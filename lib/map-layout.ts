@@ -5,13 +5,33 @@ export interface MapAnchor {
   y: number;
   name: string;
   priority: number;
-  kind: 'province' | 'scenic' | 'city';
+  kind: 'province' | 'scenic' | 'city' | 'capital';
+  offscreen?: boolean;
+  direction?: number;
 }
 export interface PlacedLabel extends MapAnchor {
   left: number;
   top: number;
   width: number;
   height: number;
+}
+export function cityVisible(province: number, selected?: string | number) {
+  return province === Number(selected);
+}
+export function capitalPosition(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+) {
+  const px = Math.max(70, Math.min(width - 70, x));
+  const py = Math.max(180, Math.min(Math.max(180, height - 210), y));
+  return {
+    x: px,
+    y: py,
+    offscreen: px !== x || py !== y,
+    direction: (Math.atan2(y - py, x - px) * 180) / Math.PI,
+  };
 }
 export function labelDock(label: {
   width: number;
@@ -80,42 +100,53 @@ export function placeLabels(
   )) {
     const w =
         a.kind === 'province'
-          ? Math.max(60, Array.from(a.name).length * 18 + 12)
-          : a.kind === 'city'
-            ? Math.max(62, Array.from(a.name).length * 16 + 20)
-            : 44,
+          ? Math.max(72, Array.from(a.name).length * 27 + 12)
+          : a.kind === 'capital'
+            ? 110
+            : a.kind === 'city'
+              ? Math.max(62, Array.from(a.name).length * 16 + 20)
+              : 44,
       h =
-        a.kind === 'city'
+        a.kind === 'city' || a.kind === 'capital'
           ? 44
           : a.kind === 'province'
             ? 44
             : 36 + Math.min(6, Array.from(a.name).length) * 16;
     let found: PlacedLabel | undefined;
     const offsets =
-      a.kind === 'province'
-        ? [
-            [0, -h / 2],
-            [0, -h / 2 - 8],
-            [0, -h / 2 + 8],
-            [8, -h / 2],
-            [-8, -h / 2],
-          ]
-        : [
-            [0, -h - 12],
-            [w + 12, -h / 2],
-            [-w - 12, -h / 2],
-            [0, 15],
-            [0, -h - 50],
-            [62, -h - 18],
-            [-62, -h - 18],
-            [80, 15],
-            [-80, 15],
-          ];
+      a.kind === 'capital'
+        ? [[0, -h / 2]]
+        : a.kind === 'city'
+          ? [
+              [w / 2 + 10, -h / 2],
+              [-w / 2 - 10, -h / 2],
+              [0, -h - 8],
+              [0, 8],
+            ]
+          : a.kind === 'province'
+            ? [
+                [0, -h / 2],
+                [0, -h / 2 - 8],
+                [0, -h / 2 + 8],
+                [8, -h / 2],
+                [-8, -h / 2],
+              ]
+            : [
+                [0, -h - 12],
+                [w + 12, -h / 2],
+                [-w - 12, -h / 2],
+                [0, 15],
+                [0, -h - 50],
+                [62, -h - 18],
+                [-62, -h - 18],
+                [80, 15],
+                [-80, 15],
+              ];
     // 优先保留相对锚点的摆放位置，避免轻微缩放触发布局翻转。
     const old = previous.find((p) => p.id === a.id);
-    if (old && a.kind !== 'province')
+    if (old && a.kind === 'scenic')
       offsets.unshift([old.left + old.width / 2 - old.x, old.top - old.y]);
-    if (provinceMode && a.kind !== 'province')
+    if (provinceMode && a.kind === 'scenic')
       offsets.push([20, -h - 8], [-20, -h - 8], [35, -h - 8], [-35, -h - 8]);
     for (const [dx, dy] of offsets) {
       const c = {

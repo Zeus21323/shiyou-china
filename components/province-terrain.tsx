@@ -3,6 +3,9 @@ import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
+import { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js';
+import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js';
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import manifest from '../public/data/terrain/manifest.json';
 import relief from '../public/data/terrain/relief.json';
 import chinaHeights from '../public/data/terrain/china-elevation.json';
@@ -178,7 +181,6 @@ export const ProvinceShape = memo(function ProvinceShape({
   const releaseQueued = useRef(false);
   const material = useRef<THREE.MeshStandardMaterial>(null);
   const mesh = useRef<THREE.Mesh>(null);
-  const line = useRef<THREE.LineSegments>(null);
   const activeColor = useMemo(() => new THREE.Color('#fff9dc'), []);
   const baseColor = useMemo(() => new THREE.Color('#e1e9df'), []);
   const borderColor = useMemo(() => new THREE.Color('#a77c30'), []);
@@ -262,16 +264,27 @@ export const ProvinceShape = memo(function ProvinceShape({
                   0.033,
               );
           }
-    const g = new THREE.BufferGeometry().setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(values, 3),
-    );
-    if (detail)
-      g.morphAttributes.position = [new THREE.Float32BufferAttribute(fine, 3)];
-    return g;
+    const geometry = new LineSegmentsGeometry().setPositions(values);
+    const material = new LineMaterial({
+      color: '#627e6c',
+      linewidth: 1.6,
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false,
+    });
+    const line = new LineSegments2(geometry, material);
+    line.frustumCulled = false;
+    line.raycast = () => {};
+    return { line, values, fine, blend: -1 };
   }, [feature, detail]);
   useEffect(() => () => baseGeometry.dispose(), [baseGeometry]);
-  useEffect(() => () => outline.dispose(), [outline]);
+  useEffect(
+    () => () => {
+      outline.line.geometry.dispose();
+      outline.line.material.dispose();
+    },
+    [outline],
+  );
   const detailedMaterial = useMemo(() => {
     if (!detail) return null;
     const m = new THREE.MeshStandardMaterial({
@@ -307,7 +320,7 @@ export const ProvinceShape = memo(function ProvinceShape({
     return m;
   }, [detail, nationalTexture]);
   useEffect(() => () => detailedMaterial?.dispose(), [detailedMaterial]);
-  useFrame((_, dt) => {
+  useFrame(({ size }, dt) => {
     if (detail) {
       const target = active ? 1 : 0;
       detail.blend.value = reduced
@@ -320,8 +333,19 @@ export const ProvinceShape = memo(function ProvinceShape({
           );
       if (mesh.current?.morphTargetInfluences)
         mesh.current.morphTargetInfluences[0] = detail.blend.value;
-      if (line.current?.morphTargetInfluences)
-        line.current.morphTargetInfluences[0] = detail.blend.value;
+      if (Math.abs(outline.blend - detail.blend.value) > 0.0001) {
+        const positions = outline.line.geometry.attributes
+          .instanceStart as THREE.InterleavedBufferAttribute;
+        const array = positions.data.array;
+        for (let i = 2; i < outline.values.length; i += 3)
+          array[i] = THREE.MathUtils.lerp(
+            outline.values[i],
+            outline.fine[i],
+            detail.blend.value,
+          );
+        positions.data.needsUpdate = true;
+        outline.blend = detail.blend.value;
+      }
       if (!active && detail.blend.value < 0.002 && !releaseQueued.current) {
         releaseQueued.current = true;
         setDetail(null);
@@ -339,12 +363,12 @@ export const ProvinceShape = memo(function ProvinceShape({
       mat.color.copy(baseColor).lerp(activeColor, emphasis);
       mat.depthWrite = !muted;
     }
-    const border = line.current?.material as
-      | THREE.LineBasicMaterial
-      | undefined;
+    const border = outline.line.material;
     if (border) {
-      border.color.set('#9aa99a').lerp(borderColor, emphasis);
-      border.opacity = 0.55 + 0.45 * emphasis;
+      border.color.set('#627e6c').lerp(borderColor, emphasis);
+      border.opacity = 0.85 + 0.15 * emphasis;
+      border.linewidth = 1.6 + 0.8 * emphasis;
+      border.resolution.set(size.width, size.height);
     }
   });
   return (
@@ -375,13 +399,7 @@ export const ProvinceShape = memo(function ProvinceShape({
           />
         )}
       </mesh>
-      <lineSegments
-        key={detail ? 'detail-line' : 'base-line'}
-        ref={line}
-        args={[outline]}
-      >
-        <lineBasicMaterial color="#9aa99a" transparent opacity={0.55} />
-      </lineSegments>
+      <primitive object={outline.line} />
     </group>
   );
 });

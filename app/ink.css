@@ -733,7 +733,9 @@ select {
   white-space: nowrap;
   text-shadow: 0 1px #fff9e8;
 }
-.map-sign.province {
+.map-sign.province,
+.map-sign.city,
+.map-sign.capital {
   perspective: none;
   display: grid;
   place-items: center;
@@ -741,8 +743,8 @@ select {
 .province-map-name {
   writing-mode: horizontal-tb;
   white-space: nowrap;
-  font: 600 17px/1.4 var(--display);
-  letter-spacing: 2px;
+  font: 600 22px/1.4 var(--display);
+  letter-spacing: 5px;
   color: #243f35;
   text-shadow:
     0 0 3px #f5f3df,
@@ -759,17 +761,48 @@ select {
   outline: 2px solid #8c492e;
   outline-offset: 1px;
 }
-.map-sign.city .sign-front {
-  flex-direction: row;
-  justify-content: center;
-  padding: 5px;
-  border-color: #748f83;
-  background: linear-gradient(100deg, #f6f4e7, #dce6dc);
+.city-map-name,
+.capital-name,
+.capital-direction {
+  font: 600 16px/1.4 var(--display);
+  color: #283e34;
+  white-space: nowrap;
+  text-shadow:
+    0 0 3px #f5f3df,
+    1px 0 #f5f3df,
+    -1px 0 #f5f3df,
+    0 1px #f5f3df,
+    0 -1px #f5f3df;
 }
-.map-sign.city .sign-front span {
-  writing-mode: horizontal-tb;
-  font-size: 15px;
-  letter-spacing: 0;
+.city-map-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34574b;
+  border: 1.5px solid #fff8dc;
+  transform: translate(-50%, -50%);
+}
+.map-sign.capital {
+  z-index: 5;
+}
+.capital-star {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 23px;
+  height: 23px;
+  transform: translate(-50%, -50%);
+  fill: #c42929;
+  stroke: #fff2d6;
+  stroke-width: 1.2;
+}
+.capital-name,
+.capital-direction {
+  position: absolute;
+  top: calc(50% + 14px);
+  font-size: 14px;
+  color: #9a2424;
 }
 .sign-front small {
   font-size: 8px;

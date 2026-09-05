@@ -30,6 +30,8 @@ import {
   clusterAnchors,
   placeLabels,
   labelDock,
+  cityVisible,
+  capitalPosition,
   type MapAnchor,
   type PlacedLabel,
 } from '../lib/map-layout';
@@ -104,6 +106,9 @@ function CameraAndLabels({
   const previousLabels = useRef<PlacedLabel[]>([]);
   const showFour = useRef(false);
   const pivot = useRef<THREE.Vector2 | null>(null);
+  const hoverPointer = useRef<{ point: THREE.Vector2; until: number } | null>(
+    null,
+  );
   const ray = useMemo(() => new THREE.Raycaster(), []);
   const ground = useMemo(
     () => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
@@ -204,6 +209,29 @@ function CameraAndLabels({
       if (province) prefetchProvinceTerrain(province.properties.adcode);
     };
     let pinchDistance = 0;
+    const hoverMove = (event: Event) => {
+      const e = event as PointerEvent;
+      if (e.pointerType !== 'mouse') return;
+      if (
+        (e.target as HTMLElement).closest(
+          '.map-cluster, .map-density, .map-zoom',
+        )
+      ) {
+        hoverPointer.current = null;
+        return;
+      }
+      const rect = gl.domElement.getBoundingClientRect();
+      hoverPointer.current = {
+        point: new THREE.Vector2(
+          ((e.clientX - rect.left) / rect.width) * 2 - 1,
+          1 - ((e.clientY - rect.top) / rect.height) * 2,
+        ),
+        until: performance.now() + 260,
+      };
+    };
+    const hoverLeave = () => {
+      hoverPointer.current = null;
+    };
     const touchDown = (e: PointerEvent) => {
       if (e.pointerType !== 'touch') return;
       touches.set(e.pointerId, new THREE.Vector2(e.clientX, e.clientY));
@@ -255,6 +283,10 @@ function CameraAndLabels({
         e.deltaY *
         (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? rect.height : 1);
       zoomDirection.current = pixels < 0 ? 1 : -1;
+      hoverPointer.current =
+        pixels < 0
+          ? { point: pivot.current.clone(), until: performance.now() + 260 }
+          : null;
       flight.current = null;
       userZoomed.current = true;
       zoomTarget.current = THREE.MathUtils.clamp(
@@ -266,6 +298,8 @@ function CameraAndLabels({
       if (pixels < 0) warmPointer();
     };
     host.addEventListener('wheel', wheel, { passive: false });
+    host.addEventListener('pointermove', hoverMove);
+    host.addEventListener('pointerleave', hoverLeave);
     const canvas = gl.domElement;
     canvas.addEventListener('pointerdown', touchDown, true);
     canvas.addEventListener('pointermove', touchMove, true);
@@ -274,6 +308,8 @@ function CameraAndLabels({
     controls.current?.listenToKeyEvents(host as HTMLElement);
     return () => {
       host.removeEventListener('wheel', wheel);
+      host.removeEventListener('pointermove', hoverMove);
+      host.removeEventListener('pointerleave', hoverLeave);
       controls.current?.stopListenToKeyEvents();
       canvas.removeEventListener('pointerdown', touchDown, true);
       canvas.removeEventListener('pointermove', touchMove, true);
@@ -340,6 +376,7 @@ function CameraAndLabels({
     if (
       selected &&
       userZoomed.current &&
+      zoomDirection.current < 0 &&
       !flight.current &&
       !returning.current &&
       cam.zoom / initialZoom.current < 0.6
@@ -349,10 +386,16 @@ function CameraAndLabels({
       onViewportSelect(null);
     }
     const now = performance.now();
+    const followingMouse =
+      hoverPointer.current &&
+      cam.zoom >= nationalZoom * 1.8 &&
+      (now < hoverPointer.current.until ||
+        (zoomTarget.current !== null && zoomDirection.current > 0));
     if (
       !flight.current &&
       now >= selectionCheckAt.current &&
-      ((userZoomed.current && zoomDirection.current > 0) ||
+      (followingMouse ||
+        (userZoomed.current && zoomDirection.current > 0) ||
         panPending.current ||
         dragStart.current)
     ) {
@@ -369,12 +412,37 @@ function CameraAndLabels({
         return hit ? [[hit.x / 0.75 + 104, hit.y / 0.95 + 35]] : [];
       });
       let candidate = viewportProvince(provinces, samples, selected);
+      if (followingMouse && hoverPointer.current) {
+        ray.setFromCamera(hoverPointer.current.point, cam);
+        const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
+        if (hit) {
+          // 用当前地形高度修正倾斜相机的落点，避免山地上沿用海平面位置。
+          for (let i = 0; i < 3; i++) {
+            const geo = [hit.x / 0.75 + 104, hit.y / 0.95 + 35];
+            const region = provinceAt(provinces, geo);
+            const h =
+              provinceTerrainHeight(region?.properties.adcode, geo) *
+              HEIGHT_SCALE;
+            ray.ray.intersectPlane(
+              new THREE.Plane(new THREE.Vector3(0, 0, 1), -h),
+              hit,
+            );
+          }
+          candidate = provinceAt(provinces, [
+            hit.x / 0.75 + 104,
+            hit.y / 0.95 + 35,
+          ]);
+        } else candidate = null;
+      }
       const visibleCandidate = candidate;
       if (candidate) {
         const fit = fitProvinceZoom([candidate], size.width, size.height);
         if (Math.max(cam.zoom, zoomTarget.current ?? cam.zoom) >= fit * 0.38)
           prefetchProvinceTerrain(candidate.properties.adcode);
-        if (cam.zoom < autoProvinceThreshold(fit, nationalZoom))
+        if (
+          !followingMouse &&
+          cam.zoom < autoProvinceThreshold(fit, nationalZoom)
+        )
           candidate = null;
       }
       const code = String(candidate?.properties.adcode ?? '');
@@ -428,13 +496,23 @@ function CameraAndLabels({
       name: string,
       point: number[],
       priority: number,
-      kind: 'province' | 'scenic' | 'city',
+      kind: MapAnchor['kind'],
       provinceCode: string | number | undefined = selected?.properties.adcode,
     ) => {
       const h = provinceTerrainHeight(provinceCode, point) * HEIGHT_SCALE;
       const p = new THREE.Vector3(...project(point), h + 0.07).project(cam);
       const x = ((p.x + 1) * size.width) / 2,
         y = ((1 - p.y) * size.height) / 2;
+      if (kind === 'capital') {
+        anchors.push({
+          id,
+          name,
+          priority,
+          kind,
+          ...capitalPosition(x, y, size.width, size.height),
+        });
+        return;
+      }
       if (
         p.z < -1 ||
         p.z > 1 ||
@@ -477,15 +555,21 @@ function CameraAndLabels({
       });
     }
     const cityAnchors: MapAnchor[] = [];
-    if (selected || cam.zoom / nationalZoom >= 1.6) {
+    {
       for (const city of cityData.cities) {
+        const capital = city.province === 110000;
+        if (
+          !capital &&
+          !cityVisible(city.province, selected?.properties.adcode)
+        )
+          continue;
         const start = anchors.length;
         add(
           city.id,
           city.name,
           city.coordinates,
-          city.province === selected?.properties.adcode ? 12 : 3,
-          'city',
+          capital ? 1000 : 12,
+          capital ? 'capital' : 'city',
           city.province,
         );
         if (anchors.length > start) cityAnchors.push(anchors.pop()!);
@@ -774,9 +858,13 @@ export default function HandscrollMap({
               aria-hidden={!visibleIds.has(l.id)}
               tabIndex={visibleIds.has(l.id) ? 0 : -1}
               aria-label={
-                l.kind === 'city'
-                  ? `${l.name} · 城市，查看所在省份`
-                  : l.name + (count > 1 ? `及附近${count - 1}个景点` : '')
+                l.kind === 'capital'
+                  ? l.offscreen
+                    ? '北京位于画面外，点击前往'
+                    : '北京，首都，点击查看'
+                  : l.kind === 'city'
+                    ? `${l.name} · 城市，查看所在省份`
+                    : l.name + (count > 1 ? `及附近${count - 1}个景点` : '')
               }
               onPointerEnter={() => {
                 const code =
@@ -796,6 +884,40 @@ export default function HandscrollMap({
             >
               {l.kind === 'province' ? (
                 <span className="province-map-name">{l.name}</span>
+              ) : l.kind === 'capital' ? (
+                <>
+                  <svg
+                    className="capital-star"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 1.5 15.2 8.1 22.5 9.2 17.2 14.3 18.5 21.6 12 18.2 5.5 21.6 6.8 14.3 1.5 9.2 8.8 8.1Z" />
+                  </svg>
+                  {l.offscreen ? (
+                    <span className="capital-direction">
+                      北京方向{' '}
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          transform: `rotate(${l.direction}deg)`,
+                        }}
+                      >
+                        →
+                      </span>
+                    </span>
+                  ) : selected?.properties.adcode === 110000 ? (
+                    <span className="capital-name">北京</span>
+                  ) : null}
+                </>
+              ) : l.kind === 'city' ? (
+                <>
+                  <span
+                    className="city-map-dot"
+                    style={{ left: l.x - l.left, top: l.y - l.top }}
+                    aria-hidden="true"
+                  />
+                  <span className="city-map-name">{l.name}</span>
+                </>
               ) : (
                 <>
                   <svg

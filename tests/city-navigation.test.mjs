@@ -5,12 +5,50 @@ import {
   viewportProvince,
   autoProvinceThreshold,
 } from '../lib/province-view.ts';
-import { placeLabels, overlap } from '../lib/map-layout.ts';
+import {
+  placeLabels,
+  overlap,
+  cityVisible,
+  capitalPosition,
+} from '../lib/map-layout.ts';
 import { ResourceCache } from '../lib/resource-cache.ts';
 const read = (n) =>
   JSON.parse(
     fs.readFileSync(new URL('../public/data/' + n, import.meta.url), 'utf8'),
   );
+
+test('全国隐藏普通城市，仅高亮省份显示所属城市', () => {
+  assert.equal(cityVisible(330000), false);
+  assert.equal(cityVisible(330000, 330000), true);
+  assert.equal(cityVisible(320000, 330000), false);
+  assert.equal(cityVisible(440000, '440000'), true);
+});
+
+test('北京保持真实屏幕点位，移出可用画面后显示有方向的边缘提示', () => {
+  const inside = capitalPosition(450, 400, 1000, 900);
+  assert.deepEqual([inside.x, inside.y, inside.offscreen], [450, 400, false]);
+  const outside = capitalPosition(1450, 400, 1000, 900);
+  assert.equal(outside.offscreen, true);
+  assert.equal(outside.direction, 0);
+  const anchors = [
+    {
+      id: 'beijing',
+      name: '北京',
+      kind: 'capital',
+      priority: 1000,
+      ...outside,
+    },
+    {
+      id: 'nearby',
+      name: '某省',
+      kind: 'province',
+      priority: 4,
+      x: outside.x,
+      y: outside.y,
+    },
+  ];
+  assert.equal(placeLabels(anchors, 1000, 900).labels[0].id, 'beijing');
+});
 test('省会、直辖市、港澳台行政中心及北上广深去重且有坐标来源', () => {
   const data = read('city-labels.json');
   assert.equal(data.cities.length, 35);
