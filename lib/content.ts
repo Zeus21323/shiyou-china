@@ -20,6 +20,7 @@ export interface Work {
   evidenceUrl?: string;
   scenicId: string;
   verification?: 'verified' | 'candidate' | 'regional';
+  verificationNote?: string;
   sourceFile?: string;
   sourceRow?: number;
 }

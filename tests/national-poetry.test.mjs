@@ -16,6 +16,29 @@ const target = path.join(root, 'public/data/poetry');
 const read = (p) => JSON.parse(fs.readFileSync(p, 'utf8'));
 const index = read(path.join(target, 'attractions.index.json'));
 
+test('原有18篇核对诗文的正文、出处、关联及核对说明完整保留', () => {
+  const original = read(path.join(root, 'public/data/works.json'));
+  const published = index.flatMap(
+    (a) => read(path.join(target, 'places', a.id + '.json')).curated,
+  );
+  assert.equal(published.length, original.length);
+  for (const work of original) {
+    const matches = published.filter((w) => w.id === work.id);
+    assert.equal(matches.length, 1);
+    const mapped = matches[0];
+    for (const field of Object.keys(work).filter(
+      (k) => !['scenicId', 'verification'].includes(k),
+    ))
+      assert.deepEqual(mapped[field], work[field]);
+    assert.equal(mapped.verification, 'verified');
+    assert.equal(mapped.verificationNote, work.verification);
+    assert.equal(
+      index.find((a) => a.id === mapped.scenicId)?.legacyId,
+      work.scenicId,
+    );
+  }
+});
+
 test('全国接入覆盖指定数据库全部景点与关系，分省及出处无丢失', () => {
   const original = read(path.join(source, 'attractions.index.json'));
   const meta = read(path.join(source, 'manifest.json'));

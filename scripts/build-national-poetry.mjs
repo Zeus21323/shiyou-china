@@ -93,7 +93,12 @@ for (const attraction of attractions) {
   const legacyId = matches.length === 1 ? matches[0].id : undefined;
   const curated = verified
     .filter((w) => w.scenicId === legacyId)
-    .map((w) => ({ ...w, scenicId: attraction.id, verification: 'verified' }));
+    .map((w) => ({
+      ...w,
+      scenicId: attraction.id,
+      verification: 'verified',
+      verificationNote: w.verification,
+    }));
   curatedCount += curated.length;
   write(path.join(target, 'places', attraction.id + '.json'), {
     scenicId: attraction.id,

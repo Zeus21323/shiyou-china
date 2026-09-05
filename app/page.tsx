@@ -343,6 +343,9 @@ export default function Home() {
                     {reading.dynasty} · {reading.author}{' '}
                     <span>{verificationLabel(reading)}</span>
                   </div>
+                  {reading.verificationNote && (
+                    <p className="relation-note">{reading.verificationNote}</p>
+                  )}
                   {readStatus === 'loading' ? (
                     <p role="status">正在读取诗词正文…</p>
                   ) : readStatus === 'error' ? (
