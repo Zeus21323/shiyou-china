@@ -322,7 +322,8 @@ export const ProvinceShape = memo(function ProvinceShape({
       opacity: 1,
       dashed: false,
       depthWrite: false,
-      depthTest: false,
+      // 线在地形后绘制以保留细线清晰度，但必须受地形/抬升侧壁深度遮挡。
+      depthTest: true,
     });
     const line = new LineSegments2(geometry, material);
     line.renderOrder = 10;
