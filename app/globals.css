@@ -784,6 +784,126 @@ select,
   border-color: #7d6843;
   box-shadow: 0 3px 12px #66563033;
 }
+/* 六面 CSS 3D 竖牌。外层仍是避让算法的完整占位框，立体牌身内缩。 */
+.map-sign,
+.map-sign.province,
+.map-sign:hover {
+  display: block;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  perspective: 600px;
+}
+.map-sign::before {
+  content: none;
+}
+.sign-solid {
+  position: absolute;
+  inset: 4px;
+  transform-style: preserve-3d;
+  transform: rotateX(8deg) rotateY(-20deg);
+  transition: transform 180ms ease;
+}
+.sign-front,
+.sign-back,
+.sign-side {
+  position: absolute;
+  box-sizing: border-box;
+  backface-visibility: hidden;
+}
+.sign-front {
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+  padding: 8px 2px;
+  border: 1px solid #b7a16e;
+  border-radius: 3px;
+  background: linear-gradient(100deg, #fff8e2, #ecddb3);
+  color: #394832;
+  box-shadow:
+    inset 1px 0 #fffdf3,
+    inset -2px 0 #b9a27566;
+  transform: translateZ(4px);
+}
+.map-sign.province .sign-front {
+  background: linear-gradient(100deg, #fbf4de, #d9cca6);
+}
+.sign-front::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #96733c;
+  box-shadow: 0 1px #fff9e1;
+}
+.sign-front span {
+  text-shadow:
+    0 1px #fff9e8,
+    0 -0.5px #25332455;
+}
+.sign-side {
+  background: #967a49;
+}
+.sign-left,
+.sign-right {
+  top: 0;
+  bottom: 0;
+  width: 8px;
+}
+.sign-left {
+  left: -4px;
+  transform: rotateY(-90deg);
+  background: #b99b61;
+}
+.sign-right {
+  right: -4px;
+  transform: rotateY(90deg);
+  background: linear-gradient(#aa8a52, #735b35);
+}
+.sign-top,
+.sign-bottom {
+  left: 0;
+  right: 0;
+  height: 8px;
+}
+.sign-top {
+  top: -4px;
+  transform: rotateX(90deg);
+  background: #e6ce95;
+}
+.sign-bottom {
+  bottom: -4px;
+  transform: rotateX(-90deg);
+  background: #705832;
+}
+.sign-back {
+  inset: 0;
+  background: #a48b59;
+  transform: translateZ(-4px) rotateY(180deg);
+  backface-visibility: visible;
+  box-shadow: 3px 5px 4px #44372245;
+}
+.map-sign:hover .sign-solid,
+.map-sign:focus-visible .sign-solid {
+  transform: rotateX(4deg) rotateY(-10deg);
+}
+.map-sign:focus-visible {
+  outline: 2px solid #6a763f;
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sign-solid {
+    transition: none;
+  }
+}
 .map-zoom {
   position: absolute;
   right: 20px;

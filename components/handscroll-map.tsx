@@ -505,18 +505,27 @@ export default function HandscrollMap({
               }
               onClick={() => act(l.id)}
             >
-              <span title={l.name}>
-                {l.kind === 'scenic' && l.name.length > 6
-                  ? l.name.slice(0, 5) + '…'
-                  : l.name}
-              </span>
-              {l.kind === 'scenic' && (
-                <small>
-                  {count > 1
-                    ? `+${count - 1}`
-                    : areas.find((a) => a.id === l.id)?.grade}
-                </small>
-              )}
+              <div className="sign-solid">
+                <div className="sign-side sign-left" aria-hidden="true" />
+                <div className="sign-side sign-right" aria-hidden="true" />
+                <div className="sign-side sign-top" aria-hidden="true" />
+                <div className="sign-side sign-bottom" aria-hidden="true" />
+                <div className="sign-back" aria-hidden="true" />
+                <div className="sign-front">
+                  <span title={l.name}>
+                    {l.kind === 'scenic' && l.name.length > 6
+                      ? l.name.slice(0, 5) + '…'
+                      : l.name}
+                  </span>
+                  {l.kind === 'scenic' && (
+                    <small>
+                      {count > 1
+                        ? `+${count - 1}`
+                        : areas.find((a) => a.id === l.id)?.grade}
+                    </small>
+                  )}
+                </div>
+              </div>
             </button>
           );
         })}
