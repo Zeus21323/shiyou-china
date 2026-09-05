@@ -14,6 +14,7 @@ import {
   type TerrainStatus,
   prefetchProvinceTerrain,
   warmProvinceTexture,
+  createBoundaryContext,
 } from './province-terrain';
 import {
   fitProvinceZoom,
@@ -783,6 +784,10 @@ export default function HandscrollMap({
   const [terrainStatus, setTerrainStatus] = useState<
     Record<string, TerrainStatus>
   >({});
+  const boundaries = useMemo(
+    () => createBoundaryContext(provinces),
+    [provinces],
+  );
   const onTerrainStatus = useCallback((code: string, status: TerrainStatus) => {
     setTerrainStatus((old) => ({ ...old, [code]: status }));
   }, []);
@@ -919,6 +924,8 @@ export default function HandscrollMap({
             <ProvinceShape
               key={p.properties.adcode}
               feature={p}
+              boundaries={boundaries}
+              focusCode={mapSelected?.properties.adcode}
               active={mapSelected?.properties.adcode === p.properties.adcode}
               muted={
                 !!mapSelected &&

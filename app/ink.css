@@ -764,7 +764,7 @@ select {
 .city-map-name,
 .capital-name,
 .capital-direction {
-  font: 600 16px/1.4 var(--display);
+  font: 600 19px/1.4 var(--display);
   color: #283e34;
   white-space: nowrap;
   text-shadow:
@@ -776,8 +776,8 @@ select {
 }
 .city-map-dot {
   position: absolute;
-  width: 7px;
-  height: 7px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #34574b;
   border: 1.5px solid #fff8dc;
@@ -790,8 +790,8 @@ select {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 23px;
-  height: 23px;
+  width: 27px;
+  height: 27px;
   transform: translate(-50%, -50%);
   fill: #c42929;
   stroke: #fff2d6;
@@ -803,6 +803,9 @@ select {
   top: calc(50% + 14px);
   font-size: 14px;
   color: #9a2424;
+}
+.capital-name {
+  font-size: 18px;
 }
 .sign-front small {
   font-size: 8px;

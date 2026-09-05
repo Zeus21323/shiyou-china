@@ -14,7 +14,12 @@ import {
   HEIGHT_SCALE,
   type ElevationGrid,
 } from '../lib/terrain-height';
-import { provincePolygons } from '../lib/province-view';
+import {
+  boundaryKey,
+  boundaryOwner,
+  provinceBoundaries,
+  sharedBoundaryHeight,
+} from '../lib/province-boundaries';
 import { useReducedMotion } from '../lib/use-motion-preference';
 import type { Province } from './china-map';
 import { ResourceCache } from '../lib/resource-cache';
@@ -36,6 +41,34 @@ type Detail = {
 };
 // Only mounted detail resources are held here. Release them after the return transition.
 const liveDetails = new Map<string, Detail>();
+export function createBoundaryContext(provinces: Province[]) {
+  return {
+    ...provinceBoundaries(provinces),
+    frame: -1,
+    revision: 'initial',
+    heights: new Map<string, number>(),
+  };
+}
+type BoundaryContext = ReturnType<typeof createBoundaryContext>;
+function boundaryHeight(context: BoundaryContext, point: number[]) {
+  const key = boundaryKey(point);
+  if (context.heights.has(key)) return context.heights.get(key)!;
+  const base = Math.max(0, elevationAt(chinaHeights, point[0], point[1]));
+  const samples = [...(context.vertices.get(key) ?? [])].flatMap((code) => {
+    const detail = liveDetails.get(code);
+    return detail
+      ? [
+          {
+            height: Math.max(0, elevationAt(detail.grid, point[0], point[1])),
+            blend: detail.blend.value,
+          },
+        ]
+      : [];
+  });
+  const height = sharedBoundaryHeight(base, samples) * HEIGHT_SCALE + 0.033;
+  context.heights.set(key, height);
+  return height;
+}
 export const provinceTerrainBlend = (code?: number | string) =>
   liveDetails.get(String(code))?.blend.value ?? 0;
 export function provinceTerrainHeight(
@@ -178,6 +211,8 @@ export const ProvinceShape = memo(function ProvinceShape({
   onSelect,
   meshData,
   onStatus,
+  focusCode,
+  boundaries,
 }: {
   feature: Province;
   active: boolean;
@@ -185,6 +220,8 @@ export const ProvinceShape = memo(function ProvinceShape({
   onSelect: (p: Province) => void;
   meshData: ArrayBuffer;
   onStatus: (code: string, status: TerrainStatus) => void;
+  focusCode?: string | number;
+  boundaries: BoundaryContext;
 }) {
   const code = String(feature.properties.adcode);
   const nationalTexture = useTexture(`/data/terrain/${manifest.china.texture}`);
@@ -249,32 +286,24 @@ export const ProvinceShape = memo(function ProvinceShape({
   }, [meshData, code]);
   const outline = useMemo(() => {
     const values: number[] = [],
-      fine: number[] = [];
-    for (const polygon of provincePolygons(feature))
-      for (const ring of polygon)
-        for (let i = 1; i < ring.length; i++)
-          for (const p of [ring[i - 1], ring[i]]) {
-            const x = (p[0] - 104) * 0.75,
-              y = (p[1] - 35) * 0.95;
-            values.push(
-              x,
-              y,
-              Math.max(0, elevationAt(chinaHeights, p[0], p[1])) *
-                HEIGHT_SCALE +
-                0.033,
-            );
-            if (detail)
-              fine.push(
-                x,
-                y,
-                Math.max(0, elevationAt(detail.grid, p[0], p[1])) *
-                  HEIGHT_SCALE +
-                  0.033,
-              );
-          }
+      points: number[][] = [];
+    for (const segment of boundaries.segments.filter(
+      (s) => boundaryOwner(s.owners, focusCode) === code,
+    ))
+      for (const p of [segment.a, segment.b]) {
+        points.push(p);
+        const x = (p[0] - 104) * 0.75,
+          y = (p[1] - 35) * 0.95;
+        values.push(
+          x,
+          y,
+          Math.max(0, elevationAt(chinaHeights, p[0], p[1])) * HEIGHT_SCALE +
+            0.033,
+        );
+      }
     const geometry = new LineSegmentsGeometry().setPositions(values);
     const material = new LineMaterial({
-      color: '#000000',
+      color: '#ffffff',
       linewidth: 1.6,
       transparent: true,
       opacity: 1,
@@ -286,8 +315,8 @@ export const ProvinceShape = memo(function ProvinceShape({
     line.renderOrder = 10;
     line.frustumCulled = false;
     line.raycast = () => {};
-    return { line, values, fine, blend: -1 };
-  }, [feature, detail]);
+    return { line, points, revision: null as string | null };
+  }, [boundaries, code, focusCode]);
   useEffect(() => () => baseGeometry.dispose(), [baseGeometry]);
   useEffect(
     () => () => {
@@ -344,19 +373,6 @@ export const ProvinceShape = memo(function ProvinceShape({
           );
       if (mesh.current?.morphTargetInfluences)
         mesh.current.morphTargetInfluences[0] = detail.blend.value;
-      if (Math.abs(outline.blend - detail.blend.value) > 0.0001) {
-        const positions = outline.line.geometry.attributes
-          .instanceStart as THREE.InterleavedBufferAttribute;
-        const array = positions.data.array;
-        for (let i = 2; i < outline.values.length; i += 3)
-          array[i] = THREE.MathUtils.lerp(
-            outline.values[i],
-            outline.fine[i],
-            detail.blend.value,
-          );
-        positions.data.needsUpdate = true;
-        outline.blend = detail.blend.value;
-      }
       if (!active && detail.blend.value < 0.002 && !releaseQueued.current) {
         releaseQueued.current = true;
         setDetail(null);
@@ -379,12 +395,41 @@ export const ProvinceShape = memo(function ProvinceShape({
     const border = outline.line.material;
     outline.line.renderOrder = active ? 11 : 10;
     if (border) {
-      border.color.set('#000000').lerp(borderColor, emphasis);
+      border.color.set('#ffffff').lerp(borderColor, emphasis);
       border.opacity = 1;
       border.linewidth = 1.6 + 0.8 * emphasis;
       border.resolution.set(size.width, size.height);
     }
-  });
+  }, -2);
+  useFrame(({ clock }) => {
+    if (boundaries.frame !== clock.elapsedTime) {
+      boundaries.frame = clock.elapsedTime;
+      const revision = [...liveDetails]
+        .map(([code, detail]) => `${code}:${detail.blend.value.toFixed(4)}`)
+        .join('|');
+      if (revision !== boundaries.revision) {
+        boundaries.revision = revision;
+        boundaries.heights.clear();
+      }
+    }
+    if (outline.revision === boundaries.revision) return;
+    const positions = outline.line.geometry.attributes.instanceStart as
+      | THREE.InterleavedBufferAttribute
+      | undefined;
+    if (!positions) return;
+    const array = positions.data.array;
+    let changed = false;
+    outline.points.forEach((point, i) => {
+      const height = boundaryHeight(boundaries, point),
+        index = i * 3 + 2;
+      if (Math.abs(array[index] - height) > 0.00001) {
+        array[index] = height;
+        changed = true;
+      }
+    });
+    if (changed) positions.data.needsUpdate = true;
+    outline.revision = boundaries.revision;
+  }, -1);
   return (
     <group>
       <mesh

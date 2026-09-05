@@ -104,7 +104,7 @@ export function placeLabels(
           : a.kind === 'capital'
             ? 110
             : a.kind === 'city'
-              ? Math.max(62, Array.from(a.name).length * 16 + 20)
+              ? Math.max(68, Array.from(a.name).length * 20 + 20)
               : 44,
       h =
         a.kind === 'city' || a.kind === 'capital'
