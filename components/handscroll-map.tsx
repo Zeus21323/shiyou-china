@@ -1,9 +1,11 @@
 'use client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Edges, OrbitControls } from '@react-three/drei';
+import { Edges, OrbitControls, useTexture } from '@react-three/drei';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+import type { OrbitControls as Controls } from 'three-stdlib';
+import { useReducedMotion } from '../lib/use-motion-preference';
+import terrain from '../public/data/terrain/manifest.json';
 import type { Province } from './china-map';
 import type { ScenicArea, Catalog } from '../lib/content';
 import { selectScenicAreas } from '../lib/scenic-selection';
@@ -46,33 +48,52 @@ const polygons = (f: Province) =>
 function ProvinceShape({
   feature,
   active,
+  muted,
   onSelect,
 }: {
   feature: Province;
   active: boolean;
+  muted: boolean;
   onSelect: () => void;
 }) {
   const [hover, setHover] = useState(false);
-  const geometry = useMemo(
-    () =>
-      new THREE.ExtrudeGeometry(
-        polygons(feature)
-          .filter((p) => p[0]?.length >= 3)
-          .map((p) => {
-            const shape = new THREE.Shape(
-              p[0].map((x) => new THREE.Vector2(...project(x))),
-            );
-            p.slice(1).forEach((r) =>
-              shape.holes.push(
-                new THREE.Path(r.map((x) => new THREE.Vector2(...project(x)))),
-              ),
-            );
-            return shape;
-          }),
-        { depth: 0.12, bevelEnabled: false },
-      ),
-    [feature],
-  );
+  const region = active && Number(feature.properties.adcode) === 330000 ? terrain.zhejiang : terrain.china;
+  const texture = useTexture(`/data/terrain/${region.texture}`);
+  const { gl } = useThree();
+  useEffect(() => {
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
+    texture.needsUpdate = true;
+  }, [texture, gl]);
+  const geometry = useMemo(() => {
+    const geometry = new THREE.ExtrudeGeometry(
+      polygons(feature)
+        .filter((p) => p[0]?.length >= 3)
+        .map((p) => {
+          const shape = new THREE.Shape(
+            p[0].map((x) => new THREE.Vector2(...project(x))),
+          );
+          p.slice(1).forEach((r) =>
+            shape.holes.push(
+              new THREE.Path(r.map((x) => new THREE.Vector2(...project(x)))),
+            ),
+          );
+          return shape;
+        }),
+      { depth: 0.025, bevelEnabled: false },
+    );
+    geometry.computeBoundingBox();
+    const [west, south, east, north] = region.bounds;
+    const pos = geometry.getAttribute('position');
+    const uv = geometry.getAttribute('uv');
+    for (let i = 0; i < pos.count; i++)
+      uv.setXY(
+        i,
+        (pos.getX(i) / 0.75 + 104 - west) / (east - west),
+        (pos.getY(i) / 0.95 + 35 - south) / (north - south),
+      );
+    return geometry;
+  }, [feature, region]);
   useEffect(() => () => geometry.dispose(), [geometry]);
   return (
     <mesh
@@ -88,127 +109,21 @@ function ProvinceShape({
       }}
     >
       <meshStandardMaterial
-        color={active ? '#b9c6a0' : hover ? '#a8bba1' : '#c4c7a4'}
+        attach="material-0"
+        map={texture}
+        transparent={muted}
+        opacity={muted ? 0.2 : 1}
+        depthWrite={!muted}
+        color={active || hover ? '#ffffff' : '#e1e9df'}
         roughness={1}
         metalness={0}
       />
-      <Edges color={active ? '#866739' : '#92987a'} threshold={40} />
-    </mesh>
-  );
-}
-function inRing(x: number, y: number, ring: number[][]) {
-  let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const a = ring[i],
-      b = ring[j];
-    if (
-      a[1] > y !== b[1] > y &&
-      x < ((b[0] - a[0]) * (y - a[1])) / (b[1] - a[1]) + a[0]
-    )
-      inside = !inside;
-  }
-  return inside;
-}
-function ArtisticRelief({
-  provinces,
-  selected,
-}: {
-  provinces: Province[];
-  selected: Province | null;
-}) {
-  const geometry = useMemo(() => {
-    const shapes = (selected ? [selected] : provinces)
-      .flatMap(polygons)
-      .map((p) => ({
-        p,
-        minX: Math.min(...p[0].map((v) => v[0])),
-        maxX: Math.max(...p[0].map((v) => v[0])),
-        minY: Math.min(...p[0].map((v) => v[1])),
-        maxY: Math.max(...p[0].map((v) => v[1])),
-      }));
-    const positions: number[] = [],
-      colors: number[] = [];
-    const hash = (x: number, y: number) => {
-      const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
-      return n - Math.floor(n);
-    };
-    const noise = (x: number, y: number) => {
-      const ix = Math.floor(x),
-        iy = Math.floor(y),
-        fx = x - ix,
-        fy = y - iy,
-        u = fx * fx * (3 - 2 * fx),
-        v = fy * fy * (3 - 2 * fy);
-      return (
-        (hash(ix, iy) * (1 - u) + hash(ix + 1, iy) * u) * (1 - v) +
-        (hash(ix, iy + 1) * (1 - u) + hash(ix + 1, iy + 1) * u) * v
-      );
-    };
-    const height = (x: number, y: number) => {
-      const frequency = selected ? 8 : 1.8;
-      const ridges = Math.pow(
-        1 - Math.abs(noise(x * frequency, y * frequency) * 2 - 1),
-        4,
-      );
-      const detail = noise(x * frequency * 4, y * frequency * 4) * 0.2;
-      return 0.14 + (ridges + detail) * (selected ? 0.075 : x < 105 ? 1 : 0.45);
-    };
-    const vertex = (x: number, y: number) => {
-      const z = height(x, y),
-        p = project([x, y]);
-      positions.push(...p, z);
-      const c = new THREE.Color('#ccc9a4').lerp(
-        new THREE.Color('#356d68'),
-        Math.min(1, (z - 0.14) * (selected ? 11 : 1.9)),
-      );
-      colors.push(c.r, c.g, c.b);
-    };
-    const step = selected ? 0.025 : 0.26;
-    for (
-      let x = Math.min(...shapes.map((s) => s.minX));
-      x < Math.max(...shapes.map((s) => s.maxX));
-      x += step
-    )
-      for (
-        let y = Math.min(...shapes.map((s) => s.minY));
-        y < Math.max(...shapes.map((s) => s.maxY));
-        y += step
-      ) {
-        const cx = x + step / 2,
-          cy = y + step / 2;
-        const valid = shapes.some(
-          (s) =>
-            cx >= s.minX &&
-            cx <= s.maxX &&
-            cy >= s.minY &&
-            cy <= s.maxY &&
-            inRing(cx, cy, s.p[0]) &&
-            !s.p.slice(1).some((r) => inRing(cx, cy, r)),
-        );
-        if (!valid) continue;
-        vertex(x, y);
-        vertex(x + step, y);
-        vertex(x, y + step);
-        vertex(x + step, y);
-        vertex(x + step, y + step);
-        vertex(x, y + step);
-      }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    g.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-    const smooth = mergeVertices(g);
-    smooth.computeVertexNormals();
-    g.dispose();
-    return smooth;
-  }, [provinces, selected]);
-  useEffect(() => () => geometry.dispose(), [geometry]);
-  return (
-    <mesh geometry={geometry} raycast={() => null}>
-      <meshStandardMaterial
-        vertexColors
-        roughness={1}
+      <meshStandardMaterial attach="material-1" color="#7d998a" roughness={1} />
+      <Edges
+        color={active ? '#547d70' : '#9aa99a'}
+        threshold={40}
         transparent
-        opacity={0.8}
+        opacity={muted ? 0.18 : 0.8}
       />
     </mesh>
   );
@@ -220,6 +135,7 @@ function CameraAndLabels({
   areas,
   command,
   onScreen,
+  resetRevision,
 }: {
   provinces: Province[];
   selected: Province | null;
@@ -227,14 +143,29 @@ function CameraAndLabels({
   areas: ScenicArea[];
   command: { id: number; factor: number };
   onScreen: (s: ScreenState) => void;
+  resetRevision: number;
 }) {
   const { camera, size } = useThree();
+  const reduced = useReducedMotion();
+  const controls = useRef<Controls>(null);
+  const flight = useRef<{
+    position: THREE.Vector3;
+    target: THREE.Vector3;
+    zoom: number;
+  } | null>(null);
+  const zoomTarget = useRef<number | null>(null);
+  const initialized = useRef(false);
+  const lastFrame = useRef('');
+  const areaIndex = useMemo(
+    () => new Map(areas.map((a) => [a.id, a])),
+    [areas],
+  );
   const initialZoom = useRef(1),
     elapsed = useRef(0);
   const cam = camera as THREE.OrthographicCamera;
   const bounds = useMemo(() => {
     const b = new THREE.Box2();
-    (selected ? [selected] : provinces)
+    (selected ? [selected] : provinces.filter((p) => p.properties.name))
       .flatMap(polygons)
       .flat(2)
       .forEach((p) => b.expandByPoint(new THREE.Vector2(...project(p))));
@@ -255,24 +186,61 @@ function CameraAndLabels({
         size.width / Math.max(span.x, 1),
         Math.max(220, size.height - 180) / Math.max(span.y, 1),
       ) * 0.79;
-    cam.zoom = initialZoom.current;
-    cam.up.set(0, 0, 1);
-    cam.position.set(center.x, center.y - 15, 42);
-    cam.lookAt(center.x, center.y, 0);
-    cam.updateProjectionMatrix();
-  }, [bounds, cam, center, size.width, size.height]);
+    const destination = {
+      position: new THREE.Vector3(center.x, center.y - 15, 42),
+      target: new THREE.Vector3(center.x, center.y, 0),
+      zoom: initialZoom.current,
+    };
+    zoomTarget.current = null;
+    if (!initialized.current || reduced) {
+      cam.position.copy(destination.position);
+      cam.zoom = destination.zoom;
+      cam.up.set(0, 0, 1);
+      cam.lookAt(destination.target);
+      controls.current?.target.copy(destination.target);
+      cam.updateProjectionMatrix();
+      initialized.current = true;
+      flight.current = null;
+    } else flight.current = destination;
+  }, [bounds, cam, center, size.width, size.height, resetRevision, reduced]);
   useEffect(() => {
     if (command.id) {
-      cam.zoom = Math.max(
+      flight.current = null;
+      const next = Math.max(
         initialZoom.current * 0.7,
-        Math.min(initialZoom.current * 18, cam.zoom * command.factor),
+        Math.min(
+          initialZoom.current * 18,
+          (zoomTarget.current ?? cam.zoom) * command.factor,
+        ),
       );
-      cam.updateProjectionMatrix();
+      if (reduced) {
+        cam.zoom = next;
+        cam.updateProjectionMatrix();
+      } else zoomTarget.current = next;
     }
-  }, [command, cam]);
+  }, [command, cam, reduced]);
   useFrame((_, dt) => {
+    const blend = 1 - Math.exp(-Math.min(dt, 0.05) * 7);
+    if (flight.current && controls.current) {
+      const f = flight.current;
+      cam.position.lerp(f.position, blend);
+      controls.current.target.lerp(f.target, blend);
+      cam.zoom = THREE.MathUtils.lerp(cam.zoom, f.zoom, blend);
+      cam.lookAt(controls.current.target);
+      cam.updateProjectionMatrix();
+      if (
+        cam.position.distanceTo(f.position) < 0.002 &&
+        Math.abs(cam.zoom - f.zoom) < 0.02
+      )
+        flight.current = null;
+    } else if (zoomTarget.current !== null) {
+      cam.zoom = THREE.MathUtils.lerp(cam.zoom, zoomTarget.current, blend);
+      cam.updateProjectionMatrix();
+      if (Math.abs(cam.zoom - zoomTarget.current) < 0.02)
+        zoomTarget.current = null;
+    }
     elapsed.current += dt;
-    if (elapsed.current < 0.1) return;
+    if (elapsed.current < 1 / 30) return;
     elapsed.current = 0;
     const zoom = cam.zoom / initialZoom.current;
     const anchors: MapAnchor[] = [];
@@ -314,7 +282,7 @@ function CameraAndLabels({
         );
     } else if (selected.properties.adcode === 330000) {
       points.forEach((p) => {
-        const a = areas.find((a) => a.id === p.scenicId);
+        const a = areaIndex.get(p.scenicId);
         if (!a || (a.grade === '4A' && zoom < 1.65)) return;
         add(
           p.scenicId,
@@ -333,18 +301,28 @@ function CameraAndLabels({
       : 100;
     const eligible = groups.slice(0, budget).map((g) => g.anchor);
     const result = placeLabels(eligible, size.width, size.height, !selected);
-    onScreen({
+    const next = {
       ...result,
       hidden: [...result.hidden, ...groups.slice(budget).map((g) => g.anchor)],
       groups,
       zoom,
       width: size.width,
       height: size.height,
-    });
+    };
+    const fingerprint = JSON.stringify(next);
+    if (fingerprint !== lastFrame.current) {
+      lastFrame.current = fingerprint;
+      onScreen(next);
+    }
   });
   return (
     <OrbitControls
-      target={[center.x, center.y, 0]}
+      ref={controls}
+      onStart={() => {
+        flight.current = null;
+        zoomTarget.current = null;
+      }}
+      dampingFactor={0.12}
       enableDamping
       minZoom={0.5}
       maxZoom={1400}
@@ -360,11 +338,13 @@ export default function HandscrollMap({
   selected,
   onSelect,
   onScenic,
+  resetRevision,
 }: {
   provinces: Province[];
   selected: Province | null;
   onSelect: (p: Province) => void;
   onScenic: (s: ScenicArea) => void;
+  resetRevision: number;
 }) {
   const [points, setPoints] = useState<PointRecord[]>([]),
     [areas, setAreas] = useState<ScenicArea[]>([]),
@@ -433,17 +413,20 @@ export default function HandscrollMap({
         gl={{ alpha: true }}
         fallback={<p>三维地图不可用，请从省份及景区列表继续。</p>}
       >
-        <ambientLight intensity={1.1} />
-        <directionalLight position={[-15, -10, 30]} intensity={1.2} />
+        <ambientLight intensity={1.8} />
+        <directionalLight position={[-15, -10, 30]} intensity={0.5} />
         {provinces.map((p) => (
           <ProvinceShape
             key={p.properties.adcode}
             feature={p}
             active={selected?.properties.adcode === p.properties.adcode}
+            muted={
+              !!selected && selected.properties.adcode !== p.properties.adcode
+            }
             onSelect={() => onSelect(p)}
           />
         ))}
-        <ArtisticRelief provinces={provinces} selected={selected} />
+
         <CameraAndLabels
           provinces={provinces}
           selected={selected}
@@ -451,6 +434,7 @@ export default function HandscrollMap({
           areas={areas}
           command={command}
           onScreen={setScreen}
+          resetRevision={resetRevision}
         />
       </Canvas>
       <div
@@ -494,8 +478,9 @@ export default function HandscrollMap({
               key={l.id}
               className={'map-sign ' + l.kind}
               style={{
-                left: l.left,
-                top: l.top,
+                left: 0,
+                top: 0,
+                transform: `translate3d(${l.left}px, ${l.top}px, 0)`,
                 width: l.width,
                 height: l.height,
               }}
@@ -539,6 +524,14 @@ export default function HandscrollMap({
           −
         </button>
       </div>
+      {!selected && screen.hidden.length > 0 && (
+        <div className="map-density">
+          <small>地名较密，可从列表选择全部省份</small>
+          <button onClick={() => document.getElementById('province')?.focus()}>
+            选择省份
+          </button>
+        </div>
+      )}
       {selected?.properties.adcode === 330000 && (
         <div className="map-density">
           <span>5A 优先 · 已显示 {screen.labels.length} 处</span>

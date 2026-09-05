@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import ChinaMap, { type Province } from '../components/handscroll-map';
 import ScenicList from '../components/scenic-list';
-import PoetryNebula from '../components/poetry-nebula';
+import PoetryNebula from '../components/star-river';
 import type { ScenicArea, Work, Catalog } from '../lib/content';
 import { selectScenicAreas } from '../lib/scenic-selection';
 export default function Home() {
@@ -24,7 +24,9 @@ export default function Home() {
         if (!r.ok) throw Error();
         return r.json();
       })
-      .then((d) => setScenicCount(selectScenicAreas((d as Catalog).scenicAreas).length))
+      .then((d) =>
+        setScenicCount(selectScenicAreas((d as Catalog).scenicAreas).length),
+      )
       .catch(() => setScenicCount(null));
     fetch('/data/china.geojson', { signal: c.signal })
       .then((r) => {
@@ -68,9 +70,15 @@ export default function Home() {
     : [];
   return (
     <main className={'atlas-app ' + (scenic ? 'reading-mode' : 'map-mode')}>
+      <a className="skip-link" href="#destinations">
+        跳到景区与诗文
+      </a>
       <header className="masthead">
         <a className="brand" href="/">
-          诗游中国<span>POETRY ATLAS</span>
+          <i className="brand-seal" aria-hidden="true">
+            山<br />水
+          </i>
+          诗游中国<span>一卷山河 · 千载诗心</span>
         </a>
         <div className="edition">山水之间 · 字句之中</div>
         <span className="pilot">浙江 · 诗文初集</span>
@@ -81,18 +89,19 @@ export default function Home() {
             <PoetryNebula works={currentWorks} onRead={setReading} />
           ) : (
             <ChinaMap
-              key={mapRevision}
+              resetRevision={mapRevision}
               provinces={provinces}
               selected={selected}
               onSelect={selectProvince}
               onScenic={openScenic}
             />
           )}
-          <div className="map-heading">
+          <div
+            className="map-heading"
+            key={scenic?.id ?? selected?.properties.name ?? 'china'}
+          >
             <span className="eyebrow">
-              {scenic
-                ? '山水有回声 / POETRY NEBULA'
-                : '从一片山水，走进一篇诗文'}
+              {scenic ? '山水有回声' : '山河入画 · 诗文入境'}
             </span>
             <h1>
               {scenic
@@ -103,7 +112,7 @@ export default function Home() {
               {scenic
                 ? `${currentWorks.length} 篇已核对原文的作品 · 点击星点阅读`
                 : selected
-                  ? '省份已选中，从右侧继续探索景区。'
+                  ? '循着地名，寻访山水。放大地图，遇见更多景点。'
                   : '选择省份，开启你的山水诗文之旅。'}
             </p>
           </div>
@@ -129,15 +138,17 @@ export default function Home() {
               </button>
             )}
             <button onClick={() => selectProvince(null)}>↖ 全国视野</button>
-            <span>拖动平移 · 滚轮缩放</span>
+            <span>
+              {scenic ? '拖动环视 · 滚轮缩放' : '拖动平移 · 滚轮缩放'}
+            </span>
           </div>
           <p className="map-credit">
             {scenic
               ? '亮星对应作品 · 微尘为装饰，不计入收录数量'
-              : '省界：DataV · 山形为艺术示意，非真实高程'}
+              : '省界：DataV · 地形：Mapzen / USGS · 主要河湖：Natural Earth（概化）'}
           </p>
         </div>
-        <aside className="sidebar">
+        <aside className="sidebar" id="destinations" tabIndex={-1}>
           {scenic ? (
             <>
               <button
@@ -244,7 +255,7 @@ export default function Home() {
             </>
           ) : (
             <>
-              <span className="eyebrow">目的地 / DESTINATIONS</span>
+              <span className="eyebrow">山水行笺</span>
               <h2>{selected?.properties.name || '从浙江出发'}</h2>
               {!selected && (
                 <p className="intro">

@@ -1,0 +1,39 @@
+{
+  "china": {
+    "bounds": [
+      73,
+      18,
+      136,
+      54
+    ],
+    "width": 1537,
+    "height": 1025,
+    "tileZoom": 5,
+    "approximateSampleMetres": 3914,
+    "texture": "china-ink.png",
+    "elevation": "china-elevation.json",
+    "water": "china-water.geojson"
+  },
+  "zhejiang": {
+    "bounds": [
+      117.8,
+      26.8,
+      123.3,
+      31.6
+    ],
+    "width": 1409,
+    "height": 1537,
+    "tileZoom": 8,
+    "approximateSampleMetres": 380,
+    "texture": "zhejiang-ink.png",
+    "elevation": "zhejiang-elevation.json",
+    "water": "zhejiang-water.geojson"
+  },
+  "sources": {
+    "dem": "https://registry.opendata.aws/terrain-tiles/",
+    "demAttribution": "Mapzen terrain tiles; global SRTM/GMTED2010 courtesy of USGS; ETOPO1 courtesy of NOAA",
+    "water": "https://www.naturalearthdata.com/",
+    "waterLicense": "Natural Earth public domain",
+    "note": "水系为1:1000万制图概化数据，主要河湖，非完整水网；颜色与等高线是基于实际高程的艺术化表现，非地质岩性图。"
+  }
+}

@@ -38,7 +38,7 @@ export function placeLabels(
   for (const a of [...anchors].sort(
     (a, b) => b.priority - a.priority || a.id.localeCompare(b.id),
   )) {
-    const w = provinceMode ? 28 : 34,
+    const w = 44,
       h = provinceMode
         ? 24 + Array.from(a.name).length * 15
         : 36 + Math.min(6, Array.from(a.name).length) * 16;

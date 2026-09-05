@@ -68,8 +68,11 @@ export default function ScenicList({
         只看已收录诗文（{counts.size}）
       </button>
       <input
+        type="search"
+        name="scenic-search"
+        autoComplete="off"
         aria-label="搜索浙江景区"
-        placeholder="搜索景区或城市"
+        placeholder="搜索景区或城市，如西湖…"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
