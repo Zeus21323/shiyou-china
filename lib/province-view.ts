@@ -13,6 +13,23 @@ export function requiresCameraFit(
     last.height !== height
   );
 }
+export function autoProvinceThreshold(fitZoom: number, nationalZoom: number) {
+  return Math.max(fitZoom * 0.64, nationalZoom * 1.35);
+}
+// 中心命中优先；中心在近海时使用周围可见陆地，避免沿海放大迟迟不响应。
+export function viewportProvince(
+  provinces: Province[],
+  points: number[][],
+  current?: Province | null,
+): Province | null {
+  const hits = points.map((point) => provinceAt(provinces, point));
+  if (hits[0]) return hits[0];
+  const scores = new Map<Province, number>();
+  for (const hit of hits.slice(1))
+    if (hit) scores.set(hit, (scores.get(hit) ?? 0) + 1);
+  if (current && scores.has(current)) return current;
+  return [...scores].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+}
 export function provincePolygons(p: Province): number[][][][] {
   return (
     p.geometry.type === 'Polygon'

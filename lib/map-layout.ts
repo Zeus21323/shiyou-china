@@ -5,7 +5,7 @@ export interface MapAnchor {
   y: number;
   name: string;
   priority: number;
-  kind: 'province' | 'scenic';
+  kind: 'province' | 'scenic' | 'city';
 }
 export interface PlacedLabel extends MapAnchor {
   left: number;
@@ -78,10 +78,16 @@ export function placeLabels(
   for (const a of [...anchors].sort(
     (a, b) => b.priority - a.priority || a.id.localeCompare(b.id),
   )) {
-    const w = 44,
-      h = provinceMode
-        ? 24 + Array.from(a.name).length * 15
-        : 36 + Math.min(6, Array.from(a.name).length) * 16;
+    const w =
+        a.kind === 'city'
+          ? Math.max(62, Array.from(a.name).length * 16 + 20)
+          : 44,
+      h =
+        a.kind === 'city'
+          ? 44
+          : a.kind === 'province'
+            ? 24 + Array.from(a.name).length * 15
+            : 36 + Math.min(6, Array.from(a.name).length) * 16;
     let found: PlacedLabel | undefined;
     const offsets = [
       [0, -h - 12],
@@ -108,7 +114,7 @@ export function placeLabels(
         width: w,
         height: h,
       };
-      if (leaderLength(c) > (provinceMode ? 50 : 100)) continue;
+      if (leaderLength(c) > (a.kind === 'scenic' ? 100 : 50)) continue;
       if (
         c.left < 10 ||
         c.left + w > width - 10 ||

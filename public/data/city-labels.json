@@ -1,0 +1,463 @@
+{
+  "sourceUrl": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_populated_places_simple.geojson",
+  "license": "Natural Earth public domain",
+  "crs": "WGS84",
+  "note": "城市中心概化点，非政府驻地或导航目的地；一线城市采用北上广深口径。",
+  "cities": [
+    {
+      "id": "city-1159151595",
+      "name": "北京",
+      "province": 110000,
+      "coordinates": [
+        116.394201,
+        39.90172
+      ],
+      "sourceName": "Beijing",
+      "sourceId": "1159151595",
+      "kind": "municipality",
+      "firstTier": true
+    },
+    {
+      "id": "city-1159151381",
+      "name": "天津",
+      "province": 120000,
+      "coordinates": [
+        117.196607,
+        39.082772
+      ],
+      "sourceName": "Tianjin",
+      "sourceId": "1159151381",
+      "kind": "municipality",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159149907",
+      "name": "石家庄",
+      "province": 130000,
+      "coordinates": [
+        114.478032,
+        38.05196
+      ],
+      "sourceName": "Shijiazhuang",
+      "sourceId": "1159149907",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151365",
+      "name": "太原",
+      "province": 140000,
+      "coordinates": [
+        112.543112,
+        37.876958
+      ],
+      "sourceName": "Taiyuan",
+      "sourceId": "1159151365",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159149941",
+      "name": "呼和浩特",
+      "province": 150000,
+      "coordinates": [
+        111.65805,
+        40.821921
+      ],
+      "sourceName": "Hohhot",
+      "sourceId": "1159149941",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151377",
+      "name": "沈阳",
+      "province": 210000,
+      "coordinates": [
+        123.448028,
+        41.806925
+      ],
+      "sourceName": "Shenyeng",
+      "sourceId": "1159151377",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151393",
+      "name": "长春",
+      "province": 220000,
+      "coordinates": [
+        125.338042,
+        43.866954
+      ],
+      "sourceName": "Changchun",
+      "sourceId": "1159151393",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151397",
+      "name": "哈尔滨",
+      "province": 230000,
+      "coordinates": [
+        126.648039,
+        45.75193
+      ],
+      "sourceName": "Harbin",
+      "sourceId": "1159151397",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151605",
+      "name": "上海",
+      "province": 310000,
+      "coordinates": [
+        121.434559,
+        31.218398
+      ],
+      "sourceName": "Shanghai",
+      "sourceId": "1159151605",
+      "kind": "municipality",
+      "firstTier": true
+    },
+    {
+      "id": "city-1159151385",
+      "name": "南京",
+      "province": 320000,
+      "coordinates": [
+        118.778029,
+        32.051965
+      ],
+      "sourceName": "Nanjing",
+      "sourceId": "1159151385",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151387",
+      "name": "杭州",
+      "province": 330000,
+      "coordinates": [
+        120.168073,
+        30.25192
+      ],
+      "sourceName": "Hangzhou",
+      "sourceId": "1159151387",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159149793",
+      "name": "合肥",
+      "province": 340000,
+      "coordinates": [
+        117.278068,
+        31.851977
+      ],
+      "sourceName": "Hefei",
+      "sourceId": "1159149793",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151329",
+      "name": "福州",
+      "province": 350000,
+      "coordinates": [
+        119.2981,
+        26.081942
+      ],
+      "sourceName": "Fuzhou",
+      "sourceId": "1159151329",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151383",
+      "name": "南昌",
+      "province": 360000,
+      "coordinates": [
+        115.87805,
+        28.681938
+      ],
+      "sourceName": "Nanchang",
+      "sourceId": "1159151383",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151379",
+      "name": "济南",
+      "province": 370000,
+      "coordinates": [
+        116.993073,
+        36.676928
+      ],
+      "sourceName": "Jinan",
+      "sourceId": "1159151379",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151375",
+      "name": "郑州",
+      "province": 410000,
+      "coordinates": [
+        113.663147,
+        34.756942
+      ],
+      "sourceName": "Zhengzhou",
+      "sourceId": "1159151375",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151367",
+      "name": "武汉",
+      "province": 420000,
+      "coordinates": [
+        114.268071,
+        30.581977
+      ],
+      "sourceName": "Wuhan",
+      "sourceId": "1159151367",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151369",
+      "name": "长沙",
+      "province": 430000,
+      "coordinates": [
+        112.968047,
+        28.201916
+      ],
+      "sourceName": "Changsha",
+      "sourceId": "1159151369",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151331",
+      "name": "广州",
+      "province": 440000,
+      "coordinates": [
+        113.261785,
+        23.124723
+      ],
+      "sourceName": "Guangzhou",
+      "sourceId": "1159151331",
+      "kind": "capital",
+      "firstTier": true
+    },
+    {
+      "id": "city-1159151323",
+      "name": "南宁",
+      "province": 450000,
+      "coordinates": [
+        108.318099,
+        22.821934
+      ],
+      "sourceName": "Nanning",
+      "sourceId": "1159151323",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159146977",
+      "name": "海口",
+      "province": 460000,
+      "coordinates": [
+        110.320026,
+        20.050002
+      ],
+      "sourceName": "Haikou",
+      "sourceId": "1159146977",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151327",
+      "name": "重庆",
+      "province": 500000,
+      "coordinates": [
+        106.593036,
+        29.566923
+      ],
+      "sourceName": "Chongqing",
+      "sourceId": "1159151327",
+      "kind": "municipality",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151533",
+      "name": "成都",
+      "province": 510000,
+      "coordinates": [
+        104.068074,
+        30.671946
+      ],
+      "sourceName": "Chengdu",
+      "sourceId": "1159151533",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151325",
+      "name": "贵阳",
+      "province": 520000,
+      "coordinates": [
+        106.718093,
+        26.581989
+      ],
+      "sourceName": "Guiyang",
+      "sourceId": "1159151325",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151371",
+      "name": "昆明",
+      "province": 530000,
+      "coordinates": [
+        102.69744,
+        25.042859
+      ],
+      "sourceName": "Kunming",
+      "sourceId": "1159151371",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159150879",
+      "name": "拉萨",
+      "province": 540000,
+      "coordinates": [
+        91.10001,
+        29.645024
+      ],
+      "sourceName": "Lhasa",
+      "sourceId": "1159150879",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151363",
+      "name": "西安",
+      "province": 610000,
+      "coordinates": [
+        108.89305,
+        34.276971
+      ],
+      "sourceName": "Xian",
+      "sourceId": "1159151363",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151321",
+      "name": "兰州",
+      "province": 620000,
+      "coordinates": [
+        103.790054,
+        36.057974
+      ],
+      "sourceName": "Lanzhou",
+      "sourceId": "1159151321",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159150819",
+      "name": "西宁",
+      "province": 630000,
+      "coordinates": [
+        101.768059,
+        36.621944
+      ],
+      "sourceName": "Xining",
+      "sourceId": "1159150819",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159150889",
+      "name": "银川",
+      "province": 640000,
+      "coordinates": [
+        106.271092,
+        38.46992
+      ],
+      "sourceName": "Yinchuan",
+      "sourceId": "1159150889",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151531",
+      "name": "乌鲁木齐",
+      "province": 650000,
+      "coordinates": [
+        87.57306,
+        43.806958
+      ],
+      "sourceName": "Ürümqi",
+      "sourceId": "1159151531",
+      "kind": "capital",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151567",
+      "name": "台北",
+      "province": 710000,
+      "coordinates": [
+        121.568333,
+        25.035833
+      ],
+      "sourceName": "Taipei",
+      "sourceId": "1159151567",
+      "kind": "administrative-centre",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151629",
+      "name": "香港",
+      "province": 810000,
+      "coordinates": [
+        114.183064,
+        22.306927
+      ],
+      "sourceName": "Hong Kong",
+      "sourceId": "1159151629",
+      "kind": "administrative-centre",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159149085",
+      "name": "澳门",
+      "province": 820000,
+      "coordinates": [
+        113.544375,
+        22.189135
+      ],
+      "sourceName": "Macau",
+      "sourceId": "1159149085",
+      "kind": "administrative-centre",
+      "firstTier": false
+    },
+    {
+      "id": "city-1159151215",
+      "name": "深圳",
+      "province": 440000,
+      "coordinates": [
+        114.061154,
+        22.548097
+      ],
+      "sourceName": "Shenzhen",
+      "sourceId": "1159151215",
+      "kind": "city",
+      "firstTier": true
+    }
+  ]
+}

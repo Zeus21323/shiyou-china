@@ -168,7 +168,7 @@ export default function Home() {
           <p className="map-credit">
             {scenic
               ? '亮星对应作品 · 微尘为装饰，不计入收录数量'
-              : '省界：DataV · 地形：Mapzen / USGS · 主要河湖：Natural Earth（概化）'}
+              : '省界：DataV · 地形：Mapzen / USGS · 城市与河湖：Natural Earth（概化）'}
           </p>
         </div>
         <aside className="sidebar" id="destinations" tabIndex={-1}>

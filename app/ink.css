@@ -736,6 +736,18 @@ select {
 .map-sign.province span {
   font-size: 15px;
 }
+.map-sign.city .sign-front {
+  flex-direction: row;
+  justify-content: center;
+  padding: 5px;
+  border-color: #748f83;
+  background: linear-gradient(100deg, #f6f4e7, #dce6dc);
+}
+.map-sign.city .sign-front span {
+  writing-mode: horizontal-tb;
+  font-size: 15px;
+  letter-spacing: 0;
+}
 .sign-front small {
   font-size: 8px;
   color: #775e35;

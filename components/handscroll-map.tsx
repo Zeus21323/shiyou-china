@@ -11,16 +11,20 @@ import {
   provinceTerrainBlend,
   provinceTerrainHeight,
   type TerrainStatus,
+  prefetchProvinceTerrain,
 } from './province-terrain';
 import {
   fitProvinceZoom,
+  viewportProvince,
   provinceAt,
+  autoProvinceThreshold,
   requiresCameraFit,
   provincePolygons as polygons,
   provinceFocusPolygons,
 } from '../lib/province-view';
 import type { Province } from './china-map';
 import type { ScenicArea, Catalog } from '../lib/content';
+import cityData from '../public/data/city-labels.json';
 import { selectScenicAreas } from '../lib/scenic-selection';
 import {
   clusterAnchors,
@@ -89,11 +93,14 @@ function CameraAndLabels({
   const lastCommand = useRef(0);
   const initialized = useRef(false);
   const userZoomed = useRef(false);
+  const zoomDirection = useRef(1);
   const returning = useRef(false);
   const lastFit = useRef({ revision: -1, width: 0, height: 0 });
   const dragStart = useRef<THREE.Vector3 | null>(null);
   const panPending = useRef(false);
   const panSettlesAt = useRef(0);
+  const selectionCheckAt = useRef(0);
+  const proposed = useRef({ code: '', since: 0 });
   const previousLabels = useRef<PlacedLabel[]>([]);
   const showFour = useRef(false);
   const pivot = useRef<THREE.Vector2 | null>(null);
@@ -188,6 +195,14 @@ function CameraAndLabels({
     const host = gl.domElement.closest('.handscroll-map');
     if (!host || !visible) return;
     const touches = new Map<number, THREE.Vector2>();
+    const warmPointer = () => {
+      if (!pivot.current) return;
+      ray.setFromCamera(pivot.current, cam);
+      const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
+      const province =
+        hit && provinceAt(provinces, [hit.x / 0.75 + 104, hit.y / 0.95 + 35]);
+      if (province) prefetchProvinceTerrain(province.properties.adcode);
+    };
     let pinchDistance = 0;
     const touchDown = (e: PointerEvent) => {
       if (e.pointerType !== 'touch') return;
@@ -216,7 +231,9 @@ function CameraAndLabels({
           nationalZoom * 0.65,
           1400,
         );
+      zoomDirection.current = distance >= pinchDistance ? 1 : -1;
       pinchDistance = distance;
+      warmPointer();
       userZoomed.current = true;
     };
     const touchUp = (e: PointerEvent) => {
@@ -237,6 +254,7 @@ function CameraAndLabels({
       const pixels =
         e.deltaY *
         (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? rect.height : 1);
+      zoomDirection.current = pixels < 0 ? 1 : -1;
       flight.current = null;
       userZoomed.current = true;
       zoomTarget.current = THREE.MathUtils.clamp(
@@ -245,6 +263,7 @@ function CameraAndLabels({
         nationalZoom * 0.65,
         1400,
       );
+      if (pixels < 0) warmPointer();
     };
     host.addEventListener('wheel', wheel, { passive: false });
     const canvas = gl.domElement;
@@ -272,6 +291,7 @@ function CameraAndLabels({
       );
       userZoomed.current = true;
       pivot.current = null;
+      zoomDirection.current = command.factor > 1 ? 1 : -1;
       if (reduced) {
         cam.zoom = next;
         cam.updateProjectionMatrix();
@@ -314,6 +334,9 @@ function CameraAndLabels({
     }
     cam.updateMatrixWorld();
     gl.domElement.dataset.mapZoom = cam.zoom.toFixed(4);
+    gl.domElement.dataset.terrainProgress = provinceTerrainBlend(
+      selected?.properties.adcode,
+    ).toFixed(3);
     if (
       selected &&
       userZoomed.current &&
@@ -325,28 +348,62 @@ function CameraAndLabels({
       zoomTarget.current = null;
       onViewportSelect(null);
     }
+    const now = performance.now();
     if (
-      panPending.current &&
-      performance.now() > panSettlesAt.current &&
-      controls.current &&
       !flight.current &&
-      zoomTarget.current === null
+      now >= selectionCheckAt.current &&
+      ((userZoomed.current && zoomDirection.current > 0) ||
+        panPending.current ||
+        dragStart.current)
     ) {
-      panPending.current = false;
-      ray.setFromCamera(new THREE.Vector2(0, 0), cam);
-      const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
-      let candidate = hit
-        ? provinceAt(provinces, [hit.x / 0.75 + 104, hit.y / 0.95 + 35])
-        : null;
-      if (
-        candidate &&
-        cam.zoom < fitProvinceZoom([candidate], size.width, size.height) * 0.6
-      )
-        candidate = null;
-      if (candidate?.properties.adcode !== selected?.properties.adcode) {
-        userZoomed.current = false;
-        onViewportSelect(candidate);
+      selectionCheckAt.current = now + 65;
+      const samples = [
+        [0, 0],
+        [-0.32, 0],
+        [0.32, 0],
+        [0, 0.28],
+        [0, -0.28],
+      ].flatMap(([x, y]) => {
+        ray.setFromCamera(new THREE.Vector2(x, y), cam);
+        const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
+        return hit ? [[hit.x / 0.75 + 104, hit.y / 0.95 + 35]] : [];
+      });
+      let candidate = viewportProvince(provinces, samples, selected);
+      const visibleCandidate = candidate;
+      if (candidate) {
+        const fit = fitProvinceZoom([candidate], size.width, size.height);
+        if (Math.max(cam.zoom, zoomTarget.current ?? cam.zoom) >= fit * 0.38)
+          prefetchProvinceTerrain(candidate.properties.adcode);
+        if (cam.zoom < autoProvinceThreshold(fit, nationalZoom))
+          candidate = null;
       }
+      const code = String(candidate?.properties.adcode ?? '');
+      if (proposed.current.code !== code)
+        proposed.current = { code, since: now };
+      // 65ms 检查 + 70ms 稳定期，边界轻微晃动不会反复切换。
+      if (
+        !returning.current &&
+        now - proposed.current.since >= 70 &&
+        candidate?.properties.adcode !== selected?.properties.adcode
+      ) {
+        // 已选省份在 60–64% 之间保留，形成进入/退出滞回。
+        if (
+          candidate ||
+          !selected ||
+          cam.zoom < initialZoom.current * 0.6 ||
+          visibleCandidate?.properties.adcode !== selected.properties.adcode
+        )
+          onViewportSelect(candidate);
+      }
+      if (panPending.current && now > panSettlesAt.current)
+        panPending.current = false;
+      if (
+        zoomTarget.current === null &&
+        !panPending.current &&
+        !dragStart.current &&
+        now - proposed.current.since >= 140
+      )
+        userZoomed.current = false;
     }
     elapsed.current += dt;
     if (elapsed.current < 1 / 30) return;
@@ -371,11 +428,10 @@ function CameraAndLabels({
       name: string,
       point: number[],
       priority: number,
-      kind: 'province' | 'scenic',
+      kind: 'province' | 'scenic' | 'city',
+      provinceCode: string | number | undefined = selected?.properties.adcode,
     ) => {
-      const h =
-        provinceTerrainHeight(selected?.properties.adcode, point) *
-        HEIGHT_SCALE;
+      const h = provinceTerrainHeight(provinceCode, point) * HEIGHT_SCALE;
       const p = new THREE.Vector3(...project(point), h + 0.07).project(cam);
       const x = ((p.x + 1) * size.width) / 2,
         y = ((1 - p.y) * size.height) / 2;
@@ -401,7 +457,7 @@ function CameraAndLabels({
               '',
             ),
             p.properties.center!,
-            1,
+            4,
             'province',
           ),
         );
@@ -420,13 +476,38 @@ function CameraAndLabels({
         );
       });
     }
+    const cityAnchors: MapAnchor[] = [];
+    if (selected || cam.zoom / nationalZoom >= 1.6) {
+      for (const city of cityData.cities) {
+        const start = anchors.length;
+        add(
+          city.id,
+          city.name,
+          city.coordinates,
+          city.province === selected?.properties.adcode ? 12 : 3,
+          'city',
+          city.province,
+        );
+        if (anchors.length > start) cityAnchors.push(anchors.pop()!);
+      }
+      // 直辖市和港澳的同名行政区牌与城市牌只保留一份。
+      for (let i = anchors.length - 1; i >= 0; i--)
+        if (
+          anchors[i].kind === 'province' &&
+          cityAnchors.some((c) => c.name === anchors[i].name)
+        )
+          anchors.splice(i, 1);
+    }
     const groups = selected
       ? clusterAnchors(anchors, 28)
       : anchors.map((a) => ({ anchor: a, members: [a] }));
     const budget = selected
       ? Math.min(80, Math.max(5, Math.floor(8 * zoom * zoom)))
       : 100;
-    const eligible = groups.slice(0, budget).map((g) => g.anchor);
+    const eligible = [
+      ...groups.slice(0, budget).map((g) => g.anchor),
+      ...cityAnchors,
+    ];
     const result = placeLabels(
       eligible,
       size.width,
@@ -466,7 +547,7 @@ function CameraAndLabels({
           dragStart.current.distanceTo(controls.current.target) > 0.02
         ) {
           panPending.current = true;
-          panSettlesAt.current = performance.now() + 300;
+          panSettlesAt.current = performance.now() + 200;
         }
         dragStart.current = null;
       }}
@@ -582,6 +663,14 @@ export default function HandscrollMap({
     return () => c.abort();
   }, []);
   const act = (id: string) => {
+    const city = cityData.cities.find((c) => c.id === id);
+    if (city) {
+      const p = provinces.find(
+        (p) => Number(p.properties.adcode) === city.province,
+      );
+      if (p && p.properties.adcode !== selected?.properties.adcode) onSelect(p);
+      return;
+    }
     if (!selected) {
       const p = provinces.find((p) => String(p.properties.adcode) === id);
       if (p) onSelect(p);
@@ -636,9 +725,12 @@ export default function HandscrollMap({
             <ProvinceShape
               key={p.properties.adcode}
               feature={p}
+              focusCode={selected?.properties.adcode}
               active={selected?.properties.adcode === p.properties.adcode}
               muted={
-                !!selected && selected.properties.adcode !== p.properties.adcode
+                !!selected &&
+                currentTerrainStatus !== 'loading' &&
+                selected.properties.adcode !== p.properties.adcode
               }
               meshData={meshData}
               onStatus={onTerrainStatus}
@@ -682,8 +774,24 @@ export default function HandscrollMap({
               aria-hidden={!visibleIds.has(l.id)}
               tabIndex={visibleIds.has(l.id) ? 0 : -1}
               aria-label={
-                l.name + (count > 1 ? `及附近${count - 1}个景点` : '')
+                l.kind === 'city'
+                  ? `${l.name} · 城市，查看所在省份`
+                  : l.name + (count > 1 ? `及附近${count - 1}个景点` : '')
               }
+              onPointerEnter={() => {
+                const code =
+                  l.kind === 'province'
+                    ? l.id
+                    : cityData.cities.find((c) => c.id === l.id)?.province;
+                if (code) prefetchProvinceTerrain(code);
+              }}
+              onFocus={() => {
+                const code =
+                  l.kind === 'province'
+                    ? l.id
+                    : cityData.cities.find((c) => c.id === l.id)?.province;
+                if (code) prefetchProvinceTerrain(code);
+              }}
               onClick={() => act(l.id)}
             >
               <svg
@@ -759,7 +867,10 @@ export default function HandscrollMap({
       )}
       {selected?.properties.adcode === 330000 && (
         <div className="map-density">
-          <span>5A 优先 · 已显示 {screen.labels.length} 处</span>
+          <span>
+            5A 优先 · 已显示{' '}
+            {screen.labels.filter((l) => l.kind === 'scenic').length} 处
+          </span>
           <small>
             {dataError
               ? '点位加载失败，请使用景区列表'

@@ -14,6 +14,7 @@ import {
 import { provincePolygons } from '../lib/province-view';
 import { useReducedMotion } from '../lib/use-motion-preference';
 import type { Province } from './china-map';
+import { ResourceCache } from '../lib/resource-cache';
 
 type Region = {
   texture: string;
@@ -28,6 +29,7 @@ type Detail = {
   texture: THREE.Texture;
   grid: ElevationGrid;
   blend: { value: number };
+  release?: () => void;
 };
 // Only mounted detail resources are held here. Release them after the return transition.
 const liveDetails = new Map<string, Detail>();
@@ -143,6 +145,13 @@ async function loadDetail(code: string, signal: AbortSignal): Promise<Detail> {
   };
 }
 export type TerrainStatus = 'loading' | 'ready' | 'error';
+const detailCache = new ResourceCache<Detail>(3, loadDetail, (asset) => {
+  asset.geometry.dispose();
+  asset.texture.dispose();
+});
+export function prefetchProvinceTerrain(code: string | number) {
+  if (regions[String(code)]) detailCache.prefetch(String(code));
+}
 export const ProvinceShape = memo(function ProvinceShape({
   feature,
   active,
@@ -150,6 +159,7 @@ export const ProvinceShape = memo(function ProvinceShape({
   onSelect,
   meshData,
   onStatus,
+  focusCode,
 }: {
   feature: Province;
   active: boolean;
@@ -157,18 +167,21 @@ export const ProvinceShape = memo(function ProvinceShape({
   onSelect: (p: Province) => void;
   meshData: ArrayBuffer;
   onStatus: (code: string, status: TerrainStatus) => void;
+  focusCode?: string | number;
 }) {
   const code = String(feature.properties.adcode);
   const nationalTexture = useTexture(`/data/terrain/${manifest.china.texture}`);
   const { gl } = useThree();
   const reduced = useReducedMotion();
   const [detail, setDetail] = useState<Detail | null>(null);
+  const [failed, setFailed] = useState(false);
   const releaseQueued = useRef(false);
   const material = useRef<THREE.MeshStandardMaterial>(null);
   const mesh = useRef<THREE.Mesh>(null);
   const line = useRef<THREE.LineSegments>(null);
   const activeColor = useMemo(() => new THREE.Color('#fff9dc'), []);
   const baseColor = useMemo(() => new THREE.Color('#e1e9df'), []);
+  const borderColor = useMemo(() => new THREE.Color('#a77c30'), []);
   useEffect(() => {
     for (const texture of [nationalTexture, detail?.texture])
       if (texture) {
@@ -179,31 +192,41 @@ export const ProvinceShape = memo(function ProvinceShape({
   }, [nationalTexture, detail, gl]);
   useEffect(() => {
     if (!active || detail || !regions[code]) return;
-    const controller = new AbortController();
+    const lease = detailCache.acquire(code);
+    let cancelled = false,
+      accepted = false;
+    setFailed(false);
     onStatus(code, 'loading');
-    loadDetail(code, controller.signal)
+    lease.promise
       .then((asset) => {
-        if (controller.signal.aborted) {
-          asset.geometry.dispose();
-          asset.texture.dispose();
-          return;
-        }
+        if (cancelled) return;
+        accepted = true;
+        const current = {
+          ...asset,
+          blend: { value: 0 },
+          release: lease.release,
+        };
         releaseQueued.current = false;
-        liveDetails.set(code, asset);
-        setDetail(asset);
+        liveDetails.set(code, current);
+        setDetail(current);
         onStatus(code, 'ready');
       })
       .catch(() => {
-        if (!controller.signal.aborted) onStatus(code, 'error');
+        if (!cancelled) {
+          setFailed(true);
+          onStatus(code, 'error');
+        }
       });
-    return () => controller.abort();
+    return () => {
+      cancelled = true;
+      if (!accepted) lease.release();
+    };
   }, [code, active, detail, onStatus]);
   useEffect(
     () => () => {
       if (detail) {
         if (liveDetails.get(code) === detail) liveDetails.delete(code);
-        detail.geometry.dispose();
-        detail.texture.dispose();
+        detail.release?.();
       }
     },
     [code, detail],
@@ -305,11 +328,23 @@ export const ProvinceShape = memo(function ProvinceShape({
       }
     }
     const mat = detailedMaterial ?? material.current;
+    const emphasis = detail?.blend.value ?? (active && failed ? 1 : 0);
     if (mat) {
       const t = reduced ? 1 : 1 - Math.exp(-8 * dt);
-      mat.opacity = THREE.MathUtils.lerp(mat.opacity, muted ? 0.65 : 1, t);
-      mat.color.lerp(active ? activeColor : baseColor, t);
+      mat.opacity = THREE.MathUtils.lerp(
+        mat.opacity,
+        muted ? 1 - 0.35 * provinceTerrainBlend(focusCode) : 1,
+        t,
+      );
+      mat.color.copy(baseColor).lerp(activeColor, emphasis);
       mat.depthWrite = !muted;
+    }
+    const border = line.current?.material as
+      | THREE.LineBasicMaterial
+      | undefined;
+    if (border) {
+      border.color.set('#9aa99a').lerp(borderColor, emphasis);
+      border.opacity = 0.55 + 0.45 * emphasis;
     }
   });
   return (
@@ -319,6 +354,7 @@ export const ProvinceShape = memo(function ProvinceShape({
         ref={mesh}
         args={[detail?.geometry ?? baseGeometry]}
         frustumCulled={false}
+        onPointerEnter={() => prefetchProvinceTerrain(code)}
         onClick={(e) => {
           e.stopPropagation();
           if (e.delta < 5 && feature.properties.name && !active)
@@ -344,11 +380,7 @@ export const ProvinceShape = memo(function ProvinceShape({
         ref={line}
         args={[outline]}
       >
-        <lineBasicMaterial
-          color={active ? '#a77c30' : '#9aa99a'}
-          transparent
-          opacity={active ? 1 : 0.55}
-        />
+        <lineBasicMaterial color="#9aa99a" transparent opacity={0.55} />
       </lineSegments>
     </group>
   );
