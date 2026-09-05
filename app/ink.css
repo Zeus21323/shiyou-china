@@ -661,20 +661,46 @@ select {
 .map-sign:hover {
   background: transparent;
 }
-.sign-solid {
-  transform-origin: 50% 100%;
-  position: absolute;
-  inset: 4px;
-  transform-style: preserve-3d;
-  transform: rotateX(8deg) rotateY(-17deg);
-  transition: transform 0.22s ease;
-}
 .sign-connector {
   position: absolute;
   left: 0;
   top: 0;
   overflow: visible;
   pointer-events: none;
+}
+.map-sign.scenic {
+  perspective: none;
+  transition: opacity 180ms ease;
+}
+.scenic-stem-label {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 8px;
+  border-bottom: 1px solid #8b713e;
+  border-radius: 3px 3px 0 0;
+  background: #f8f3e4ed;
+  color: #304d40;
+  box-shadow: 0 2px 6px #344b3414;
+}
+.scenic-stem-label span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 16px/1.5 var(--display);
+}
+.scenic-stem-label small {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #806431;
+}
+.map-sign.scenic:hover .scenic-stem-label,
+.map-sign.scenic:focus-visible .scenic-stem-label {
+  background: #fff9e9;
+  color: #864b2e;
+  border-color: #864b2e;
 }
 .scenic-address {
   margin: 16px 0 24px;
@@ -691,47 +717,6 @@ select {
 .scenic-address small {
   display: block;
   color: var(--muted);
-}
-.sign-front,
-.sign-back,
-.sign-side {
-  position: absolute;
-  box-sizing: border-box;
-  backface-visibility: hidden;
-}
-.sign-front {
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2px;
-  padding: 8px 2px;
-  border: 1px solid #b2bca2;
-  border-radius: 3px;
-  background: linear-gradient(100deg, #fffcef, #e4e5d0);
-  color: #304d40;
-  box-shadow:
-    inset 1px 0 #fffdf3,
-    inset -2px 0 #8e9e7e44;
-  transform: translateZ(4px);
-}
-.sign-front::before {
-  content: '';
-  position: absolute;
-  top: 3px;
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background: #96733c;
-}
-.sign-front span {
-  writing-mode: vertical-rl;
-  text-orientation: upright;
-  font: 16px/1 var(--display);
-  letter-spacing: 1px;
-  white-space: nowrap;
-  text-shadow: 0 1px #fff9e8;
 }
 .map-sign.province,
 .map-sign.city,
@@ -806,57 +791,6 @@ select {
 }
 .capital-name {
   font-size: 18px;
-}
-.sign-front small {
-  font-size: 8px;
-  color: #775e35;
-  line-height: 1;
-}
-.sign-side {
-  background: #967a49;
-}
-.sign-left,
-.sign-right {
-  top: 0;
-  bottom: 0;
-  width: 8px;
-}
-.sign-left {
-  left: -4px;
-  transform: rotateY(-90deg);
-  background: #b2b38d;
-}
-.sign-right {
-  right: -4px;
-  transform: rotateY(90deg);
-  background: linear-gradient(#a5af8e, #78896e);
-}
-.sign-top,
-.sign-bottom {
-  left: 0;
-  right: 0;
-  height: 8px;
-}
-.sign-top {
-  top: -4px;
-  transform: rotateX(90deg);
-  background: #e6e5c7;
-}
-.sign-bottom {
-  bottom: -4px;
-  transform: rotateX(-90deg);
-  background: #6e7a59;
-}
-.sign-back {
-  inset: 0;
-  background: #899774;
-  transform: translateZ(-4px) rotateY(180deg);
-  backface-visibility: visible;
-  box-shadow: 3px 5px 5px #344b3430;
-}
-.map-sign:hover .sign-solid,
-.map-sign:focus-visible .sign-solid {
-  transform: rotateX(4deg) rotateY(-7deg);
 }
 .reading-mode .map-stage {
   background: #102c31;

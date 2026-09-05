@@ -92,3 +92,43 @@ test('屏幕无法容纳时留在隐藏列表，不强制相互覆盖', () => {
   assert.ok(result.hidden.length > 0);
   assert.ok(result.labels.length > 0);
 });
+
+test('景点横向名称始终在真实点位正上方，移动后仍保持竖直引线', () => {
+  const anchors = [
+    {
+      id: 'a',
+      name: '杭州西湖风景名胜区',
+      x: 300,
+      y: 380,
+      priority: 10,
+      kind: 'scenic',
+    },
+    { id: 'b', name: '相邻景区', x: 320, y: 390, priority: 1, kind: 'scenic' },
+    { id: 'c', name: '另一景区', x: 550, y: 420, priority: 1, kind: 'scenic' },
+  ];
+  const first = placeLabels(anchors, 1000, 800, true);
+  assert.ok(first.labels.length >= 2);
+  const moved = placeLabels(
+    anchors.map((a) => ({ ...a, x: a.x + 15, y: a.y + 8 })),
+    1000,
+    800,
+    true,
+    first.labels,
+  );
+  for (const l of [...first.labels, ...moved.labels]) {
+    assert.equal(l.left + l.width / 2, l.x);
+    assert.ok(l.top + l.height <= l.y - 24);
+    assert.ok(l.width > l.height);
+  }
+  for (const a of moved.labels)
+    for (const b of moved.labels) {
+      if (a.id === b.id) continue;
+      const stem = {
+        left: a.x - 3,
+        top: a.top + a.height,
+        width: 6,
+        height: a.y - a.top - a.height,
+      };
+      assert.equal(overlap(stem, b, 3), false);
+    }
+});

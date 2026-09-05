@@ -105,13 +105,13 @@ export function placeLabels(
             ? 110
             : a.kind === 'city'
               ? Math.max(68, Array.from(a.name).length * 20 + 20)
-              : 44,
+              : Math.min(14, Array.from(a.name).length) * 17 + 48,
       h =
         a.kind === 'city' || a.kind === 'capital'
           ? 44
           : a.kind === 'province'
             ? 44
-            : 36 + Math.min(6, Array.from(a.name).length) * 16;
+            : 36;
     let found: PlacedLabel | undefined;
     const offsets =
       a.kind === 'capital'
@@ -132,22 +132,15 @@ export function placeLabels(
                 [-8, -h / 2],
               ]
             : [
-                [0, -h - 12],
-                [w + 12, -h / 2],
-                [-w - 12, -h / 2],
-                [0, 15],
-                [0, -h - 50],
-                [62, -h - 18],
-                [-62, -h - 18],
-                [80, 15],
-                [-80, 15],
+                [0, -h - 32],
+                [0, -h - 60],
+                [0, -h - 88],
               ];
     // 优先保留相对锚点的摆放位置，避免轻微缩放触发布局翻转。
     const old = previous.find((p) => p.id === a.id);
     if (old && a.kind === 'scenic')
-      offsets.unshift([old.left + old.width / 2 - old.x, old.top - old.y]);
-    if (provinceMode && a.kind === 'scenic')
-      offsets.push([20, -h - 8], [-20, -h - 8], [35, -h - 8], [-35, -h - 8]);
+      offsets.unshift([0, Math.min(-h - 24, old.top - old.y)]);
+    if (provinceMode && a.kind === 'scenic') offsets.push([0, -h - 116]);
     for (const [dx, dy] of offsets) {
       const c = {
         ...a,
@@ -156,7 +149,7 @@ export function placeLabels(
         width: w,
         height: h,
       };
-      if (leaderLength(c) > (a.kind === 'scenic' ? 100 : 50)) continue;
+      if (leaderLength(c) > (a.kind === 'scenic' ? 122 : 50)) continue;
       if (
         c.left < 10 ||
         c.left + w > width - 10 ||
@@ -165,6 +158,24 @@ export function placeLabels(
       )
         continue;
       if (labels.some((b) => overlap(c, b))) continue;
+      // 竖线也参与避让，避免穿过其他名称或其真实点位。
+      const stem = (p: PlacedLabel) => ({
+        left: p.x - 3,
+        top: p.top + p.height,
+        width: 6,
+        height: Math.max(0, p.y - p.top - p.height),
+      });
+      if (
+        labels.some(
+          (b) =>
+            (c.kind === 'scenic' && overlap(stem(c), b, 3)) ||
+            (b.kind === 'scenic' && overlap(c, stem(b), 3)) ||
+            (c.kind === 'scenic' &&
+              b.kind === 'scenic' &&
+              overlap(stem(c), stem(b), 3)),
+        )
+      )
+        continue;
       found = c;
       break;
     }

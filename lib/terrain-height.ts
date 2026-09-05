@@ -5,7 +5,7 @@ export type ElevationGrid = {
   heights: number[];
 };
 // 统一垂直夸张用于阅读地貌；不将米单位直接当作地图坐标。
-export const HEIGHT_SCALE = 0.00018;
+export const HEIGHT_SCALE = 0.00023;
 export function elevationAt(
   grid: ElevationGrid,
   lon: number,

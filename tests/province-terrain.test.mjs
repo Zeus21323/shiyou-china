@@ -90,3 +90,25 @@ test('山地、盆地、平原和海岛保留不同的实际地势', () => {
   assert.ok(height('710000', 121.0, 23.5) > 1800, '台湾中央山脉');
   assert.ok(height('460000', 109.7, 18.9) > 500, '海南中部山地');
 });
+
+test('同等地理范围的平原、丘陵、山区具有不同网格起伏，而非仅纹理差别', () => {
+  const grid = read('terrain/zhejiang-elevation.json');
+  const relief = (x, y) => {
+    const heights = [];
+    for (let i = -4; i <= 4; i++)
+      for (let j = -4; j <= 4; j++)
+        heights.push(elevationAt(grid, x + i * 0.015, y + j * 0.015));
+    return Math.max(...heights) - Math.min(...heights);
+  };
+  const plain = relief(120.8, 30.75),
+    hill = relief(119.95, 29.95),
+    mountain = relief(119.1, 30.35);
+  assert.ok(plain < 20, '杭嘉湖平原保持低平');
+  assert.ok(hill > 150 && hill < 600, '富阳丘陵保持缓起伏');
+  assert.ok(mountain > 800, '临安山区保留显著峰谷');
+  assert.ok(hill * HEIGHT_SCALE > plain * HEIGHT_SCALE * 10);
+  assert.ok(mountain * HEIGHT_SCALE > hill * HEIGHT_SCALE * 2);
+  assert.equal(read('terrain/relief.json').heightScale, HEIGHT_SCALE);
+  for (const code of Object.keys(manifest.provinces))
+    assert.equal(read(`terrain/${code}-relief.json`).heightScale, HEIGHT_SCALE);
+});

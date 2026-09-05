@@ -127,7 +127,9 @@ function geometryFrom(
 async function loadDetail(code: string, signal: AbortSignal): Promise<Detail> {
   const region = regions[code];
   const read = async (name: string) => {
-    const response = await fetch(`/data/terrain/${name}`, { signal });
+    const response = await fetch(`/data/terrain/${name}?v=${HEIGHT_SCALE}`, {
+      signal,
+    });
     if (!response.ok) throw Error('省级地形资源读取失败');
     return response;
   };
@@ -317,6 +319,36 @@ export const ProvinceShape = memo(function ProvinceShape({
     line.raycast = () => {};
     return { line, points, revision: null as string | null };
   }, [boundaries, code, focusCode]);
+  // 仅沿国界/海岸封闭版图外缘，省际接缝不重复挤出侧壁。
+  const skirt = useMemo(() => {
+    const points = boundaries.segments
+      .filter((s) => s.owners.length === 1 && s.owners[0] === code)
+      .flatMap((s) => [s.a, s.b]);
+    const positions: number[] = [],
+      colors: number[] = [],
+      indices: number[] = [];
+    const upper = new THREE.Color('#769b83'),
+      lower = new THREE.Color('#345d54');
+    points.forEach((p, i) => {
+      const x = (p[0] - 104) * 0.75,
+        y = (p[1] - 35) * 0.95;
+      positions.push(x, y, boundaryHeight(boundaries, p) - 0.008, x, y, -0.1);
+      colors.push(...upper.toArray(), ...lower.toArray());
+      if (i % 2 === 0) {
+        const a = i * 2;
+        indices.push(a, a + 1, a + 2, a + 2, a + 1, a + 3);
+      }
+    });
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(positions, 3),
+    );
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    geometry.setIndex(indices);
+    return { geometry, points };
+  }, [boundaries, code]);
+  useEffect(() => () => skirt.geometry.dispose(), [skirt]);
   useEffect(() => () => baseGeometry.dispose(), [baseGeometry]);
   useEffect(
     () => () => {
@@ -428,10 +460,18 @@ export const ProvinceShape = memo(function ProvinceShape({
       }
     });
     if (changed) positions.data.needsUpdate = true;
+    const sidePositions = skirt.geometry.getAttribute('position');
+    skirt.points.forEach((p, i) => {
+      sidePositions.setZ(i * 2, boundaryHeight(boundaries, p) - 0.008);
+    });
+    sidePositions.needsUpdate = true;
     outline.revision = boundaries.revision;
   }, -1);
   return (
     <group>
+      <mesh geometry={skirt.geometry} frustumCulled={false} raycast={() => {}}>
+        <meshBasicMaterial vertexColors side={THREE.DoubleSide} />
+      </mesh>
       <mesh
         key={detail ? 'detail' : 'base'}
         ref={mesh}

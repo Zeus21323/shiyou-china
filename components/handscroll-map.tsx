@@ -18,6 +18,7 @@ import {
 } from './province-terrain';
 import {
   fitProvinceZoom,
+  MAP_CAMERA_OFFSET,
   provinceAt,
   PROVINCE_FOCUS_SCALE,
   provinceFocusEnabled,
@@ -35,7 +36,6 @@ import { selectScenicAreas } from '../lib/scenic-selection';
 import {
   clusterAnchors,
   placeLabels,
-  labelDock,
   cityVisible,
   capitalPosition,
   type MapAnchor,
@@ -62,7 +62,7 @@ type ScreenState = {
 const project = ([lon, lat]: number[]) =>
   [(lon - 104) * 0.75, (lat - 35) * 0.95] as [number, number];
 const cameraSettings = {
-  position: [0, -26, 36] as [number, number, number],
+  position: [...MAP_CAMERA_OFFSET] as [number, number, number],
   zoom: 12,
   up: [0, 0, 1] as [number, number, number],
   near: 0.01,
@@ -196,7 +196,11 @@ function CameraAndLabels({
       height: size.height,
     };
     const destination = {
-      position: new THREE.Vector3(center.x, center.y - 26, 36),
+      position: new THREE.Vector3(
+        center.x,
+        center.y + MAP_CAMERA_OFFSET[1],
+        MAP_CAMERA_OFFSET[2],
+      ),
       target: new THREE.Vector3(center.x, center.y, 0),
       zoom: initialZoom.current,
     };
@@ -580,7 +584,7 @@ function CameraAndLabels({
       }
     }
     elapsed.current += dt;
-    if (elapsed.current < 1 / 30) return;
+    if (elapsed.current < 1 / 60) return;
     elapsed.current = 0;
     const cameraStamp = [
       cam.position.x,
@@ -607,7 +611,10 @@ function CameraAndLabels({
       provinceCode: string | number | undefined = selected?.properties.adcode,
     ) => {
       const h = provinceTerrainHeight(provinceCode, point) * HEIGHT_SCALE;
-      const p = new THREE.Vector3(...project(point), h + 0.07).project(cam);
+      const p = new THREE.Vector3(
+        ...project(point),
+        h + (kind === 'scenic' ? 0.028 : 0.07),
+      ).project(cam);
       const x = ((p.x + 1) * size.width) / 2,
         y = ((1 - p.y) * size.height) / 2;
       if (kind === 'capital') {
@@ -797,7 +804,9 @@ export default function HandscrollMap({
   const [meshData, setMeshData] = useState<ArrayBuffer | null>(null);
   useEffect(() => {
     const controller = new AbortController();
-    fetch('/data/terrain/relief.bin', { signal: controller.signal })
+    fetch(`/data/terrain/relief.bin?v=${HEIGHT_SCALE}`, {
+      signal: controller.signal,
+    })
       .then((r) => {
         if (!r.ok) throw Error();
         return r.arrayBuffer();
@@ -917,8 +926,8 @@ export default function HandscrollMap({
         gl={{ alpha: true }}
         fallback={<p>三维地图不可用，请从省份及景区列表继续。</p>}
       >
-        <ambientLight intensity={1.4} />
-        <directionalLight position={[-15, -10, 30]} intensity={1.1} />
+        <ambientLight intensity={0.95} />
+        <directionalLight position={[-18, -12, 22]} intensity={1.45} />
         {meshData &&
           provinces.map((p) => (
             <ProvinceShape
@@ -1044,11 +1053,10 @@ export default function HandscrollMap({
                     <line
                       x1={l.x - l.left}
                       y1={l.y - l.top}
-                      x2={labelDock(l).x}
-                      y2={labelDock(l).y}
-                      stroke="#937345"
-                      strokeWidth=".8"
-                      opacity=".65"
+                      x2={l.x - l.left}
+                      y2={l.height}
+                      stroke="#8b713e"
+                      strokeWidth="1.5"
                     />
                     <circle
                       cx={l.x - l.left}
@@ -1059,31 +1067,17 @@ export default function HandscrollMap({
                       strokeWidth="2"
                     />
                   </svg>
-                  <div
-                    className="sign-solid"
-                    style={{
-                      transformOrigin: `${labelDock(l).x - 4}px ${labelDock(l).y - 4}px`,
-                    }}
-                  >
-                    <div className="sign-side sign-left" aria-hidden="true" />
-                    <div className="sign-side sign-right" aria-hidden="true" />
-                    <div className="sign-side sign-top" aria-hidden="true" />
-                    <div className="sign-side sign-bottom" aria-hidden="true" />
-                    <div className="sign-back" aria-hidden="true" />
-                    <div className="sign-front">
-                      <span title={l.name}>
-                        {l.kind === 'scenic' && l.name.length > 6
-                          ? l.name.slice(0, 5) + '…'
-                          : l.name}
-                      </span>
-                      {l.kind === 'scenic' && (
-                        <small>
-                          {count > 1
-                            ? `+${count - 1}`
-                            : areas.find((a) => a.id === l.id)?.grade}
-                        </small>
-                      )}
-                    </div>
+                  <div className="scenic-stem-label">
+                    <span title={l.name}>
+                      {l.name.length > 14 ? l.name.slice(0, 13) + '…' : l.name}
+                    </span>
+                    {l.kind === 'scenic' && (
+                      <small>
+                        {count > 1
+                          ? `+${count - 1}`
+                          : areas.find((a) => a.id === l.id)?.grade}
+                      </small>
+                    )}
                   </div>
                 </>
               )}

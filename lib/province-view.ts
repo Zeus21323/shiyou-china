@@ -1,4 +1,7 @@
 import type { Province } from '../components/china-map';
+// 同一倾角用于初始相机、飞行动画和省份包围盒投影。
+export const MAP_CAMERA_OFFSET = [0, -36, 28] as const;
+export const MAP_VERTICAL_PROJECTION = 28 / Math.hypot(36, 28);
 export function requiresCameraFit(
   last: { revision: number; width: number; height: number },
   revision: number,
@@ -152,7 +155,8 @@ export function fitProvinceZoom(
   return (
     Math.min(
       Math.max(220, width - 96) / Math.max(maxX - minX, 1),
-      Math.max(220, height - 220) / Math.max((maxY - minY) * 0.81, 1),
+      Math.max(220, height - 220) /
+        Math.max((maxY - minY) * MAP_VERTICAL_PROJECTION, 1),
     ) * 0.92
   );
 }
