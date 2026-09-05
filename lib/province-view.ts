@@ -13,8 +13,30 @@ export function requiresCameraFit(
     last.height !== height
   );
 }
-export function autoProvinceThreshold(fitZoom: number, nationalZoom: number) {
-  return Math.max(fitZoom * 0.64, nationalZoom * 1.35);
+export const PROVINCE_FOCUS_SCALE = 6;
+export function provinceFocusEnabled(scale: number) {
+  return scale >= PROVINCE_FOCUS_SCALE - 1e-9;
+}
+export function focusProvince(
+  provinces: Province[],
+  scale: number,
+  pointer: number[] | undefined,
+  viewport: number[][],
+  current?: Province | null,
+) {
+  if (!provinceFocusEnabled(scale)) return null;
+  // 鼠标停留或指向海面时也不交回视野中心，只有离开地图才使用后备策略。
+  return pointer !== undefined
+    ? provinceAt(provinces, pointer)
+    : viewportProvince(provinces, viewport, current);
+}
+export function settleProvinceFocus(
+  previous: { code: string; since: number },
+  code: string,
+  now: number,
+) {
+  const proposal = previous.code === code ? previous : { code, since: now };
+  return { proposal, ready: now - proposal.since >= 160 };
 }
 // 中心命中优先；中心在近海时使用周围可见陆地，避免沿海放大迟迟不响应。
 export function viewportProvince(

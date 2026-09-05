@@ -5,7 +5,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import type { OrbitControls as Controls } from 'three-stdlib';
 import { useReducedMotion } from '../lib/use-motion-preference';
-import { HEIGHT_SCALE } from '../lib/terrain-height';
+import { HEIGHT_SCALE, elevationAt } from '../lib/terrain-height';
+import chinaHeights from '../public/data/terrain/china-elevation.json';
 import {
   ProvinceShape,
   provinceTerrainBlend,
@@ -15,9 +16,11 @@ import {
 } from './province-terrain';
 import {
   fitProvinceZoom,
-  viewportProvince,
   provinceAt,
-  autoProvinceThreshold,
+  PROVINCE_FOCUS_SCALE,
+  provinceFocusEnabled,
+  focusProvince,
+  settleProvinceFocus,
   requiresCameraFit,
   provincePolygons as polygons,
   provinceFocusPolygons,
@@ -106,9 +109,7 @@ function CameraAndLabels({
   const previousLabels = useRef<PlacedLabel[]>([]);
   const showFour = useRef(false);
   const pivot = useRef<THREE.Vector2 | null>(null);
-  const hoverPointer = useRef<{ point: THREE.Vector2; until: number } | null>(
-    null,
-  );
+  const hoverPointer = useRef<{ point: THREE.Vector2 } | null>(null);
   const ray = useMemo(() => new THREE.Raycaster(), []);
   const ground = useMemo(
     () => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
@@ -154,6 +155,11 @@ function CameraAndLabels({
       size.width,
       size.height,
     );
+    if (selected)
+      initialZoom.current = Math.max(
+        initialZoom.current,
+        nationalZoom * PROVINCE_FOCUS_SCALE,
+      );
     const fitRequested = requiresCameraFit(
       lastFit.current,
       resetRevision,
@@ -167,6 +173,11 @@ function CameraAndLabels({
     returning.current = false;
     // 平移/缩小引起的选择变化只更新数据范围，不改镜头或缩放目标。
     if (!fitRequested) return;
+    hoverPointer.current = null;
+    proposed.current = {
+      code: String(selected?.properties.adcode ?? ''),
+      since: performance.now(),
+    };
     lastFit.current = {
       revision: resetRevision,
       width: size.width,
@@ -226,7 +237,6 @@ function CameraAndLabels({
           ((e.clientX - rect.left) / rect.width) * 2 - 1,
           1 - ((e.clientY - rect.top) / rect.height) * 2,
         ),
-        until: performance.now() + 260,
       };
     };
     const hoverLeave = () => {
@@ -234,6 +244,7 @@ function CameraAndLabels({
     };
     const touchDown = (e: PointerEvent) => {
       if (e.pointerType !== 'touch') return;
+      hoverPointer.current = null;
       touches.set(e.pointerId, new THREE.Vector2(e.clientX, e.clientY));
       if (touches.size === 2) {
         const [a, b] = [...touches.values()];
@@ -283,10 +294,7 @@ function CameraAndLabels({
         e.deltaY *
         (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? rect.height : 1);
       zoomDirection.current = pixels < 0 ? 1 : -1;
-      hoverPointer.current =
-        pixels < 0
-          ? { point: pivot.current.clone(), until: performance.now() + 260 }
-          : null;
+      hoverPointer.current = { point: pivot.current.clone() };
       flight.current = null;
       userZoomed.current = true;
       zoomTarget.current = THREE.MathUtils.clamp(
@@ -347,8 +355,14 @@ function CameraAndLabels({
       if (
         cam.position.distanceTo(f.position) < 0.002 &&
         Math.abs(cam.zoom - f.zoom) < 0.02
-      )
+      ) {
+        cam.position.copy(f.position);
+        controls.current.target.copy(f.target);
+        cam.zoom = f.zoom;
+        cam.lookAt(f.target);
+        cam.updateProjectionMatrix();
         flight.current = null;
+      }
     } else if (zoomTarget.current !== null) {
       const before = new THREE.Vector3(),
         after = new THREE.Vector3();
@@ -365,34 +379,43 @@ function CameraAndLabels({
         cam.position.add(before);
         controls.current.target.add(before);
       }
-      if (Math.abs(cam.zoom - zoomTarget.current) < 0.02)
+      if (Math.abs(cam.zoom - zoomTarget.current) < 0.02) {
+        cam.zoom = zoomTarget.current;
+        cam.updateProjectionMatrix();
         zoomTarget.current = null;
+      }
     }
     cam.updateMatrixWorld();
     gl.domElement.dataset.mapZoom = cam.zoom.toFixed(4);
+    const canFocus = provinceFocusEnabled(cam.zoom / nationalZoom);
+    const awaitingFit = requiresCameraFit(
+      lastFit.current,
+      resetRevision,
+      size.width,
+      size.height,
+      initialized.current,
+    );
+    gl.domElement.dataset.mapScale = (cam.zoom / nationalZoom).toFixed(4);
     gl.domElement.dataset.terrainProgress = provinceTerrainBlend(
       selected?.properties.adcode,
     ).toFixed(3);
     if (
       selected &&
-      userZoomed.current &&
-      zoomDirection.current < 0 &&
+      !awaitingFit &&
       !flight.current &&
       !returning.current &&
-      cam.zoom / initialZoom.current < 0.6
+      !canFocus
     ) {
       returning.current = true;
-      zoomTarget.current = null;
       onViewportSelect(null);
     }
+    if (canFocus) returning.current = false;
     const now = performance.now();
-    const followingMouse =
-      hoverPointer.current &&
-      cam.zoom >= nationalZoom * 1.8 &&
-      (now < hoverPointer.current.until ||
-        (zoomTarget.current !== null && zoomDirection.current > 0));
+    const followingMouse = canFocus && hoverPointer.current !== null;
     if (
       !flight.current &&
+      canFocus &&
+      !awaitingFit &&
       now >= selectionCheckAt.current &&
       (followingMouse ||
         (userZoomed.current && zoomDirection.current > 0) ||
@@ -411,57 +434,43 @@ function CameraAndLabels({
         const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
         return hit ? [[hit.x / 0.75 + 104, hit.y / 0.95 + 35]] : [];
       });
-      let candidate = viewportProvince(provinces, samples, selected);
+      let pointerGeo: number[] | undefined;
       if (followingMouse && hoverPointer.current) {
         ray.setFromCamera(hoverPointer.current.point, cam);
         const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
         if (hit) {
-          // 用当前地形高度修正倾斜相机的落点，避免山地上沿用海平面位置。
+          // 命中使用不随选择与加载变化的全国DEM，避免模型渐变造成反馈抖动。
           for (let i = 0; i < 3; i++) {
             const geo = [hit.x / 0.75 + 104, hit.y / 0.95 + 35];
-            const region = provinceAt(provinces, geo);
             const h =
-              provinceTerrainHeight(region?.properties.adcode, geo) *
+              Math.max(0, elevationAt(chinaHeights, geo[0], geo[1])) *
               HEIGHT_SCALE;
             ray.ray.intersectPlane(
               new THREE.Plane(new THREE.Vector3(0, 0, 1), -h),
               hit,
             );
           }
-          candidate = provinceAt(provinces, [
-            hit.x / 0.75 + 104,
-            hit.y / 0.95 + 35,
-          ]);
-        } else candidate = null;
+          pointerGeo = [hit.x / 0.75 + 104, hit.y / 0.95 + 35];
+        } else pointerGeo = [NaN, NaN];
       }
-      const visibleCandidate = candidate;
-      if (candidate) {
-        const fit = fitProvinceZoom([candidate], size.width, size.height);
-        if (Math.max(cam.zoom, zoomTarget.current ?? cam.zoom) >= fit * 0.38)
-          prefetchProvinceTerrain(candidate.properties.adcode);
-        if (
-          !followingMouse &&
-          cam.zoom < autoProvinceThreshold(fit, nationalZoom)
-        )
-          candidate = null;
-      }
+      const candidate = focusProvince(
+        provinces,
+        cam.zoom / nationalZoom,
+        pointerGeo,
+        samples,
+        selected,
+      );
+      if (candidate) prefetchProvinceTerrain(candidate.properties.adcode);
       const code = String(candidate?.properties.adcode ?? '');
-      if (proposed.current.code !== code)
-        proposed.current = { code, since: now };
-      // 65ms 检查 + 70ms 稳定期，边界轻微晃动不会反复切换。
+      const settled = settleProvinceFocus(proposed.current, code, now);
+      proposed.current = settled.proposal;
+      // 候选连续稳定160ms才提交；鼠标静止时继续使用同一判定来源。
       if (
         !returning.current &&
-        now - proposed.current.since >= 70 &&
+        settled.ready &&
         candidate?.properties.adcode !== selected?.properties.adcode
       ) {
-        // 已选省份在 60–64% 之间保留，形成进入/退出滞回。
-        if (
-          candidate ||
-          !selected ||
-          cam.zoom < initialZoom.current * 0.6 ||
-          visibleCandidate?.properties.adcode !== selected.properties.adcode
-        )
-          onViewportSelect(candidate);
+        onViewportSelect(candidate);
       }
       if (panPending.current && now > panSettlesAt.current)
         panPending.current = false;
@@ -469,7 +478,7 @@ function CameraAndLabels({
         zoomTarget.current === null &&
         !panPending.current &&
         !dragStart.current &&
-        now - proposed.current.since >= 140
+        now - proposed.current.since >= 220
       )
         userZoomed.current = false;
     }
@@ -490,6 +499,7 @@ function CameraAndLabels({
     if (cameraStamp === lastCamera.current) return;
     lastCamera.current = cameraStamp;
     const zoom = cam.zoom / initialZoom.current;
+    const mapSelected = canFocus ? selected : null;
     const anchors: MapAnchor[] = [];
     const add = (
       id: string,
@@ -524,7 +534,7 @@ function CameraAndLabels({
         return;
       anchors.push({ id, name, x, y, priority, kind });
     };
-    if (!selected) {
+    if (!mapSelected) {
       provinces
         .filter((p) => p.properties.name && p.properties.center)
         .forEach((p) =>
@@ -539,7 +549,7 @@ function CameraAndLabels({
             'province',
           ),
         );
-    } else if (selected.properties.adcode === 330000) {
+    } else if (mapSelected.properties.adcode === 330000) {
       if (zoom > 1.7) showFour.current = true;
       if (zoom < 1.5) showFour.current = false;
       points.forEach((p) => {
@@ -560,7 +570,7 @@ function CameraAndLabels({
         const capital = city.province === 110000;
         if (
           !capital &&
-          !cityVisible(city.province, selected?.properties.adcode)
+          !cityVisible(city.province, mapSelected?.properties.adcode)
         )
           continue;
         const start = anchors.length;
@@ -582,10 +592,10 @@ function CameraAndLabels({
         )
           anchors.splice(i, 1);
     }
-    const groups = selected
+    const groups = mapSelected
       ? clusterAnchors(anchors, 28)
       : anchors.map((a) => ({ anchor: a, members: [a] }));
-    const budget = selected
+    const budget = mapSelected
       ? Math.min(80, Math.max(5, Math.floor(8 * zoom * zoom)))
       : 100;
     const eligible = [
@@ -596,7 +606,7 @@ function CameraAndLabels({
       eligible,
       size.width,
       size.height,
-      !selected,
+      !mapSelected,
       flight.current ? [] : previousLabels.current,
     );
     previousLabels.current = result.labels;
@@ -711,6 +721,7 @@ export default function HandscrollMap({
   });
   const [command, setCommand] = useState({ id: 0, factor: 1 }),
     [expanded, setExpanded] = useState<string[] | null>(null);
+  const mapSelected = provinceFocusEnabled(screen.scale) ? selected : null;
   const retainedLabels = useRef(new Map<string, PlacedLabel>());
   for (const label of screen.labels)
     retainedLabels.current.set(label.id, label);
@@ -755,7 +766,7 @@ export default function HandscrollMap({
       if (p && p.properties.adcode !== selected?.properties.adcode) onSelect(p);
       return;
     }
-    if (!selected) {
+    if (!mapSelected) {
       const p = provinces.find((p) => String(p.properties.adcode) === id);
       if (p) onSelect(p);
       return;
@@ -776,7 +787,7 @@ export default function HandscrollMap({
     <div
       className="handscroll-map"
       data-terrain-status={currentTerrainStatus}
-      data-highlighted-province={selected?.properties.adcode ?? ''}
+      data-highlighted-province={mapSelected?.properties.adcode ?? ''}
       tabIndex={0}
       aria-label="立体山水地图，可左键拖动或方向键平移，滚轮缩放"
     >
@@ -785,7 +796,7 @@ export default function HandscrollMap({
           {dataError ? '地形加载失败，请刷新重试。' : '正在铺展立体山河…'}
         </p>
       )}
-      {selected &&
+      {mapSelected &&
         (currentTerrainStatus === 'loading' ||
           currentTerrainStatus === 'error') && (
           <p className="terrain-status" role="status">
@@ -809,12 +820,12 @@ export default function HandscrollMap({
             <ProvinceShape
               key={p.properties.adcode}
               feature={p}
-              focusCode={selected?.properties.adcode}
-              active={selected?.properties.adcode === p.properties.adcode}
+              focusCode={mapSelected?.properties.adcode}
+              active={mapSelected?.properties.adcode === p.properties.adcode}
               muted={
-                !!selected &&
+                !!mapSelected &&
                 currentTerrainStatus !== 'loading' &&
-                selected.properties.adcode !== p.properties.adcode
+                mapSelected.properties.adcode !== p.properties.adcode
               }
               meshData={meshData}
               onStatus={onTerrainStatus}
@@ -836,7 +847,7 @@ export default function HandscrollMap({
       </Canvas>
       <div
         className="map-signs"
-        aria-label={selected ? '景区地图标签' : '省份地图标签'}
+        aria-label={mapSelected ? '景区地图标签' : '省份地图标签'}
       >
         {drawnLabels.map((l) => {
           const count =
@@ -905,7 +916,7 @@ export default function HandscrollMap({
                         →
                       </span>
                     </span>
-                  ) : selected?.properties.adcode === 110000 ? (
+                  ) : mapSelected?.properties.adcode === 110000 ? (
                     <span className="capital-name">北京</span>
                   ) : null}
                 </>
@@ -985,7 +996,7 @@ export default function HandscrollMap({
           −
         </button>
       </div>
-      {!selected && screen.hidden.length > 0 && (
+      {!mapSelected && screen.hidden.length > 0 && (
         <div className="map-density">
           <small>地名较密，可从列表选择全部省份</small>
           <button onClick={() => document.getElementById('province')?.focus()}>
@@ -993,7 +1004,7 @@ export default function HandscrollMap({
           </button>
         </div>
       )}
-      {selected?.properties.adcode === 330000 && (
+      {mapSelected?.properties.adcode === 330000 && (
         <div className="map-density">
           <span>
             5A 优先 · 已显示{' '}

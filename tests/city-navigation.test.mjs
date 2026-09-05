@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {
   viewportProvince,
-  autoProvinceThreshold,
+  provinceFocusEnabled,
+  focusProvince,
+  settleProvinceFocus,
 } from '../lib/province-view.ts';
 import {
   placeLabels,
@@ -105,8 +107,56 @@ test('中心命中及时选择，近海视野可根据周边陆地选择省份',
     )?.properties.adcode,
     320000,
   );
-  assert.ok(autoProvinceThreshold(150, 12) > 150 * 0.6);
-  assert.ok(autoProvinceThreshold(10, 12) > 12);
+  assert.equal(provinceFocusEnabled(5.999), false);
+  assert.equal(provinceFocusEnabled(6), true);
+  assert.equal(provinceFocusEnabled(6 - Number.EPSILON * 4), true);
+  assert.equal(provinceFocusEnabled(6.001), true);
+});
+
+test('6倍前不选省，达到6倍使用鼠标落点且不被视野中心抢回', () => {
+  const provinces = read('china.geojson').features;
+  const pointer = [120.15, 30.25];
+  const center = [[118.8, 32.05]];
+  assert.equal(focusProvince(provinces, 5.999, pointer, center), null);
+  const zhejiang = focusProvince(provinces, 6, pointer, center);
+  assert.equal(zhejiang?.properties.adcode, 330000);
+  for (let i = 0; i < 30; i++) {
+    // 模拟鼠标静止后持续检查，视野中心即使在江苏也不能替代鼠标。
+    assert.equal(
+      focusProvince(provinces, 6, pointer, center, zhejiang)?.properties.adcode,
+      330000,
+    );
+  }
+  assert.equal(focusProvince(provinces, 6, [125, 28], center, zhejiang), null);
+  assert.equal(
+    focusProvince(provinces, 6, undefined, center)?.properties.adcode,
+    320000,
+  );
+  assert.equal(focusProvince(provinces, 5.9, pointer, center, zhejiang), null);
+});
+
+test('候选省份必须持续稳定，边界短暂跳到邻省不提交选择', () => {
+  let proposal = { code: '330000', since: 0 };
+  for (const [time, code] of [
+    [65, '320000'],
+    [130, '330000'],
+    [195, '320000'],
+    [260, '330000'],
+  ]) {
+    const result = settleProvinceFocus(proposal, code, time);
+    assert.equal(result.ready, false);
+    proposal = result.proposal;
+  }
+  const entered = settleProvinceFocus(proposal, '320000', 400);
+  assert.equal(entered.ready, false);
+  assert.equal(
+    settleProvinceFocus(entered.proposal, '320000', 559).ready,
+    false,
+  );
+  assert.equal(
+    settleProvinceFocus(entered.proposal, '320000', 560).ready,
+    true,
+  );
 });
 test('城市横排标签与景区牌共同避让，不改变真实锚点', () => {
   const anchors = [
