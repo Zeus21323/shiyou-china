@@ -83,5 +83,9 @@ export const excludedScenicIds = new Set(
   Object.values(excludedScenicGroups).flat(),
 );
 export function selectScenicAreas<T extends ScenicArea>(areas: T[]): T[] {
-  return areas.filter((area) => !excludedScenicIds.has(area.id));
+  return areas.filter(
+    (area) =>
+      !excludedScenicIds.has(area.id) &&
+      !/湿地|森林公园|实地公园/.test(area.name),
+  );
 }

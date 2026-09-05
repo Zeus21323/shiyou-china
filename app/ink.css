@@ -616,6 +616,10 @@ select {
   z-index: 3;
 }
 .map-sign {
+  transition:
+    transform 100ms linear,
+    opacity 180ms ease;
+  opacity: 1;
   pointer-events: auto;
   position: absolute;
   min-height: 0;
@@ -627,6 +631,32 @@ select {
   overflow: visible;
   perspective: 600px;
   will-change: transform;
+}
+.map-sign[data-visible='false'] {
+  opacity: 0;
+  pointer-events: none;
+}
+@starting-style {
+  .map-sign[data-visible='true'] {
+    opacity: 0;
+  }
+}
+.scene-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 1;
+  transition: opacity 420ms ease;
+}
+.scene-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.handscroll-map canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.handscroll-map canvas:active {
+  cursor: grabbing;
 }
 .map-sign:hover {
   background: transparent;

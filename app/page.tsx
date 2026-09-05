@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import ChinaMap, { type Province } from '../components/handscroll-map';
 import ScenicList from '../components/scenic-list';
 import PoetryNebula from '../components/star-river';
@@ -17,6 +17,7 @@ export default function Home() {
     [workStatus, setWorkStatus] = useState<'loading' | 'ready' | 'error'>(
       'loading',
     );
+  const [lastScenic, setLastScenic] = useState<ScenicArea | null>(null);
   useEffect(() => {
     const c = new AbortController();
     fetch('/data/zhejiang-catalog.json', { signal: c.signal })
@@ -51,17 +52,19 @@ export default function Home() {
       });
     return () => c.abort();
   }, []);
-  const selectProvince = (p: Province | null) => {
+  const selectProvince = useCallback((p: Province | null) => {
     setMapRevision((n) => n + 1);
     setSelected(p);
     setScenic(null);
     setReading(null);
-  };
+  }, []);
+  const overview = useCallback(() => selectProvince(null), [selectProvince]);
   const zhejiang = () =>
     selectProvince(
       provinces.find((p) => p.properties.adcode === 330000) ?? null,
     );
   const openScenic = (s: ScenicArea) => {
+    setLastScenic(s);
     setScenic(s);
     setReading(null);
   };
@@ -85,16 +88,31 @@ export default function Home() {
       </header>
       <section className="explorer">
         <div className="map-stage">
-          {scenic ? (
-            <PoetryNebula works={currentWorks} onRead={setReading} />
-          ) : (
+          <div
+            className={'scene-layer' + (scenic ? ' scene-hidden' : '')}
+            inert={!!scenic}
+          >
             <ChinaMap
               resetRevision={mapRevision}
               provinces={provinces}
               selected={selected}
               onSelect={selectProvince}
               onScenic={openScenic}
+              onOverview={overview}
+              visible={!scenic}
             />
+          </div>
+          {lastScenic && (
+            <div
+              className={'scene-layer' + (!scenic ? ' scene-hidden' : '')}
+              inert={!scenic}
+            >
+              <PoetryNebula
+                works={works.filter((w) => w.scenicId === lastScenic.id)}
+                onRead={setReading}
+                active={!!scenic}
+              />
+            </div>
           )}
           <div
             className="map-heading"
@@ -308,7 +326,7 @@ export default function Home() {
                   <div className="editor-note">
                     <span>收录原则</span>
                     <p>
-                      精选自然山水与历史古迹，剔除现代展馆、主题乐园和商业设施。保留作品出处与景区关联。等级名录为截至
+                      精选自然山水与历史古迹，按本站选景范围剔除现代设施、湿地及森林公园。保留作品出处与景区关联。等级名录为截至
                       2024 年底的官方快照，非实时名单。
                     </p>
                   </div>

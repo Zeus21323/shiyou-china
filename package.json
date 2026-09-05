@@ -12,7 +12,7 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "data:geocode": "node scripts/refresh-scenic-points.mjs",
-    "test:map": "node --experimental-strip-types --test tests/map-layout.test.mjs"
+    "test:map": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

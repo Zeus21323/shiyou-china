@@ -30,6 +30,7 @@ export function placeLabels(
   width: number,
   height: number,
   provinceMode = false,
+  previous: PlacedLabel[] = [],
 ): { labels: PlacedLabel[]; hidden: MapAnchor[] } {
   const labels: PlacedLabel[] = [],
     hidden: MapAnchor[] = [];
@@ -54,6 +55,10 @@ export function placeLabels(
       [80, 15],
       [-80, 15],
     ];
+    // 优先保留相对锚点的摆放位置，避免轻微缩放触发布局翻转。
+    const old = previous.find((p) => p.id === a.id);
+    if (old)
+      offsets.unshift([old.left + old.width / 2 - old.x, old.top - old.y]);
     if (provinceMode)
       for (let r = 110; r <= 360; r += 45)
         for (let n = 0; n < 12; n++)
@@ -64,8 +69,8 @@ export function placeLabels(
     for (const [dx, dy] of offsets) {
       const c = {
         ...a,
-        left: Math.round(a.x + dx - w / 2),
-        top: Math.round(a.y + dy),
+        left: a.x + dx - w / 2,
+        top: a.y + dy,
         width: w,
         height: h,
       };

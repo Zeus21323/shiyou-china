@@ -66,9 +66,11 @@ function StarRiver({ paused }: { paused: boolean }) {
 export default function PoetryNebula({
   works,
   onRead,
+  active = true,
 }: {
   works: Work[];
   onRead: (w: Work) => void;
+  active?: boolean;
 }) {
   const reduced = useReducedMotion();
   const [paused, setPaused] = useState(false);
@@ -79,6 +81,7 @@ export default function PoetryNebula({
       <div className="nebula-wash" aria-hidden="true" />
       <div className="nebula-moon" aria-hidden="true" />
       <Canvas
+        frameloop={active ? 'always' : 'never'}
         camera={{ position: [0, 10, 19], fov: 45 }}
         dpr={[1, 1.5]}
         gl={{ alpha: true, antialias: true }}

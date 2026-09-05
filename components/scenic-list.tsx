@@ -47,7 +47,7 @@ export default function ScenicList({
     <div className="scenic-list">
       <div className="catalog-meta">
         <b>{catalog.scenicAreas.length} 家 4A / 5A 景区</b>
-        <p>山水古迹精选 · 已剔除现代展馆、乐园及商业设施</p>
+        <p>山水古迹精选 · 已筛除现代设施、湿地及森林公园</p>
         <p>等级截至 {catalog.asOf} · 历史快照</p>
         <a href={catalog.sourceUrl} target="_blank" rel="noreferrer">
           浙江省文旅厅官方名录 ↗
