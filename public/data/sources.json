@@ -12,8 +12,40 @@
     }
   ],
   "catalogStatus": "verified-historical-snapshot",
-  "catalog": {"id":"zj-official-2024","title":"浙江省A级旅游景区名录表（截至2024年底）","url":"https://ct.zj.gov.cn/art/2025/1/21/art_1229678763_5447295.html","asOf":"2024-12-31","retrievedAt":"2026-09-05","count4A":223,"count5A":22},
+  "scenicCoordinates": {
+    "provider": "高德地图 Web 服务 POI 搜索",
+    "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+    "retrievedAt": "2026-09-06",
+    "localFile": "scenic-points.json",
+    "matched": 131,
+    "pendingReview": 114,
+    "count5A": 22,
+    "count4A": 109,
+    "method": "名称与市、区县匹配及逐项消歧，AI辅助核对，非测绘实测；GCJ-02近似转换WGS84并保留原值。联合景区仅标代表点。"
+  },
+  "catalog": {
+    "id": "zj-official-2024",
+    "title": "浙江省A级旅游景区名录表（截至2024年底）",
+    "url": "https://ct.zj.gov.cn/art/2025/1/21/art_1229678763_5447295.html",
+    "asOf": "2024-12-31",
+    "retrievedAt": "2026-09-05",
+    "count4A": 223,
+    "count5A": 22
+  },
   "literatureStatus": "18 texts checked; 10 destinations; AI-assisted geographic curation",
-  "literature": [{"title":"Werneror/Poetry","url":"https://github.com/Werneror/Poetry","license":"MIT","licenseFile":"/licenses/Poetry-MIT.txt","usage":"17首古典诗歌原文；逐篇出处及CSV记录位置见works.json"},{"title":"古文岛·兰亭集序","url":"https://www.guwendao.net/shiwenv_af279f0cdd95.aspx","usage":"仅古典原文，未复制现代翻译赏析"}],
-  "limitations":"名录非实时；关联核对不等于学术校勘；公开发行前需完成地图许可与地图发布要求核验，后续名录按官方公告更新。"
+  "literature": [
+    {
+      "title": "Werneror/Poetry",
+      "url": "https://github.com/Werneror/Poetry",
+      "license": "MIT",
+      "licenseFile": "/licenses/Poetry-MIT.txt",
+      "usage": "17首古典诗歌原文；逐篇出处及CSV记录位置见works.json"
+    },
+    {
+      "title": "古文岛·兰亭集序",
+      "url": "https://www.guwendao.net/shiwenv_af279f0cdd95.aspx",
+      "usage": "仅古典原文，未复制现代翻译赏析"
+    }
+  ],
+  "limitations": "名录非实时；关联核对不等于学术校勘；公开发行前需完成地图许可与地图发布要求核验，后续名录按官方公告更新。"
 }

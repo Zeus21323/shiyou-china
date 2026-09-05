@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import ChinaMap, { type Province } from '../components/china-map';
+import ChinaMap, { type Province } from '../components/handscroll-map';
 import ScenicList from '../components/scenic-list';
 import PoetryNebula from '../components/poetry-nebula';
 import type { ScenicArea, Work } from '../lib/content';
@@ -58,7 +58,7 @@ export default function Home() {
     ? works.filter((w) => w.scenicId === scenic.id)
     : [];
   return (
-    <main className="atlas-app">
+    <main className={'atlas-app ' + (scenic ? 'reading-mode' : 'map-mode')}>
       <header className="masthead">
         <a className="brand" href="/">
           诗游中国<span>POETRY ATLAS</span>
@@ -76,6 +76,7 @@ export default function Home() {
               provinces={provinces}
               selected={selected}
               onSelect={selectProvince}
+              onScenic={openScenic}
             />
           )}
           <div className="map-heading">
@@ -119,12 +120,12 @@ export default function Home() {
               </button>
             )}
             <button onClick={() => selectProvince(null)}>↖ 全国视野</button>
-            <span>拖动旋转 · 滚轮缩放</span>
+            <span>拖动平移 · 滚轮缩放</span>
           </div>
           <p className="map-credit">
             {scenic
               ? '亮星对应作品 · 微尘为装饰，不计入收录数量'
-              : '行政区划示意 · 数据来源：阿里云 DataV'}
+              : '省界：DataV · 山形为艺术示意，非真实高程'}
           </p>
         </div>
         <aside className="sidebar">

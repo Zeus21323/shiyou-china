@@ -1,0 +1,2108 @@
+{
+  "provinceCode": 330000,
+  "provider": "amap",
+  "status": "ready",
+  "reviewedAt": "2026-09-05T17:17:06.637Z",
+  "coordinateSystem": "WGS84",
+  "totalCatalog": 245,
+  "matched": 131,
+  "pendingReview": 114,
+  "points": [
+    {
+      "scenicId": "zj-0001",
+      "label": "杭州西湖",
+      "longitude": 120.11657525802221,
+      "latitude": 30.22497292580342,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.121358,
+        30.222692
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B13L9M",
+      "poiId": "B023B13L9M",
+      "sourceName": "杭州西湖风景名胜区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0002",
+      "label": "西溪湿地公园",
+      "longitude": 120.05635749709757,
+      "latitude": 30.257389447657793,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.061159,
+        30.255079
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B06P06",
+      "poiId": "B023B06P06",
+      "sourceName": "西溪国家湿地公园",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0003",
+      "label": "千岛湖",
+      "longitude": 119.04998399841557,
+      "latitude": 29.54749560321576,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.055172,
+        29.545082
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFYF0GP",
+      "poiId": "B0FFFYF0GP",
+      "sourceName": "千岛湖风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0115",
+      "label": "溪口—滕头",
+      "longitude": 121.20873311894742,
+      "latitude": 29.682836794911132,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.213061,
+        29.680389
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFGTF6RC",
+      "poiId": "B0FFGTF6RC",
+      "sourceName": "溪口-滕头旅游景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0116",
+      "label": "天一阁·月湖",
+      "longitude": 121.53890787969715,
+      "latitude": 29.870191258857147,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.543096,
+        29.867633
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFK2ZI40",
+      "poiId": "B0FFK2ZI40",
+      "sourceName": "天一阁·月湖",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0201",
+      "label": "雁荡山",
+      "longitude": 121.02945831195393,
+      "latitude": 28.376809944563384,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.033716,
+        28.373656
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024105U52",
+      "poiId": "B024105U52",
+      "sourceName": "雁荡山风景名胜区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0202",
+      "label": "刘伯温故里",
+      "longitude": 119.98365009194035,
+      "latitude": 27.887439512090804,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.988101,
+        27.884162
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0G3KCN3WJ",
+      "poiId": "B0G3KCN3WJ",
+      "sourceName": "刘伯温故里景区(暂停开放)",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0288",
+      "label": "南浔古镇",
+      "longitude": 120.43529919267492,
+      "latitude": 30.88297754833838,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.439896,
+        30.88091
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023C0OMFN",
+      "poiId": "B023C0OMFN",
+      "sourceName": "南浔古镇",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0390",
+      "label": "南湖",
+      "longitude": 120.74881594618408,
+      "latitude": 30.755975408303573,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.753137,
+        30.753681
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023D02T8E",
+      "poiId": "B023D02T8E",
+      "sourceName": "嘉兴南湖旅游区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0391",
+      "label": "西塘古镇",
+      "longitude": 120.889571505828,
+      "latitude": 30.9453045161266,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.893704,
+        30.942938
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023D02T2B",
+      "poiId": "B023D02T2B",
+      "sourceName": "西塘古镇",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0392",
+      "label": "乌镇",
+      "longitude": 120.4817313767616,
+      "latitude": 30.75122535144973,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.486173,
+        30.748979
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFAPGR4",
+      "poiId": "B0FFFAPGR4",
+      "sourceName": "乌镇风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0466",
+      "label": "绍兴鲁迅故里·沈园",
+      "longitude": 120.58596208968436,
+      "latitude": 29.99294266944237,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.590035,
+        29.990303
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFR0TIH",
+      "poiId": "B0FFFR0TIH",
+      "sourceName": "沈氏园",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0550",
+      "label": "横店影视城",
+      "longitude": 120.29984484110629,
+      "latitude": 29.153144569327132,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.304245,
+        29.150418
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02430HUMW",
+      "poiId": "B02430HUMW",
+      "sourceName": "横店影视城",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0551",
+      "label": "金华双龙",
+      "longitude": 119.63218591167708,
+      "latitude": 29.186220863739777,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.636883,
+        29.183306
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02430HWAH",
+      "poiId": "B02430HWAH",
+      "sourceName": "金华双龙风景旅游区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0644",
+      "label": "江郎山-廿八都",
+      "longitude": 118.55855345963334,
+      "latitude": 28.55677646681277,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.563311,
+        28.553412
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023A00E21",
+      "poiId": "B023A00E21",
+      "sourceName": "江郎山省级旅游度假区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0645",
+      "label": "根宫佛国",
+      "longitude": 118.38534118805627,
+      "latitude": 29.14001188930663,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.390558,
+        29.137386
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023A1546R",
+      "poiId": "B023A1546R",
+      "sourceName": "根宫佛国文化旅游区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0718",
+      "label": "普陀山",
+      "longitude": 122.38924644983264,
+      "latitude": 30.002774095075345,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        122.393559,
+        30.000523
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02445IKZ7",
+      "poiId": "B02445IKZ7",
+      "sourceName": "普陀山风景名胜区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0755",
+      "label": "神仙居",
+      "longitude": 120.60427957924563,
+      "latitude": 28.696590466889532,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.608247,
+        28.693292
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFGLW1SP",
+      "poiId": "B0FFGLW1SP",
+      "sourceName": "神仙居景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0756",
+      "label": "天台山",
+      "longitude": 121.0414832850784,
+      "latitude": 29.23040916977763,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.045844,
+        29.227823
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02400SPSI",
+      "poiId": "B02400SPSI",
+      "sourceName": "天台山国家级风景名胜区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0757",
+      "label": "台州府城",
+      "longitude": 121.11281530342173,
+      "latitude": 28.84829722247139,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.117232,
+        28.845475
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFKPYR64",
+      "poiId": "B0FFKPYR64",
+      "sourceName": "台州府城文化旅游区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0865",
+      "label": "梯田",
+      "longitude": 119.48245273908694,
+      "latitude": 28.051819921330228,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.487375,
+        28.048612
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024215MX7",
+      "poiId": "B024215MX7",
+      "sourceName": "云和梯田景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0866",
+      "label": "仙都",
+      "longitude": 120.12792896918182,
+      "latitude": 28.688366281981466,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.132563,
+        28.685408
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024200C92",
+      "poiId": "B024200C92",
+      "sourceName": "缙云仙都景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0006",
+      "label": "下姜村",
+      "longitude": 118.72536922993275,
+      "latitude": 29.374933718328055,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.730345,
+        29.372286
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0M69CD2VW",
+      "poiId": "B0M69CD2VW",
+      "sourceName": "下姜村",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0008",
+      "label": "富春桃源",
+      "longitude": 119.63004751037147,
+      "latitude": 30.01373791861027,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.634811,
+        30.011103
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B07SES",
+      "poiId": "B023B07SES",
+      "sourceName": "富春桃源风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0010",
+      "label": "黄公望隐居地",
+      "longitude": 120.00686727487158,
+      "latitude": 30.090208065413854,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.011553,
+        30.087764
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B1990G",
+      "poiId": "B023B1990G",
+      "sourceName": "黄公望隐居地",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0011",
+      "label": "严州古城",
+      "longitude": 119.49915473565594,
+      "latitude": 29.543314104592053,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.504137,
+        29.540773
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B19XYF",
+      "poiId": "B023B19XYF",
+      "sourceName": "严州古城",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0013",
+      "label": "大慈岩",
+      "longitude": 119.28513842888627,
+      "latitude": 29.315374555152278,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.29018,
+        29.312731
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B08SR8",
+      "poiId": "B023B08SR8",
+      "sourceName": "大慈岩",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0014",
+      "label": "建德航空小镇",
+      "longitude": 119.19582466655352,
+      "latitude": 29.365569225468793,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.200908,
+        29.362984
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0JB6UHATO",
+      "poiId": "B0JB6UHATO",
+      "sourceName": "建德航空小镇",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0015",
+      "label": "青山湖",
+      "longitude": 119.77019545479608,
+      "latitude": 30.237826386751117,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.775061,
+        30.235356
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B07SJV",
+      "poiId": "B023B07SJV",
+      "sourceName": "青山湖景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0017",
+      "label": "大明山",
+      "longitude": 118.98526307893128,
+      "latitude": 30.041501422655006,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.990282,
+        30.038978
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B07SDD",
+      "poiId": "B023B07SDD",
+      "sourceName": "大明山风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0020",
+      "label": "运河·塘栖古镇",
+      "longitude": 120.17889496362115,
+      "latitude": 30.479703175894386,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.183536,
+        30.477368
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFGJQ68E",
+      "poiId": "B0FFGJQ68E",
+      "sourceName": "运河·塘栖古镇",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0021",
+      "label": "超山",
+      "longitude": 120.20839232302122,
+      "latitude": 30.439771115926522,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.212949,
+        30.437376
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFF3O4I1",
+      "poiId": "B0FFF3O4I1",
+      "sourceName": "超山风景名胜区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0025",
+      "label": "京杭大运河·杭州",
+      "longitude": 120.13716232816783,
+      "latitude": 30.305251405236127,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.141908,
+        30.302955
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFG97H9P",
+      "poiId": "B0FFG97H9P",
+      "sourceName": "京杭大运河杭州景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0026",
+      "label": "雷峰塔",
+      "longitude": 120.14412739534433,
+      "latitude": 30.233247636140995,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.148849,
+        30.230934
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B09LKR",
+      "poiId": "B023B09LKR",
+      "sourceName": "雷峰塔景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0030",
+      "label": "严子陵钓台",
+      "longitude": 119.64363791342484,
+      "latitude": 29.699138973355858,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.648389,
+        29.696498
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B07SOU",
+      "poiId": "B023B07SOU",
+      "sourceName": "严子陵钓台",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0031",
+      "label": "瑶琳仙境",
+      "longitude": 119.533269027678,
+      "latitude": 29.888371549152524,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.538153,
+        29.885801
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B07SP3",
+      "poiId": "B023B07SP3",
+      "sourceName": "瑶琳仙境",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0032",
+      "label": "浙江美术馆",
+      "longitude": 120.15219463548917,
+      "latitude": 30.233376046022038,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.156894,
+        30.231049
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B0BMJ6",
+      "poiId": "B023B0BMJ6",
+      "sourceName": "浙江美术馆",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0033",
+      "label": "中国丝绸博物馆",
+      "longitude": 120.14657768824411,
+      "latitude": 30.2251881214411,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.151292,
+        30.22287
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B09JLL",
+      "poiId": "B023B09JLL",
+      "sourceName": "中国丝绸博物馆",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0035",
+      "label": "杭州宋城",
+      "longitude": 120.09393544454832,
+      "latitude": 30.172071915654808,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.098741,
+        30.169795
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B025FB",
+      "poiId": "B023B025FB",
+      "sourceName": "杭州宋城",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0036",
+      "label": "浙旅院国际教育旅游体验区",
+      "longitude": 120.30133596116369,
+      "latitude": 30.247819716546104,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.305826,
+        30.245411
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFDPM8I",
+      "poiId": "B0FFFDPM8I",
+      "sourceName": "浙旅院国际教育旅游体验区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0037",
+      "label": "杭州长乔极地海洋公园",
+      "longitude": 120.22115972023221,
+      "latitude": 30.14329648862054,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.225664,
+        30.140851
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B0ACZG",
+      "poiId": "B023B0ACZG",
+      "sourceName": "杭州长乔极地海洋公园",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0040",
+      "label": "杭州乐园",
+      "longitude": 120.24038927710265,
+      "latitude": 30.1633082546322,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.244865,
+        30.16085
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B07SF4",
+      "poiId": "B023B07SF4",
+      "sourceName": "杭州乐园",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0042",
+      "label": "良渚博物院",
+      "longitude": 120.02333204048277,
+      "latitude": 30.379846725573703,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.028083,
+        30.377474
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023B0A45Y",
+      "poiId": "B023B0A45Y",
+      "sourceName": "良渚博物院",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0119",
+      "label": "鸣鹤古镇",
+      "longitude": 121.37655276188141,
+      "latitude": 30.13703225989247,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.381095,
+        30.134759
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFWXJAR",
+      "poiId": "B0FFFWXJAR",
+      "sourceName": "鸣鹤古镇",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0121",
+      "label": "梁祝文化园",
+      "longitude": 121.4804458559073,
+      "latitude": 29.91044733423513,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.484836,
+        29.908058
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E0522W",
+      "poiId": "B023E0522W",
+      "sourceName": "梁祝文化园",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0125",
+      "label": "慈城古县城",
+      "longitude": 121.44616204620459,
+      "latitude": 29.98651087043317,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.450657,
+        29.984207
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E07FCK",
+      "poiId": "B023E07FCK",
+      "sourceName": "慈城古县城",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0127",
+      "label": "浙东”四明山“抗日根据地旧址群",
+      "longitude": 121.07694093376529,
+      "latitude": 29.88500977582195,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.081429,
+        29.882731
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0HAJR6TJ6",
+      "poiId": "B0HAJR6TJ6",
+      "sourceName": "浙东四明山抗日根据地旧址群",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0128",
+      "label": "宁波帮博物馆",
+      "longitude": 121.62332936623646,
+      "latitude": 29.921039899138727,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.627435,
+        29.918423
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E0Z44G",
+      "poiId": "B023E0Z44G",
+      "sourceName": "宁波帮博物馆",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0130",
+      "label": "宁波老外滩",
+      "longitude": 121.55649064030752,
+      "latitude": 29.87912087801624,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.560634,
+        29.876526
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E07KHL",
+      "poiId": "B023E07KHL",
+      "sourceName": "宁波老外滩",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0132",
+      "label": "伍山石窟",
+      "longitude": 121.75070584996983,
+      "latitude": 29.2177619809676,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.754918,
+        29.21506
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E05C1Z",
+      "poiId": "B023E05C1Z",
+      "sourceName": "伍山石窟",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0133",
+      "label": "天下玉苑",
+      "longitude": 121.36229477002807,
+      "latitude": 29.94177898419419,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.3668,
+        29.939485
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E05BT0",
+      "poiId": "B023E05BT0",
+      "sourceName": "天下玉苑",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0135",
+      "label": "宁波海洋世界",
+      "longitude": 121.57859135087241,
+      "latitude": 29.85569385581781,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.582695,
+        29.853068
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E04MC6",
+      "poiId": "B023E04MC6",
+      "sourceName": "宁波海洋世界",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0137",
+      "label": "象山影视城",
+      "longitude": 121.83165561552029,
+      "latitude": 29.29279864042287,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.835731,
+        29.29005
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E05C1E",
+      "poiId": "B023E05C1E",
+      "sourceName": "象山影视城",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0138",
+      "label": "石浦渔港古城",
+      "longitude": 121.94311335257738,
+      "latitude": 29.211300997528422,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.947088,
+        29.208449
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E05B0B",
+      "poiId": "B023E05B0B",
+      "sourceName": "石浦渔港古城",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0140",
+      "label": "天宫庄园",
+      "longitude": 121.57321427850898,
+      "latitude": 29.805436042203304,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.577321,
+        29.802811
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E05D2C",
+      "poiId": "B023E05D2C",
+      "sourceName": "天宫庄园",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0144",
+      "label": "丹山赤水",
+      "longitude": 121.15646918264487,
+      "latitude": 29.795742189954787,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.160904,
+        29.793405
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E04F3P",
+      "poiId": "B023E04F3P",
+      "sourceName": "丹山赤水风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0150",
+      "label": "招宝山旅游",
+      "longitude": 121.72101109614508,
+      "latitude": 29.96224711896987,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.725274,
+        29.959789
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023E058Q5",
+      "poiId": "B023E058Q5",
+      "sourceName": "招宝山旅游风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0203",
+      "label": "三垟湿地",
+      "longitude": 120.70416048902528,
+      "latitude": 27.970654920486623,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.708225,
+        27.967384
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024110OQG",
+      "poiId": "B024110OQG",
+      "sourceName": "三垟湿地景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0205",
+      "label": "寨寮溪",
+      "longitude": 120.30579766766078,
+      "latitude": 27.86930859293855,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.310106,
+        27.86614
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024100OC2",
+      "poiId": "B024100OC2",
+      "sourceName": "寨寮溪风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0207",
+      "label": "中雁荡山",
+      "longitude": 120.8544243159156,
+      "latitude": 28.10483777398839,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.858381,
+        28.101446
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024100TY3",
+      "poiId": "B024100TY3",
+      "sourceName": "中雁荡山风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0208",
+      "label": "楠溪江",
+      "longitude": 120.89649949123557,
+      "latitude": 28.390101060952507,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.900433,
+        28.386678
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024104089",
+      "poiId": "B024104089",
+      "sourceName": "楠溪江风景名胜区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0215",
+      "label": "江心屿",
+      "longitude": 120.63510367153617,
+      "latitude": 28.03040922649286,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.639046,
+        28.027008
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024104087",
+      "poiId": "B024104087",
+      "sourceName": "江心屿",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0216",
+      "label": "玉苍山",
+      "longitude": 120.29258745448936,
+      "latitude": 27.520320798970747,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.296855,
+        27.517159
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024104I42",
+      "poiId": "B024104I42",
+      "sourceName": "玉苍山",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0219",
+      "label": "龙麒源",
+      "longitude": 119.91419282700738,
+      "latitude": 27.88057033318124,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.918553,
+        27.87716
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024104068",
+      "poiId": "B024104068",
+      "sourceName": "龙麒源",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0220",
+      "label": "铁定溜溜",
+      "longitude": 121.17325712613132,
+      "latitude": 28.410569877187267,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.177549,
+        28.407431
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFMF7DNV",
+      "poiId": "B0FFMF7DNV",
+      "sourceName": "铁定溜溜",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0221",
+      "label": "苏步青故里",
+      "longitude": 120.32953403506586,
+      "latitude": 27.680494220575284,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.333862,
+        27.677394
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFLN90G9",
+      "poiId": "B0FFLN90G9",
+      "sourceName": "苏步青故里文化旅游区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0223",
+      "label": "南雁荡山",
+      "longitude": 120.2164735551558,
+      "latitude": 27.5855255026868,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.220787,
+        27.582352
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0241046RS",
+      "poiId": "B0241046RS",
+      "sourceName": "南雁荡山国家级风景名胜区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0225",
+      "label": "渔寮",
+      "longitude": 120.51392996204683,
+      "latitude": 27.265335555802476,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.51798,
+        27.262065
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024105Q17",
+      "poiId": "B024105Q17",
+      "sourceName": "苍南县渔寮旅游区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0291",
+      "label": "中国竹子博览园",
+      "longitude": 119.65495754487075,
+      "latitude": 30.593588052919756,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.659799,
+        30.591077
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023C02B86",
+      "poiId": "B023C02B86",
+      "sourceName": "中国竹子博览园",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0292",
+      "label": "浙北大峡谷",
+      "longitude": 119.51692108757177,
+      "latitude": 30.44407538480244,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.521912,
+        30.44159
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFF0BWW1",
+      "poiId": "B0FFF0BWW1",
+      "sourceName": "浙北大峡谷景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0293",
+      "label": "太湖溇港",
+      "longitude": 120.28472028500724,
+      "latitude": 30.931330801711585,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.289251,
+        30.929151
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0HUAUAZLC",
+      "poiId": "B0HUAUAZLC",
+      "sourceName": "太湖溇港景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0297",
+      "label": "庾村",
+      "longitude": 119.89256473939683,
+      "latitude": 30.601250064935588,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.897158,
+        30.598688
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFMED4GC",
+      "poiId": "B0FFMED4GC",
+      "sourceName": "庾村景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0299",
+      "label": "仙山湖",
+      "longitude": 119.59896623654387,
+      "latitude": 30.89708209515061,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.603799,
+        30.894665
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023C02MJJ",
+      "poiId": "B023C02MJJ",
+      "sourceName": "仙山湖",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0305",
+      "label": "中国扬子鳄村",
+      "longitude": 119.73036702802708,
+      "latitude": 30.929954935125473,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.735323,
+        30.927737
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023C02MJ1",
+      "poiId": "B023C02MJ1",
+      "sourceName": "中国扬子鳄村景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0395",
+      "label": "南北湖",
+      "longitude": 120.84324393779323,
+      "latitude": 30.375061362404843,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.847395,
+        30.372508
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023D02TDV",
+      "poiId": "B023D02TDV",
+      "sourceName": "南北湖风景名胜区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0397",
+      "label": "歌斐颂巧克力小镇",
+      "longitude": 120.98541214559559,
+      "latitude": 30.791215726371167,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.989706,
+        30.7889
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFG900PL",
+      "poiId": "B0FFG900PL",
+      "sourceName": "歌斐颂巧克力小镇",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0398",
+      "label": "东湖",
+      "longitude": 121.02522449375827,
+      "latitude": 30.700518452417526,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.029654,
+        30.698274
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023D02TJF",
+      "poiId": "B023D02TJF",
+      "sourceName": "东湖景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0401",
+      "label": "梅花洲",
+      "longitude": 120.8477280992959,
+      "latitude": 30.67185117985493,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.851894,
+        30.669386
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023D03OFF",
+      "poiId": "B023D03OFF",
+      "sourceName": "梅花洲景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0468",
+      "label": "兰亭",
+      "longitude": 120.49554621344818,
+      "latitude": 29.928477800484373,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.499868,
+        29.926031
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023F00N0U",
+      "poiId": "B023F00N0U",
+      "sourceName": "兰亭景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0469",
+      "label": "十九峰",
+      "longitude": 120.82701947730374,
+      "latitude": 29.374315234162008,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.831126,
+        29.371614
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023F02KJ6",
+      "poiId": "B023F02KJ6",
+      "sourceName": "十九峰景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0470",
+      "label": "大禹陵",
+      "longitude": 120.60597766961786,
+      "latitude": 29.95854775812521,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.610041,
+        29.955906
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023F02L5P",
+      "poiId": "B023F02L5P",
+      "sourceName": "大禹陵景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0471",
+      "label": "大佛寺",
+      "longitude": 120.89161923516801,
+      "latitude": 29.495565877264664,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.895637,
+        29.492838
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023F003AD",
+      "poiId": "B023F003AD",
+      "sourceName": "大佛寺风景名胜区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0473",
+      "label": "丝绸世界",
+      "longitude": 120.83394048975278,
+      "latitude": 29.524230790339253,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.838044,
+        29.521592
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFF0DQIY",
+      "poiId": "B0FFF0DQIY",
+      "sourceName": "丝绸世界景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0474",
+      "label": "五泄",
+      "longitude": 120.04366975476694,
+      "latitude": 29.72879015990883,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.048408,
+        29.726426
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023F02GUL",
+      "poiId": "B023F02GUL",
+      "sourceName": "五泄风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0475",
+      "label": "西施故里",
+      "longitude": 120.23561284034615,
+      "latitude": 29.699569995393418,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.240057,
+        29.697086
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFD1GIT",
+      "poiId": "B0FFFD1GIT",
+      "sourceName": "西施故里",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0476",
+      "label": "绍兴乔波冰雪世界",
+      "longitude": 120.47201982046774,
+      "latitude": 30.057229095809657,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.47644,
+        30.054852
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023F0RXKC",
+      "poiId": "B023F0RXKC",
+      "sourceName": "绍兴乔波冰雪世界",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0479",
+      "label": "大香林",
+      "longitude": 120.39062173545254,
+      "latitude": 30.020111717738523,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.395195,
+        30.017834
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0GKK91IZ9",
+      "poiId": "B0GKK91IZ9",
+      "sourceName": "大香林风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0480",
+      "label": "安昌古镇",
+      "longitude": 120.49161921867642,
+      "latitude": 30.138337973761328,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.495973,
+        30.135906
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023F00NBB",
+      "poiId": "B023F00NBB",
+      "sourceName": "安昌古镇",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0553",
+      "label": "方岩",
+      "longitude": 120.1854160214126,
+      "latitude": 28.923690093000932,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.189911,
+        28.920803
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFI1TMKZ",
+      "poiId": "B0FFI1TMKZ",
+      "sourceName": "永康市方岩风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0554",
+      "label": "璟园",
+      "longitude": 119.81685825790294,
+      "latitude": 28.85583059334187,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.821498,
+        28.852744
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFG363AR",
+      "poiId": "B0FFG363AR",
+      "sourceName": "璟园",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0555",
+      "label": "大红岩",
+      "longitude": 119.65577490431517,
+      "latitude": 28.81754647967126,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.66047,
+        28.814378
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0HKNZRGVZ",
+      "poiId": "B0HKNZRGVZ",
+      "sourceName": "大红岩",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0556",
+      "label": "神丽峡",
+      "longitude": 119.95443179646979,
+      "latitude": 29.400100739143006,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.95894,
+        29.39737
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02430I35I",
+      "poiId": "B02430I35I",
+      "sourceName": "神丽峡风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0557",
+      "label": "舞龙峡",
+      "longitude": 120.72974544936002,
+      "latitude": 29.206086663096958,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.733935,
+        29.203355
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024315PTN",
+      "poiId": "B024315PTN",
+      "sourceName": "舞龙峡景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0558",
+      "label": "十八涡",
+      "longitude": 120.7476641834508,
+      "latitude": 29.210892260722765,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.751862,
+        29.208172
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02430HU4B",
+      "poiId": "B02430HU4B",
+      "sourceName": "十八涡景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0559",
+      "label": "灵江源森林公园",
+      "longitude": 120.64895261804617,
+      "latitude": 28.965245012260247,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.652986,
+        28.962192
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFVSUKJ",
+      "poiId": "B0FFFVSUKJ",
+      "sourceName": "灵江源森林公园",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0560",
+      "label": "百杖潭",
+      "longitude": 120.377313849864,
+      "latitude": 28.853318774758804,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.381789,
+        28.850483
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02430HS4T",
+      "poiId": "B02430HS4T",
+      "sourceName": "金华市磐安县百杖潭景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0561",
+      "label": "诸葛八卦村",
+      "longitude": 119.29138325937167,
+      "latitude": 29.250528577546167,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.296428,
+        29.247849
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02430I2UW",
+      "poiId": "B02430I2UW",
+      "sourceName": "诸葛八卦村景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0564",
+      "label": "金华之光",
+      "longitude": 119.66438297362531,
+      "latitude": 29.094659037278227,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.669113,
+        29.091726
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0LU2DV7DH",
+      "poiId": "B0LU2DV7DH",
+      "sourceName": "金华之光",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0565",
+      "label": "卢宅",
+      "longitude": 120.24225950873561,
+      "latitude": 29.266156686319345,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.246661,
+        29.263471
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02430HZD8",
+      "poiId": "B02430HZD8",
+      "sourceName": "卢宅",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0566",
+      "label": "花园村",
+      "longitude": 120.21855285707969,
+      "latitude": 29.120180825311962,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.22298,
+        29.117402
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0L0LH8S7L",
+      "poiId": "B0L0LH8S7L",
+      "sourceName": "花园村景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0568",
+      "label": "义乌国际商贸城购物",
+      "longitude": 120.10240352824418,
+      "latitude": 29.33745636849191,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.107132,
+        29.335
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/BY0001PBL7",
+      "poiId": "BY0001PBL7",
+      "sourceName": "义乌国际商贸城购物旅游区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0569",
+      "label": "仙华山",
+      "longitude": 119.8900055770074,
+      "latitude": 29.52257282598997,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.894514,
+        29.519844
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02430I2TS",
+      "poiId": "B02430I2TS",
+      "sourceName": "仙华山风景名胜区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0570",
+      "label": "婺州古城",
+      "longitude": 119.66106321766216,
+      "latitude": 29.102963628553976,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.665789,
+        29.100031
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFKQWD7C",
+      "poiId": "B0FFKQWD7C",
+      "sourceName": "婺州古城景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0647",
+      "label": "衢州古城",
+      "longitude": 118.85586939141362,
+      "latitude": 28.95905096186197,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.860669,
+        28.955962
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0IBMHDPIO",
+      "poiId": "B0IBMHDPIO",
+      "sourceName": "衢州古城文化旅游区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0648",
+      "label": "大陈古村",
+      "longitude": 118.58986394061107,
+      "latitude": 28.82514485805205,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.594602,
+        28.821909
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFIBRGKL",
+      "poiId": "B0FFIBRGKL",
+      "sourceName": "大陈古村",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0649",
+      "label": "梅树底",
+      "longitude": 118.67957995535136,
+      "latitude": 29.083166257484432,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.684453,
+        29.08024
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFJTPX05",
+      "poiId": "B0FFJTPX05",
+      "sourceName": "梅树底风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0650",
+      "label": "龙游石窟",
+      "longitude": 119.18535815873764,
+      "latitude": 29.062590596204842,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.190437,
+        29.059803
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023A00E1D",
+      "poiId": "B023A00E1D",
+      "sourceName": "龙游石窟",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0651",
+      "label": "龙游民居苑",
+      "longitude": 119.17933660607841,
+      "latitude": 29.02487508601779,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.184425,
+        29.022068
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023A0I6V8",
+      "poiId": "B023A0I6V8",
+      "sourceName": "龙游民居苑",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0652",
+      "label": "桃源七里",
+      "longitude": 118.77348168339246,
+      "latitude": 29.14657027986957,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.778442,
+        29.143765
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFH0ER8O",
+      "poiId": "B0FFH0ER8O",
+      "sourceName": "桃源七里景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0653",
+      "label": "浮盖山",
+      "longitude": 118.46754530118768,
+      "latitude": 28.253444959245037,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.47257,
+        28.250254
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023A00E22",
+      "poiId": "B023A00E22",
+      "sourceName": "浮盖山风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0654",
+      "label": "古田山",
+      "longitude": 118.11172004462573,
+      "latitude": 29.256026717350483,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.11706,
+        29.253486
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFAGOGR",
+      "poiId": "B0FFFAGOGR",
+      "sourceName": "古田山",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0655",
+      "label": "仙霞关",
+      "longitude": 118.51020164659263,
+      "latitude": 28.367921819923964,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.515087,
+        28.364619
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023A14J79",
+      "poiId": "B023A14J79",
+      "sourceName": "仙霞关",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0657",
+      "label": "药王山",
+      "longitude": 118.97358867772049,
+      "latitude": 28.76666025930083,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.978462,
+        28.763494
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023A0IG06",
+      "poiId": "B023A0IG06",
+      "sourceName": "药王山景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0658",
+      "label": "三衢石林",
+      "longitude": 118.4894853413826,
+      "latitude": 29.00562315572823,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.494497,
+        29.002743
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B023A0I86L",
+      "poiId": "B023A0I86L",
+      "sourceName": "三衢石林风景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0721",
+      "label": "花鸟岛",
+      "longitude": 122.68136710568685,
+      "latitude": 30.850358627814177,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        122.685526,
+        30.848068
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFJCYDB3",
+      "poiId": "B0FFJCYDB3",
+      "sourceName": "花鸟岛",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0724",
+      "label": "舟山桃花岛",
+      "longitude": 122.27162726132879,
+      "latitude": 29.816916129850615,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        122.275733,
+        29.814482
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024464OFB",
+      "poiId": "B024464OFB",
+      "sourceName": "舟山桃花岛风景旅游区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0758",
+      "label": "黄岩博物馆",
+      "longitude": 121.24953588819257,
+      "latitude": 28.635282598328423,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.253752,
+        28.632141
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02400TWY8",
+      "poiId": "B02400TWY8",
+      "sourceName": "黄岩博物馆",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0759",
+      "label": "天台山大瀑布（琼台仙谷）",
+      "longitude": 121.00210161424563,
+      "latitude": 29.19471161888837,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.006328,
+        29.191989
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFJRUUX5",
+      "poiId": "B0FFJRUUX5",
+      "sourceName": "天台山大瀑布(琼台仙谷)景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0770",
+      "label": "台州海洋世界",
+      "longitude": 121.40989868999293,
+      "latitude": 28.6636438312032,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.414335,
+        28.660704
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024002XRK",
+      "poiId": "B024002XRK",
+      "sourceName": "台州海洋世界",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0772",
+      "label": "长屿硐天",
+      "longitude": 121.43718694818284,
+      "latitude": 28.435688267384425,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.441575,
+        28.432625
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0MRVOFG2W",
+      "poiId": "B0MRVOFG2W",
+      "sourceName": "长屿硐天风景名胜区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0773",
+      "label": "方山",
+      "longitude": 121.24234400996971,
+      "latitude": 28.420312233824344,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        121.246544,
+        28.417086
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024005GL9",
+      "poiId": "B024005GL9",
+      "sourceName": "方山",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0871",
+      "label": "大木山茶园",
+      "longitude": 119.37186347393057,
+      "latitude": 28.52848585165519,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.376988,
+        28.525437
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFJZ5OVC",
+      "poiId": "B0FFJZ5OVC",
+      "sourceName": "大木山茶园景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0875",
+      "label": "南尖岩",
+      "longitude": 119.09155657250238,
+      "latitude": 28.382005036527563,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.096706,
+        28.378927
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024215FQ6",
+      "poiId": "B024215FQ6",
+      "sourceName": "南尖岩",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0877",
+      "label": "畲乡之窗",
+      "longitude": 119.5607933058133,
+      "latitude": 27.95389210212444,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.56544,
+        27.950493
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02420JJ0R",
+      "poiId": "B02420JJ0R",
+      "sourceName": "景宁畲族自治县畲乡之窗旅游区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0878",
+      "label": "河阳古民居",
+      "longitude": 120.00338106329521,
+      "latitude": 28.727644810243447,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.007947,
+        28.724553
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024215NPM",
+      "poiId": "B024215NPM",
+      "sourceName": "河阳古民居",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0879",
+      "label": "云和湖仙宫",
+      "longitude": 119.5181768211366,
+      "latitude": 28.21106924842959,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.522977,
+        28.207743
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024215X6G",
+      "poiId": "B024215X6G",
+      "sourceName": "云和湖仙宫景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0880",
+      "label": "黄龙",
+      "longitude": 120.05618550677927,
+      "latitude": 28.71140329017122,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.060859,
+        28.708438
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B0FFJZ6LID",
+      "poiId": "B0FFJZ6LID",
+      "sourceName": "黄龙景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0882",
+      "label": "巾子峰",
+      "longitude": 118.99312007874822,
+      "latitude": 27.659974042133037,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        118.997971,
+        27.656742
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02420163F",
+      "poiId": "B02420163F",
+      "sourceName": "巾子峰",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0883",
+      "label": "遂昌金矿国家矿山公园",
+      "longitude": 119.42018410398421,
+      "latitude": 28.616017855127733,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.425316,
+        28.613021
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B02420JI2C",
+      "poiId": "B02420JI2C",
+      "sourceName": "遂昌金矿国家矿山公园",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0884",
+      "label": "千佛山",
+      "longitude": 119.02301038327361,
+      "latitude": 28.477023578490087,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        119.02803,
+        28.473853
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024215J5N",
+      "poiId": "B024215J5N",
+      "sourceName": "千佛山景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    },
+    {
+      "scenicId": "zj-0887",
+      "label": "石门洞",
+      "longitude": 120.11638977797267,
+      "latitude": 28.27257136915339,
+      "coordinateSystem": "WGS84",
+      "originalCoordinates": [
+        120.121013,
+        28.269486
+      ],
+      "originalCoordinateSystem": "GCJ02",
+      "sourceUrl": "https://www.amap.com/detail/B024200C15",
+      "poiId": "B024200C15",
+      "sourceName": "石门洞景区",
+      "note": "高德 POI，名称与市、区县核对；坐标由 GCJ-02 近似转换。联合景区为代表点，非导航入口；开放状态请以景区公告为准。"
+    }
+  ]
+}

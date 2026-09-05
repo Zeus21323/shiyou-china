@@ -520,3 +520,437 @@ select:focus-visible {
     max-width: 160px;
   }
 }
+/* 青绿山水手卷：画面与交互标签分层，地理点位不做装饰性位移。 */
+:root {
+  color-scheme: light;
+  color: #393d31;
+  background: #eee3c5;
+}
+body {
+  background: #eee3c5;
+}
+button {
+  background: #f6ebd1;
+  color: #454b36;
+  border-color: #b8ab82;
+}
+button:hover {
+  background: #e6d8af;
+  border-color: #8a784a;
+}
+select,
+.scenic-list input {
+  background: #f6edda;
+  color: #3c483b;
+  border-color: #b8b394;
+}
+.masthead {
+  background: #f0e6ce;
+  border-color: #c8bd9d;
+  height: 76px;
+}
+.brand {
+  color: #31483e;
+}
+.brand span {
+  color: #687663;
+}
+.edition {
+  color: #5d6650;
+}
+.pilot {
+  border-color: #aa9873;
+  color: #75603b;
+}
+.explorer {
+  grid-template-columns: minmax(0, 1fr) 310px;
+  min-height: calc(100dvh - 76px);
+}
+.map-stage {
+  height: calc(100dvh - 76px);
+  min-height: 720px;
+  background: #eee3c5 url('/art/handscroll-paper.png') center/cover;
+}
+.handscroll-map {
+  height: 100%;
+  position: relative;
+}
+.handscroll-map canvas {
+  touch-action: none;
+}
+.sidebar {
+  background: #f3ebd7;
+  max-height: calc(100dvh - 76px);
+  border-color: #beb395;
+  padding: 28px 22px;
+  color: #394538;
+}
+.sidebar h2,
+.scenic-summary h2 {
+  color: #344d40;
+}
+.sidebar label,
+.intro,
+.empty-state p {
+  color: #69725d;
+}
+.primary {
+  background: #617b65;
+  color: #fff6de;
+  border-color: #617b65;
+}
+.intro-stats b {
+  color: #7c6339;
+}
+.intro-stats span,
+.editor-note p {
+  color: #707763;
+}
+.editor-note {
+  border-color: #c5ba99;
+}
+.editor-note span {
+  color: #80683b;
+}
+.map-heading {
+  top: 27px;
+  left: 28px;
+  right: 90px;
+  z-index: 4;
+}
+.map-heading .eyebrow {
+  color: #7b8067;
+  font-size: 10px;
+}
+.map-heading h1 {
+  color: #3e5142;
+  font-size: 30px;
+  letter-spacing: 6px;
+  margin: 10px 0 7px;
+}
+.map-heading p {
+  color: #69735d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.map-credit {
+  color: #73785d;
+  font-size: 10px;
+  max-width: 85%;
+  bottom: 14px;
+  z-index: 4;
+}
+.map-controls {
+  bottom: 53px;
+  z-index: 5;
+  left: 26px;
+}
+.map-controls button {
+  background: #f5ebd4e8;
+  border-color: #b4a279;
+  color: #4c5a44;
+}
+.map-controls span {
+  color: #65745c;
+}
+.catalog-meta {
+  color: #747962;
+}
+.catalog-meta b {
+  color: #655b3c;
+}
+.catalog-meta a {
+  border-color: #a7a488;
+}
+.grade-tabs [aria-pressed='true'],
+.scenic-list > button[aria-pressed='true'] {
+  background: #647d66;
+  color: #fff5d9;
+}
+.result-count {
+  color: #747861;
+}
+.scenic-card {
+  background: #faf4e6;
+  border-color: #c7bda0;
+  border-radius: 3px;
+}
+.scenic-card strong {
+  color: #405440;
+}
+.scenic-card-top {
+  color: #7c8069;
+}
+.scenic-card-top b {
+  color: #907036;
+}
+.scenic-enter {
+  color: #6d7d61;
+}
+.back-link {
+  color: #6a765d;
+}
+.eyebrow {
+  color: #7a8069;
+}
+.work-list button {
+  background: #faf3df;
+}
+.work-list strong {
+  color: #655533;
+}
+.work-list button span,
+.work-list button small,
+.work-byline {
+  color: #74806b;
+}
+.work-body {
+  color: #434735;
+}
+.evidence {
+  border-color: #bbb395;
+}
+.evidence h3 {
+  color: #806836;
+}
+.evidence p,
+.evidence a {
+  color: #627156;
+}
+.empty-icon {
+  color: #8c7d55;
+}
+.map-signs,
+.map-leaders {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.map-signs {
+  z-index: 3;
+}
+.map-sign {
+  pointer-events: auto;
+  position: absolute;
+  padding: 10px 5px 8px;
+  background: #fff4dcec;
+  border: 1px solid #b9a77d;
+  color: #434b34;
+  border-radius: 10px 10px 5px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  box-shadow: 1px 3px 7px #59472c16;
+  flex-direction: column;
+  overflow: hidden;
+}
+.map-sign:before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #9c8c62;
+}
+.map-sign span {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font:
+    16px KaiTi,
+    STKaiti,
+    serif;
+  letter-spacing: 1px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.map-sign.province {
+  background: #f5eddae8;
+}
+.map-sign.province span {
+  font-size: 15px;
+}
+.map-sign small {
+  font-size: 8px;
+  color: #8c662a;
+  line-height: 1;
+}
+.map-sign:hover {
+  background: #fff7dd;
+  transform: none;
+  border-color: #7d6843;
+  box-shadow: 0 3px 12px #66563033;
+}
+.map-zoom {
+  position: absolute;
+  right: 20px;
+  top: 27px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+}
+.map-zoom button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 21px;
+  border-radius: 3px;
+  background: #f8efd9e6;
+}
+.map-zoom span {
+  font-size: 10px;
+  color: #69745c;
+}
+.map-density {
+  position: absolute;
+  bottom: 113px;
+  left: 27px;
+  z-index: 4;
+  font-size: 11px;
+  color: #52694f;
+  background: #f4ecd7dd;
+  padding: 7px 11px;
+  border-left: 2px solid #a89260;
+  max-width: calc(100% - 55px);
+}
+.map-density small {
+  display: block;
+  font-size: 10px;
+  margin-top: 5px;
+  color: #7c8067;
+}
+.map-density button {
+  font-size: 10px;
+  padding: 4px 8px;
+  margin-top: 6px;
+}
+.map-cluster {
+  position: absolute;
+  z-index: 12;
+  right: 65px;
+  top: 160px;
+  width: min(320px, calc(100% - 40px));
+  max-height: 60%;
+  overflow: auto;
+  background: #fff7e5;
+  border: 1px solid #b4a47d;
+  padding: 18px;
+  box-shadow: 0 12px 40px #51432c33;
+}
+.map-cluster h3 {
+  font:
+    24px KaiTi,
+    serif;
+  margin: 0;
+}
+.map-cluster p {
+  font-size: 12px;
+  color: #7d806a;
+}
+.map-cluster > button:not(.cluster-close) {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 7px 0;
+  font-size: 13px;
+}
+.map-cluster b {
+  color: #917137;
+  font-size: 11px;
+}
+.cluster-close {
+  float: right;
+  font-size: 11px;
+  padding: 3px 7px;
+}
+.reading-mode .map-heading h1 {
+  color: #e5d4aa;
+}
+.reading-mode .map-heading p,
+.reading-mode .map-heading .eyebrow {
+  color: #9cbcaf;
+}
+.reading-mode .map-credit {
+  color: #9cbcaf;
+}
+.reading-mode .map-stage {
+  background: #071d25;
+}
+.reading-mode .star-label {
+  background: #15353c;
+  color: #f3d9a2;
+  border-color: #8d9c79;
+}
+.reading-mode .star-label small {
+  color: #c0d3c6;
+}
+.map-mode .map-heading {
+  width: fit-content;
+  max-width: calc(100% - 120px);
+  padding: 12px 16px;
+  background: #f4ecd4e8;
+  border: 1px solid #c5ba9970;
+}
+.reading-mode .map-controls button {
+  background: #16333b;
+  color: #e5d4aa;
+  border-color: #5e7265;
+}
+@media (max-width: 850px) {
+  .masthead {
+    height: 68px;
+  }
+  .explorer {
+    grid-template-columns: 1fr;
+  }
+  .map-stage {
+    height: 76dvh;
+    min-height: 660px;
+  }
+  .sidebar {
+    max-height: none;
+    padding: 24px;
+  }
+  .map-heading {
+    left: 20px;
+    right: 65px;
+    top: 23px;
+  }
+  .map-heading h1 {
+    font-size: 24px;
+  }
+  .map-heading p {
+    font-size: 11px;
+  }
+  .map-zoom {
+    right: 14px;
+    top: 22px;
+  }
+  .map-sign span {
+    font-size: 16px;
+  }
+  .map-density {
+    left: 20px;
+  }
+  .map-cluster {
+    right: 20px;
+  }
+  .map-credit {
+    left: 20px;
+  }
+  .map-controls {
+    left: 20px;
+  }
+  .scenic-scroll {
+    max-height: 480px;
+  }
+  .reading-mode .map-stage {
+    min-height: 460px;
+    height: 56dvh;
+  }
+}
