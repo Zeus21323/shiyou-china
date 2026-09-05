@@ -36,7 +36,21 @@ export function settleProvinceFocus(
   now: number,
 ) {
   const proposal = previous.code === code ? previous : { code, since: now };
-  return { proposal, ready: now - proposal.since >= 160 };
+  return { proposal, ready: now - proposal.since >= 40 };
+}
+// 跨界需真正离开当前省份的3px邻域，避免用延长等待来掩盖边界抖动。
+export function retainBoundaryFocus(
+  candidate: Province | null,
+  current: Province | null,
+  nearby: (Province | null)[],
+) {
+  if (
+    current &&
+    candidate?.properties.adcode !== current.properties.adcode &&
+    nearby.some((p) => p?.properties.adcode === current.properties.adcode)
+  )
+    return current;
+  return candidate;
 }
 // 中心命中优先；中心在近海时使用周围可见陆地，避免沿海放大迟迟不响应。
 export function viewportProvince(

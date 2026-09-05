@@ -13,6 +13,7 @@ import {
   provinceTerrainHeight,
   type TerrainStatus,
   prefetchProvinceTerrain,
+  warmProvinceTexture,
 } from './province-terrain';
 import {
   fitProvinceZoom,
@@ -21,6 +22,7 @@ import {
   provinceFocusEnabled,
   focusProvince,
   settleProvinceFocus,
+  retainBoundaryFocus,
   requiresCameraFit,
   provincePolygons as polygons,
   provinceFocusPolygons,
@@ -110,6 +112,15 @@ function CameraAndLabels({
   const showFour = useRef(false);
   const pivot = useRef<THREE.Vector2 | null>(null);
   const hoverPointer = useRef<{ point: THREE.Vector2 } | null>(null);
+  const pointerPick = useRef<{
+    stamp: string;
+    point: number[];
+    nearby: number[][];
+  } | null>(null);
+  const previewCheckAt = useRef(0);
+  const focusHistory = useRef<{ code: string; scale: number; time: number }[]>(
+    [],
+  );
   const ray = useMemo(() => new THREE.Raycaster(), []);
   const ground = useMemo(
     () => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
@@ -220,6 +231,7 @@ function CameraAndLabels({
       if (province) prefetchProvinceTerrain(province.properties.adcode);
     };
     let pinchDistance = 0;
+    let hoverWarmAt = 0;
     const hoverMove = (event: Event) => {
       const e = event as PointerEvent;
       if (e.pointerType !== 'mouse') return;
@@ -238,6 +250,15 @@ function CameraAndLabels({
           1 - ((e.clientY - rect.top) / rect.height) * 2,
         ),
       };
+      if (cam.zoom / nationalZoom >= 2.5 && performance.now() >= hoverWarmAt) {
+        hoverWarmAt = performance.now() + 120;
+        // 预载使用鼠标位置，不改变现有滚轮缩放中心。
+        ray.setFromCamera(hoverPointer.current.point, cam);
+        const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
+        const p =
+          hit && provinceAt(provinces, [hit.x / 0.75 + 104, hit.y / 0.95 + 35]);
+        if (p) prefetchProvinceTerrain(p.properties.adcode);
+      }
     };
     const hoverLeave = () => {
       hoverPointer.current = null;
@@ -396,6 +417,16 @@ function CameraAndLabels({
       initialized.current,
     );
     gl.domElement.dataset.mapScale = (cam.zoom / nationalZoom).toFixed(4);
+    const focusCode = canFocus ? String(selected?.properties.adcode ?? '') : '';
+    if (focusHistory.current.at(-1)?.code !== focusCode) {
+      focusHistory.current.push({
+        code: focusCode,
+        scale: cam.zoom / nationalZoom,
+        time: Math.round(performance.now()),
+      });
+      focusHistory.current = focusHistory.current.slice(-24);
+      gl.domElement.dataset.focusHistory = JSON.stringify(focusHistory.current);
+    }
     gl.domElement.dataset.terrainProgress = provinceTerrainBlend(
       selected?.properties.adcode,
     ).toFixed(3);
@@ -422,7 +453,7 @@ function CameraAndLabels({
         panPending.current ||
         dragStart.current)
     ) {
-      selectionCheckAt.current = now + 65;
+      selectionCheckAt.current = now + 32;
       const samples = [
         [0, 0],
         [-0.32, 0],
@@ -435,36 +466,78 @@ function CameraAndLabels({
         return hit ? [[hit.x / 0.75 + 104, hit.y / 0.95 + 35]] : [];
       });
       let pointerGeo: number[] | undefined;
+      let pointerNearby: number[][] = [];
       if (followingMouse && hoverPointer.current) {
-        ray.setFromCamera(hoverPointer.current.point, cam);
-        const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
-        if (hit) {
-          // 命中使用不随选择与加载变化的全国DEM，避免模型渐变造成反馈抖动。
-          for (let i = 0; i < 3; i++) {
-            const geo = [hit.x / 0.75 + 104, hit.y / 0.95 + 35];
-            const h =
-              Math.max(0, elevationAt(chinaHeights, geo[0], geo[1])) *
-              HEIGHT_SCALE;
-            ray.ray.intersectPlane(
-              new THREE.Plane(new THREE.Vector3(0, 0, 1), -h),
-              hit,
-            );
-          }
-          pointerGeo = [hit.x / 0.75 + 104, hit.y / 0.95 + 35];
-        } else pointerGeo = [NaN, NaN];
+        const pointer = hoverPointer.current.point;
+        // 只有鼠标或镜头实际移动才重算落点，渲染与资源更新不会改写选择。
+        const stamp = [
+          pointer.x.toFixed(5),
+          pointer.y.toFixed(5),
+          cam.zoom.toFixed(4),
+          cam.position.x.toFixed(4),
+          cam.position.y.toFixed(4),
+          cam.position.z.toFixed(4),
+          cam.quaternion.x.toFixed(5),
+          cam.quaternion.y.toFixed(5),
+          cam.quaternion.z.toFixed(5),
+          cam.quaternion.w.toFixed(5),
+          size.width,
+          size.height,
+        ].join('|');
+        const projectPointer = (point: THREE.Vector2) => {
+          ray.setFromCamera(point, cam);
+          const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
+          if (hit) {
+            // 命中使用不随选择与加载变化的全国DEM，避免模型渐变造成反馈抖动。
+            for (let i = 0; i < 3; i++) {
+              const geo = [hit.x / 0.75 + 104, hit.y / 0.95 + 35];
+              const h =
+                Math.max(0, elevationAt(chinaHeights, geo[0], geo[1])) *
+                HEIGHT_SCALE;
+              ray.ray.intersectPlane(
+                new THREE.Plane(new THREE.Vector3(0, 0, 1), -h),
+                hit,
+              );
+            }
+            return [hit.x / 0.75 + 104, hit.y / 0.95 + 35];
+          } else return [NaN, NaN];
+        };
+        if (pointerPick.current?.stamp !== stamp) {
+          const point = projectPointer(pointer);
+          const nearby = [
+            [-6 / size.width, 0],
+            [6 / size.width, 0],
+            [0, -6 / size.height],
+            [0, 6 / size.height],
+          ].map(([dx, dy]) =>
+            projectPointer(new THREE.Vector2(pointer.x + dx, pointer.y + dy)),
+          );
+          pointerPick.current = { stamp, point, nearby };
+        }
+        pointerGeo = pointerPick.current.point;
+        pointerNearby = pointerPick.current.nearby;
       }
-      const candidate = focusProvince(
+      let candidate = focusProvince(
         provinces,
         cam.zoom / nationalZoom,
         pointerGeo,
         samples,
         selected,
       );
-      if (candidate) prefetchProvinceTerrain(candidate.properties.adcode);
+      if (followingMouse)
+        candidate = retainBoundaryFocus(
+          candidate,
+          selected,
+          pointerNearby.map((p) => provinceAt(provinces, p)),
+        );
+      if (candidate) {
+        prefetchProvinceTerrain(candidate.properties.adcode);
+        warmProvinceTexture(candidate.properties.adcode, gl);
+      }
       const code = String(candidate?.properties.adcode ?? '');
       const settled = settleProvinceFocus(proposed.current, code, now);
       proposed.current = settled.proposal;
-      // 候选连续稳定160ms才提交；鼠标静止时继续使用同一判定来源。
+      // 空间滞回负责边界稳定，省内只需40ms响应。
       if (
         !returning.current &&
         settled.ready &&
@@ -481,6 +554,29 @@ function CameraAndLabels({
         now - proposed.current.since >= 220
       )
         userZoomed.current = false;
+    }
+    // 6倍前预载当前及相邻视野；点击飞入阶段也提前准备GPU纹理。
+    if (now >= previewCheckAt.current && cam.zoom / nationalZoom >= 2.5) {
+      previewCheckAt.current = now + 220;
+      const warmCodes = new Set<string>();
+      if (selected) warmCodes.add(String(selected.properties.adcode));
+      for (const [x, y] of [
+        [0, 0],
+        [-0.3, 0],
+        [0.3, 0],
+        [0, -0.45],
+        [0, 0.45],
+      ]) {
+        ray.setFromCamera(new THREE.Vector2(x, y), cam);
+        const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
+        const region =
+          hit && provinceAt(provinces, [hit.x / 0.75 + 104, hit.y / 0.95 + 35]);
+        if (region) warmCodes.add(String(region.properties.adcode));
+      }
+      for (const code of warmCodes) {
+        prefetchProvinceTerrain(code);
+        warmProvinceTexture(code, gl);
+      }
     }
     elapsed.current += dt;
     if (elapsed.current < 1 / 30) return;
@@ -719,6 +815,9 @@ export default function HandscrollMap({
     width: 1,
     height: 1,
   });
+  useEffect(() => {
+    if (selected) prefetchProvinceTerrain(selected.properties.adcode);
+  }, [selected]);
   const [command, setCommand] = useState({ id: 0, factor: 1 }),
     [expanded, setExpanded] = useState<string[] | null>(null);
   const mapSelected = provinceFocusEnabled(screen.scale) ? selected : null;
@@ -820,11 +919,9 @@ export default function HandscrollMap({
             <ProvinceShape
               key={p.properties.adcode}
               feature={p}
-              focusCode={mapSelected?.properties.adcode}
               active={mapSelected?.properties.adcode === p.properties.adcode}
               muted={
                 !!mapSelected &&
-                currentTerrainStatus !== 'loading' &&
                 mapSelected.properties.adcode !== p.properties.adcode
               }
               meshData={meshData}

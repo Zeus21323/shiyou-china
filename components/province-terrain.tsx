@@ -148,10 +148,26 @@ async function loadDetail(code: string, signal: AbortSignal): Promise<Detail> {
   };
 }
 export type TerrainStatus = 'loading' | 'ready' | 'error';
-const detailCache = new ResourceCache<Detail>(3, loadDetail, (asset) => {
+const detailCache = new ResourceCache<Detail>(6, loadDetail, (asset) => {
   asset.geometry.dispose();
   asset.texture.dispose();
 });
+const initializedTextures = new WeakSet<THREE.Texture>();
+function initializeTexture(texture: THREE.Texture, gl: THREE.WebGLRenderer) {
+  if (initializedTextures.has(texture)) return;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
+  texture.needsUpdate = true;
+  gl.initTexture(texture);
+  initializedTextures.add(texture);
+}
+export function warmProvinceTexture(
+  code: string | number,
+  gl: THREE.WebGLRenderer,
+) {
+  const detail = detailCache.peek(String(code));
+  if (detail) initializeTexture(detail.texture, gl);
+}
 export function prefetchProvinceTerrain(code: string | number) {
   if (regions[String(code)]) detailCache.prefetch(String(code));
 }
@@ -162,7 +178,6 @@ export const ProvinceShape = memo(function ProvinceShape({
   onSelect,
   meshData,
   onStatus,
-  focusCode,
 }: {
   feature: Province;
   active: boolean;
@@ -170,34 +185,28 @@ export const ProvinceShape = memo(function ProvinceShape({
   onSelect: (p: Province) => void;
   meshData: ArrayBuffer;
   onStatus: (code: string, status: TerrainStatus) => void;
-  focusCode?: string | number;
 }) {
   const code = String(feature.properties.adcode);
   const nationalTexture = useTexture(`/data/terrain/${manifest.china.texture}`);
   const { gl } = useThree();
   const reduced = useReducedMotion();
   const [detail, setDetail] = useState<Detail | null>(null);
-  const [failed, setFailed] = useState(false);
   const releaseQueued = useRef(false);
   const material = useRef<THREE.MeshStandardMaterial>(null);
   const mesh = useRef<THREE.Mesh>(null);
   const activeColor = useMemo(() => new THREE.Color('#fff9dc'), []);
   const baseColor = useMemo(() => new THREE.Color('#e1e9df'), []);
   const borderColor = useMemo(() => new THREE.Color('#a77c30'), []);
+  const focusBlend = useRef(0);
   useEffect(() => {
     for (const texture of [nationalTexture, detail?.texture])
-      if (texture) {
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
-        texture.needsUpdate = true;
-      }
+      if (texture) initializeTexture(texture, gl);
   }, [nationalTexture, detail, gl]);
   useEffect(() => {
     if (!active || detail || !regions[code]) return;
     const lease = detailCache.acquire(code);
     let cancelled = false,
       accepted = false;
-    setFailed(false);
     onStatus(code, 'loading');
     lease.promise
       .then((asset) => {
@@ -215,7 +224,6 @@ export const ProvinceShape = memo(function ProvinceShape({
       })
       .catch(() => {
         if (!cancelled) {
-          setFailed(true);
           onStatus(code, 'error');
         }
       });
@@ -266,13 +274,16 @@ export const ProvinceShape = memo(function ProvinceShape({
           }
     const geometry = new LineSegmentsGeometry().setPositions(values);
     const material = new LineMaterial({
-      color: '#627e6c',
+      color: '#000000',
       linewidth: 1.6,
       transparent: true,
-      opacity: 0.85,
+      opacity: 1,
+      dashed: false,
       depthWrite: false,
+      depthTest: false,
     });
     const line = new LineSegments2(geometry, material);
+    line.renderOrder = 10;
     line.frustumCulled = false;
     line.raycast = () => {};
     return { line, values, fine, blend: -1 };
@@ -328,7 +339,7 @@ export const ProvinceShape = memo(function ProvinceShape({
         : THREE.MathUtils.damp(
             detail.blend.value,
             target,
-            9,
+            18,
             Math.min(dt, 0.05),
           );
       if (mesh.current?.morphTargetInfluences)
@@ -352,21 +363,24 @@ export const ProvinceShape = memo(function ProvinceShape({
       }
     }
     const mat = detailedMaterial ?? material.current;
-    const emphasis = detail?.blend.value ?? (active && failed ? 1 : 0);
+    // 高亮只属于当前省份，旧省份的地形退场不能再次点亮旧省界。
+    focusBlend.current = active
+      ? reduced
+        ? 1
+        : THREE.MathUtils.damp(focusBlend.current, 1, 28, Math.min(dt, 0.05))
+      : 0;
+    const emphasis = focusBlend.current;
     if (mat) {
       const t = reduced ? 1 : 1 - Math.exp(-8 * dt);
-      mat.opacity = THREE.MathUtils.lerp(
-        mat.opacity,
-        muted ? 1 - 0.35 * provinceTerrainBlend(focusCode) : 1,
-        t,
-      );
+      mat.opacity = THREE.MathUtils.lerp(mat.opacity, muted ? 0.82 : 1, t);
       mat.color.copy(baseColor).lerp(activeColor, emphasis);
-      mat.depthWrite = !muted;
+      mat.depthWrite = true;
     }
     const border = outline.line.material;
+    outline.line.renderOrder = active ? 11 : 10;
     if (border) {
-      border.color.set('#627e6c').lerp(borderColor, emphasis);
-      border.opacity = 0.85 + 0.15 * emphasis;
+      border.color.set('#000000').lerp(borderColor, emphasis);
+      border.opacity = 1;
       border.linewidth = 1.6 + 0.8 * emphasis;
       border.resolution.set(size.width, size.height);
     }
@@ -392,7 +406,7 @@ export const ProvinceShape = memo(function ProvinceShape({
             ref={material}
             map={nationalTexture}
             transparent
-            depthWrite={!muted}
+            depthWrite
             color={baseColor}
             roughness={1}
             metalness={0}

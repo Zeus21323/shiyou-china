@@ -12,6 +12,9 @@ export class ResourceCache<T> {
   private limit: number;
   private loader: (key: string, signal: AbortSignal) => Promise<T>;
   private dispose: (value: T) => void;
+  peek(key: string) {
+    return this.entries.get(key)?.value;
+  }
   constructor(
     limit: number,
     loader: (key: string, signal: AbortSignal) => Promise<T>,

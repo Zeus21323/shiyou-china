@@ -6,6 +6,7 @@ import {
   provinceFocusEnabled,
   focusProvince,
   settleProvinceFocus,
+  retainBoundaryFocus,
 } from '../lib/province-view.ts';
 import {
   placeLabels,
@@ -150,14 +151,31 @@ test('候选省份必须持续稳定，边界短暂跳到邻省不提交选择',
   const entered = settleProvinceFocus(proposal, '320000', 400);
   assert.equal(entered.ready, false);
   assert.equal(
-    settleProvinceFocus(entered.proposal, '320000', 559).ready,
+    settleProvinceFocus(entered.proposal, '320000', 439).ready,
     false,
   );
   assert.equal(
-    settleProvinceFocus(entered.proposal, '320000', 560).ready,
+    settleProvinceFocus(entered.proposal, '320000', 440).ready,
     true,
   );
 });
+test('边界3px邻域保留原省份，进入邻省内部立即交给快速稳定判定', () => {
+  const provinces = read('china.geojson').features;
+  const current = provinces.find((p) => p.properties.adcode === 330000);
+  const next = provinces.find((p) => p.properties.adcode === 320000);
+  assert.equal(
+    retainBoundaryFocus(next, current, [next, current, next, next]),
+    current,
+  );
+  assert.equal(
+    retainBoundaryFocus(next, current, [next, next, next, next]),
+    next,
+  );
+  assert.equal(retainBoundaryFocus(null, current, [null, current]), current);
+  assert.equal(retainBoundaryFocus(null, current, [null, null]), null);
+  assert.equal(retainBoundaryFocus(next, null, [next, current]), next);
+});
+
 test('城市横排标签与景区牌共同避让，不改变真实锚点', () => {
   const anchors = [
     { id: 'city', name: '杭州', kind: 'city', priority: 12, x: 400, y: 300 },
