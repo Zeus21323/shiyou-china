@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import type { Province } from './china-map';
 import type { ScenicArea, Catalog } from '../lib/content';
+import { selectScenicAreas } from '../lib/scenic-selection';
 import {
   clusterAnchors,
   placeLabels,
@@ -391,8 +392,14 @@ export default function HandscrollMap({
       }),
     ])
       .then(([p, a]) => {
-        setPoints((p as { points: PointRecord[] }).points);
-        setAreas((a as Catalog).scenicAreas);
+        const selectedAreas = selectScenicAreas((a as Catalog).scenicAreas);
+        const selectedIds = new Set(selectedAreas.map((area) => area.id));
+        setPoints(
+          (p as { points: PointRecord[] }).points.filter((point) =>
+            selectedIds.has(point.scenicId),
+          ),
+        );
+        setAreas(selectedAreas);
       })
       .catch((e) => {
         if (e.name !== 'AbortError') setDataError(true);

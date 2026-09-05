@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import ChinaMap, { type Province } from '../components/handscroll-map';
 import ScenicList from '../components/scenic-list';
 import PoetryNebula from '../components/poetry-nebula';
-import type { ScenicArea, Work } from '../lib/content';
+import type { ScenicArea, Work, Catalog } from '../lib/content';
+import { selectScenicAreas } from '../lib/scenic-selection';
 export default function Home() {
+  const [scenicCount, setScenicCount] = useState<number | null>(null);
   const [mapRevision, setMapRevision] = useState(0);
   const [provinces, setProvinces] = useState<Province[]>([]),
     [selected, setSelected] = useState<Province | null>(null),
@@ -17,6 +19,13 @@ export default function Home() {
     );
   useEffect(() => {
     const c = new AbortController();
+    fetch('/data/zhejiang-catalog.json', { signal: c.signal })
+      .then((r) => {
+        if (!r.ok) throw Error();
+        return r.json();
+      })
+      .then((d) => setScenicCount(selectScenicAreas((d as Catalog).scenicAreas).length))
+      .catch(() => setScenicCount(null));
     fetch('/data/china.geojson', { signal: c.signal })
       .then((r) => {
         if (!r.ok) throw Error();
@@ -277,8 +286,8 @@ export default function Home() {
                   </button>
                   <div className="intro-stats">
                     <div>
-                      <b>245</b>
-                      <span>官方景区名录</span>
+                      <b>{scenicCount ?? '—'}</b>
+                      <span>山水古迹精选</span>
                     </div>
                     <div>
                       <b>{new Set(works.map((w) => w.scenicId)).size || '—'}</b>
@@ -288,8 +297,8 @@ export default function Home() {
                   <div className="editor-note">
                     <span>收录原则</span>
                     <p>
-                      保留作品出处，说明景区关联。等级名录为截至 2024
-                      年底的官方快照，非实时名单。
+                      精选自然山水与历史古迹，剔除现代展馆、主题乐园和商业设施。保留作品出处与景区关联。等级名录为截至
+                      2024 年底的官方快照，非实时名单。
                     </p>
                   </div>
                 </>

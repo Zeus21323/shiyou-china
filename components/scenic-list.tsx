@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import type { Catalog, ScenicArea, Work } from '../lib/content';
+import { selectScenicAreas } from '../lib/scenic-selection';
 export default function ScenicList({
   onSelect,
   works,
@@ -23,7 +24,12 @@ export default function ScenicList({
         if (!r.ok) throw Error();
         return r.json();
       })
-      .then((d) => setCatalog(d as Catalog))
+      .then((d) =>
+        setCatalog({
+          ...(d as Catalog),
+          scenicAreas: selectScenicAreas((d as Catalog).scenicAreas),
+        }),
+      )
       .catch((e) => {
         if (e.name !== 'AbortError') setError(true);
       });
@@ -41,7 +47,8 @@ export default function ScenicList({
     <div className="scenic-list">
       <div className="catalog-meta">
         <b>{catalog.scenicAreas.length} 家 4A / 5A 景区</b>
-        <p>名录截至 {catalog.asOf} · 历史快照</p>
+        <p>山水古迹精选 · 已剔除现代展馆、乐园及商业设施</p>
+        <p>等级截至 {catalog.asOf} · 历史快照</p>
         <a href={catalog.sourceUrl} target="_blank" rel="noreferrer">
           浙江省文旅厅官方名录 ↗
         </a>
