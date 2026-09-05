@@ -794,56 +794,62 @@ export default function HandscrollMap({
               }}
               onClick={() => act(l.id)}
             >
-              <svg
-                className="sign-connector"
-                width={l.width}
-                height={l.height}
-                aria-hidden="true"
-              >
-                <line
-                  x1={l.x - l.left}
-                  y1={l.y - l.top}
-                  x2={labelDock(l).x}
-                  y2={labelDock(l).y}
-                  stroke="#937345"
-                  strokeWidth=".8"
-                  opacity=".65"
-                />
-                <circle
-                  cx={l.x - l.left}
-                  cy={l.y - l.top}
-                  r={l.kind === 'province' ? 2 : 4}
-                  fill="#b78a37"
-                  stroke="#fff5d1"
-                  strokeWidth="2"
-                />
-              </svg>
-              <div
-                className="sign-solid"
-                style={{
-                  transformOrigin: `${labelDock(l).x - 4}px ${labelDock(l).y - 4}px`,
-                }}
-              >
-                <div className="sign-side sign-left" aria-hidden="true" />
-                <div className="sign-side sign-right" aria-hidden="true" />
-                <div className="sign-side sign-top" aria-hidden="true" />
-                <div className="sign-side sign-bottom" aria-hidden="true" />
-                <div className="sign-back" aria-hidden="true" />
-                <div className="sign-front">
-                  <span title={l.name}>
-                    {l.kind === 'scenic' && l.name.length > 6
-                      ? l.name.slice(0, 5) + '…'
-                      : l.name}
-                  </span>
-                  {l.kind === 'scenic' && (
-                    <small>
-                      {count > 1
-                        ? `+${count - 1}`
-                        : areas.find((a) => a.id === l.id)?.grade}
-                    </small>
-                  )}
-                </div>
-              </div>
+              {l.kind === 'province' ? (
+                <span className="province-map-name">{l.name}</span>
+              ) : (
+                <>
+                  <svg
+                    className="sign-connector"
+                    width={l.width}
+                    height={l.height}
+                    aria-hidden="true"
+                  >
+                    <line
+                      x1={l.x - l.left}
+                      y1={l.y - l.top}
+                      x2={labelDock(l).x}
+                      y2={labelDock(l).y}
+                      stroke="#937345"
+                      strokeWidth=".8"
+                      opacity=".65"
+                    />
+                    <circle
+                      cx={l.x - l.left}
+                      cy={l.y - l.top}
+                      r={4}
+                      fill="#b78a37"
+                      stroke="#fff5d1"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                  <div
+                    className="sign-solid"
+                    style={{
+                      transformOrigin: `${labelDock(l).x - 4}px ${labelDock(l).y - 4}px`,
+                    }}
+                  >
+                    <div className="sign-side sign-left" aria-hidden="true" />
+                    <div className="sign-side sign-right" aria-hidden="true" />
+                    <div className="sign-side sign-top" aria-hidden="true" />
+                    <div className="sign-side sign-bottom" aria-hidden="true" />
+                    <div className="sign-back" aria-hidden="true" />
+                    <div className="sign-front">
+                      <span title={l.name}>
+                        {l.kind === 'scenic' && l.name.length > 6
+                          ? l.name.slice(0, 5) + '…'
+                          : l.name}
+                      </span>
+                      {l.kind === 'scenic' && (
+                        <small>
+                          {count > 1
+                            ? `+${count - 1}`
+                            : areas.find((a) => a.id === l.id)?.grade}
+                        </small>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </button>
           );
         })}

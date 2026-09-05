@@ -79,32 +79,43 @@ export function placeLabels(
     (a, b) => b.priority - a.priority || a.id.localeCompare(b.id),
   )) {
     const w =
-        a.kind === 'city'
-          ? Math.max(62, Array.from(a.name).length * 16 + 20)
-          : 44,
+        a.kind === 'province'
+          ? Math.max(60, Array.from(a.name).length * 18 + 12)
+          : a.kind === 'city'
+            ? Math.max(62, Array.from(a.name).length * 16 + 20)
+            : 44,
       h =
         a.kind === 'city'
           ? 44
           : a.kind === 'province'
-            ? 24 + Array.from(a.name).length * 15
+            ? 44
             : 36 + Math.min(6, Array.from(a.name).length) * 16;
     let found: PlacedLabel | undefined;
-    const offsets = [
-      [0, -h - 12],
-      [w + 12, -h / 2],
-      [-w - 12, -h / 2],
-      [0, 15],
-      [0, -h - 50],
-      [62, -h - 18],
-      [-62, -h - 18],
-      [80, 15],
-      [-80, 15],
-    ];
+    const offsets =
+      a.kind === 'province'
+        ? [
+            [0, -h / 2],
+            [0, -h / 2 - 8],
+            [0, -h / 2 + 8],
+            [8, -h / 2],
+            [-8, -h / 2],
+          ]
+        : [
+            [0, -h - 12],
+            [w + 12, -h / 2],
+            [-w - 12, -h / 2],
+            [0, 15],
+            [0, -h - 50],
+            [62, -h - 18],
+            [-62, -h - 18],
+            [80, 15],
+            [-80, 15],
+          ];
     // 优先保留相对锚点的摆放位置，避免轻微缩放触发布局翻转。
     const old = previous.find((p) => p.id === a.id);
-    if (old)
+    if (old && a.kind !== 'province')
       offsets.unshift([old.left + old.width / 2 - old.x, old.top - old.y]);
-    if (provinceMode)
+    if (provinceMode && a.kind !== 'province')
       offsets.push([20, -h - 8], [-20, -h - 8], [35, -h - 8], [-35, -h - 8]);
     for (const [dx, dy] of offsets) {
       const c = {

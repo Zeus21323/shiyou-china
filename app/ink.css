@@ -733,8 +733,31 @@ select {
   white-space: nowrap;
   text-shadow: 0 1px #fff9e8;
 }
-.map-sign.province span {
-  font-size: 15px;
+.map-sign.province {
+  perspective: none;
+  display: grid;
+  place-items: center;
+}
+.province-map-name {
+  writing-mode: horizontal-tb;
+  white-space: nowrap;
+  font: 600 17px/1.4 var(--display);
+  letter-spacing: 2px;
+  color: #243f35;
+  text-shadow:
+    0 0 3px #f5f3df,
+    1px 0 #f5f3df,
+    -1px 0 #f5f3df,
+    0 1px #f5f3df,
+    0 -1px #f5f3df;
+  transition: color 180ms ease;
+}
+.map-sign.province:hover .province-map-name {
+  color: #8c492e;
+}
+.map-sign.province:focus-visible {
+  outline: 2px solid #8c492e;
+  outline-offset: 1px;
 }
 .map-sign.city .sign-front {
   flex-direction: row;

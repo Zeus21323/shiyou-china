@@ -75,7 +75,7 @@ test('省界孔洞不会被误判为当前省份', () => {
   assert.equal(containsProvince(p, [0.5, 0.5]), true);
   assert.equal(containsProvince(p, [1.5, 1.5]), false);
 });
-test('省名引导线最长50px，端点严格落在牌身边缘', () => {
+test('省名横排贴近地理锚点，密集时隐藏而不远移', () => {
   const anchors = Array.from({ length: 34 }, (_, i) => ({
     id: String(i),
     name: '某某省',
@@ -88,6 +88,17 @@ test('省名引导线最长50px，端点严格落在牌身边缘', () => {
   assert.ok(placed.labels.length);
   assert.ok(placed.hidden.length);
   for (const l of placed.labels) {
+    assert.ok(l.width > l.height);
+    assert.ok(
+      Math.hypot(l.left + l.width / 2 - l.x, l.top + l.height / 2 - l.y) <= 8,
+    );
+  }
+  const cityLabels = placeLabels(
+    anchors.map((a) => ({ ...a, kind: 'city' })),
+    900,
+    900,
+  );
+  for (const l of cityLabels.labels) {
     assert.ok(leaderLength(l) <= 50);
     const dock = labelDock(l);
     assert.ok(
