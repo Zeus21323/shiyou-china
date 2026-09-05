@@ -1,81 +1,194 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ChinaMap, { type Province } from '../components/handscroll-map';
-import ScenicList from '../components/scenic-list';
-import ScenicAddress from '../components/scenic-address';
+import NationalScenicList from '../components/national-scenic-list';
 import PoetryNebula from '../components/star-river';
-import type { ScenicArea, Work, Catalog } from '../lib/content';
-import { selectScenicAreas } from '../lib/scenic-selection';
+import type { ScenicArea, Work } from '../lib/content';
+import {
+  loadPoetryAttractions,
+  loadPoetryManifest,
+  loadAttractionSky,
+  skyWorks,
+  resolvePoetryWork,
+  type PoetryAttraction,
+  type PoetryManifest,
+} from '../lib/poetry-db';
+const PAGE_SIZE = 12;
+const scopeLabels = {
+  all: '全部',
+  related: '景点线索',
+  regional: '同城诗词',
+  verified: '已核对',
+};
+type Scope = keyof typeof scopeLabels;
+const verificationLabel = (w: Work) =>
+  w.verification === 'verified'
+    ? '已核对'
+    : w.verification === 'regional'
+      ? '区域线索'
+      : '候选关联';
 export default function Home() {
-  const [scenicCount, setScenicCount] = useState<number | null>(null);
-  const [mapRevision, setMapRevision] = useState(0);
   const [provinces, setProvinces] = useState<Province[]>([]),
     [selected, setSelected] = useState<Province | null>(null),
-    [error, setError] = useState('');
-  const [scenic, setScenic] = useState<ScenicArea | null>(null),
-    [works, setWorks] = useState<Work[]>([]),
-    [reading, setReading] = useState<Work | null>(null),
-    [workStatus, setWorkStatus] = useState<'loading' | 'ready' | 'error'>(
-      'loading',
+    [mapRevision, setMapRevision] = useState(0);
+  const [catalog, setCatalog] = useState<PoetryAttraction[]>([]),
+    [manifest, setManifest] = useState<PoetryManifest | null>(null),
+    [catalogError, setCatalogError] = useState(''),
+    [retry, setRetry] = useState(0);
+  const [scenic, setScenic] = useState<PoetryAttraction | null>(null),
+    [lastSky, setLastSky] = useState<Work[] | null>(null);
+  const [collection, setCollection] = useState<{
+      id: string;
+      works: Work[];
+      status: 'loading' | 'ready' | 'error';
+    }>({ id: '', works: [], status: 'loading' }),
+    [collectionRetry, setCollectionRetry] = useState(0);
+  const [query, setQuery] = useState(''),
+    [scope, setScope] = useState<Scope>('all'),
+    [page, setPage] = useState(0);
+  const [reading, setReading] = useState<Work | null>(null),
+    [readStatus, setReadStatus] = useState<'ready' | 'loading' | 'error'>(
+      'ready',
     );
-  const [lastScenic, setLastScenic] = useState<ScenicArea | null>(null);
+  const readRequest = useRef(0);
   useEffect(() => {
-    const c = new AbortController();
-    fetch('/data/zhejiang-catalog.json', { signal: c.signal })
-      .then((r) => {
+    let active = true;
+    setCatalogError('');
+    Promise.all([
+      fetch('/data/china.geojson').then((r) => {
         if (!r.ok) throw Error();
         return r.json();
+      }),
+      loadPoetryAttractions(),
+      loadPoetryManifest(),
+    ])
+      .then(([geo, areas, meta]) => {
+        if (active) {
+          setProvinces((geo as { features: Province[] }).features);
+          setCatalog(areas);
+          setManifest(meta);
+        }
       })
-      .then((d) =>
-        setScenicCount(selectScenicAreas((d as Catalog).scenicAreas).length),
-      )
-      .catch(() => setScenicCount(null));
-    fetch('/data/china.geojson', { signal: c.signal })
-      .then((r) => {
-        if (!r.ok) throw Error();
-        return r.json();
-      })
-      .then((d) => setProvinces((d as { features: Province[] }).features))
-      .catch((e) => {
-        if (e.name !== 'AbortError') setError('地图加载失败，请刷新重试。');
+      .catch(() => {
+        if (active) setCatalogError('全国景点数据暂时无法加载，请重试。');
       });
-    fetch('/data/works.json', { signal: c.signal })
-      .then((r) => {
-        if (!r.ok) throw Error();
-        return r.json();
+    return () => {
+      active = false;
+    };
+  }, [retry]);
+  useEffect(() => {
+    if (!scenic) return;
+    let active = true;
+    setCollection({ id: scenic.id, works: [], status: 'loading' });
+    loadAttractionSky(scenic.id)
+      .then((data) => {
+        if (active)
+          setCollection({
+            id: scenic.id,
+            works: skyWorks(data),
+            status: 'ready',
+          });
       })
-      .then((d) => {
-        setWorks(d as Work[]);
-        setWorkStatus('ready');
-      })
-      .catch((e) => {
-        if (e.name !== 'AbortError') setWorkStatus('error');
+      .catch(() => {
+        if (active)
+          setCollection({ id: scenic.id, works: [], status: 'error' });
       });
-    return () => c.abort();
+    return () => {
+      active = false;
+    };
+  }, [scenic?.id, collectionRetry]);
+  const closeReading = useCallback(() => {
+    readRequest.current++;
+    setReading(null);
+    setReadStatus('ready');
   }, []);
-  const selectProvince = useCallback((p: Province | null) => {
-    setMapRevision((n) => n + 1);
-    setSelected(p);
+  const selectProvince = useCallback(
+    (p: Province | null) => {
+      setMapRevision((n) => n + 1);
+      setSelected(p);
+      setScenic(null);
+      closeReading();
+    },
+    [closeReading],
+  );
+  const selectInViewport = useCallback(
+    (p: Province | null) => {
+      setSelected(p);
+      setScenic(null);
+      closeReading();
+    },
+    [closeReading],
+  );
+  const openScenic = useCallback(
+    (area: ScenicArea) => {
+      const s = catalog.find((a) => a.id === area.id);
+      if (!s) return;
+      setScenic(s);
+      setQuery('');
+      setScope('all');
+      setPage(0);
+      closeReading();
+    },
+    [catalog, closeReading],
+  );
+  const readWork = useCallback(async (w: Work) => {
+    const token = ++readRequest.current;
+    setReading(w);
+    setReadStatus(w.body ? 'ready' : 'loading');
+    try {
+      const full = await resolvePoetryWork(w);
+      if (token === readRequest.current) {
+        setReading(full);
+        setReadStatus('ready');
+      }
+    } catch {
+      if (token === readRequest.current) setReadStatus('error');
+    }
+  }, []);
+  const provinceAreas = useMemo(
+    () => catalog.filter((a) => a.provinceCode === selected?.properties.adcode),
+    [catalog, selected],
+  );
+  const points = useMemo(
+    () => provinceAreas.flatMap((a) => (a.point ? [a.point] : [])),
+    [provinceAreas],
+  );
+  const allWorks = useMemo(
+    () => (collection.id === scenic?.id ? collection.works : []),
+    [collection, scenic?.id],
+  );
+  const filtered = useMemo(
+    () =>
+      allWorks.filter(
+        (w) =>
+          (scope === 'all' ||
+            (scope === 'related' && w.verification !== 'regional') ||
+            (scope === 'regional' && w.verification === 'regional') ||
+            (scope === 'verified' && w.verification === 'verified')) &&
+          `${w.title}${w.author}${w.dynasty}`.includes(query.trim()),
+      ),
+    [allWorks, scope, query],
+  );
+  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)),
+    currentPage = Math.min(page, pages - 1);
+  const currentWorks = useMemo(
+    () =>
+      filtered.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE),
+    [filtered, currentPage],
+  );
+  useEffect(() => {
+    if (scenic) setLastSky(currentWorks);
+  }, [currentWorks, scenic]);
+  const returnToProvince = () => {
     setScenic(null);
-    setReading(null);
-  }, []);
-  const selectInViewport = useCallback((p: Province | null) => {
-    setSelected(p);
-    setScenic(null);
-    setReading(null);
-  }, []);
-  const zhejiang = () =>
-    selectProvince(
-      provinces.find((p) => p.properties.adcode === 330000) ?? null,
-    );
-  const openScenic = (s: ScenicArea) => {
-    setLastScenic(s);
-    setScenic(s);
-    setReading(null);
+    closeReading();
   };
-  const currentWorks = scenic
-    ? works.filter((w) => w.scenicId === scenic.id)
-    : [];
+  const regionName = scenic?.province ?? selected?.properties.name ?? '';
+  const busy = collection.id !== scenic?.id || collection.status === 'loading';
+  const changePage = (n: number) => {
+    setPage(n);
+    closeReading();
+  };
   return (
     <main className={'atlas-app ' + (scenic ? 'reading-mode' : 'map-mode')}>
       <a className="skip-link" href="#destinations">
@@ -89,7 +202,7 @@ export default function Home() {
           诗游中国<span>一卷山河 · 千载诗心</span>
         </a>
         <div className="edition">山水之间 · 字句之中</div>
-        <span className="pilot">浙江 · 诗文初集</span>
+        <span className="pilot">全国 · 诗词山河</span>
       </header>
       <section className="explorer">
         <div className="map-stage">
@@ -98,67 +211,86 @@ export default function Home() {
             inert={!!scenic}
           >
             <ChinaMap
-              resetRevision={mapRevision}
               provinces={provinces}
+              areas={provinceAreas}
+              points={points}
               selected={selected}
               onSelect={selectProvince}
               onScenic={openScenic}
               onViewportSelect={selectInViewport}
+              resetRevision={mapRevision}
               visible={!scenic}
             />
           </div>
-          {lastScenic && (
+          {lastSky !== null && (
             <div
               className={'scene-layer' + (!scenic ? ' scene-hidden' : '')}
               inert={!scenic}
             >
               <PoetryNebula
-                works={works.filter((w) => w.scenicId === lastScenic.id)}
-                onRead={setReading}
+                works={scenic ? currentWorks : lastSky}
+                onRead={readWork}
                 active={!!scenic}
               />
             </div>
           )}
           <div
             className="map-heading"
-            key={scenic?.id ?? selected?.properties.name ?? 'china'}
+            key={scenic?.id ?? selected?.properties.adcode ?? 'china'}
           >
             <span className="eyebrow">
               {scenic ? '山水有回声' : '山河入画 · 诗文入境'}
             </span>
-            <h1>
+            <h1 title={scenic?.name}>
               {scenic
-                ? scenic.name.replace(/^浙江省/, '')
-                : selected?.properties.name || '循山河，访诗文。'}
+                ? scenic.point?.label || scenic.label || scenic.name
+                : (selected?.properties.name ?? '循山河，访诗文。')}
             </h1>
             <p>
               {scenic
-                ? `${currentWorks.length} 篇已核对原文的作品 · 点击星点阅读`
+                ? busy
+                  ? '正在展开此地诗词…'
+                  : collection.status === 'error'
+                    ? '诗词暂时未能读取，可在右侧重试'
+                    : `${filtered.length.toLocaleString()} 篇${scope === 'all' ? '诗词记录' : scopeLabels[scope]} · 点击星点阅读`
                 : selected
                   ? '循着地名，寻访山水。放大地图，遇见更多景点。'
                   : '选择省份，开启你的山水诗文之旅。'}
             </p>
           </div>
-          {error && !scenic && (
-            <p role="alert" className="map-error">
-              {error}
+          {catalogError && (
+            <div className="map-error" role="alert">
+              {catalogError}
+              <button onClick={() => setRetry((n) => n + 1)}>重试加载</button>
+            </div>
+          )}
+          {!catalog.length && !catalogError && (
+            <p className="map-error" role="status">
+              正在读取全国山水与诗词索引…
             </p>
           )}
-          {!provinces.length && !error && (
-            <p role="status" className="map-error">
-              正在载入山河地图…
-            </p>
+          {scenic && !busy && filtered.length > 0 && (
+            <nav className="sky-pager" aria-label="诗词星河翻页">
+              <button
+                disabled={currentPage === 0}
+                onClick={() => changePage(currentPage - 1)}
+              >
+                上一片星河
+              </button>
+              <span>
+                {currentPage + 1} / {pages}
+              </span>
+              <button
+                disabled={currentPage === pages - 1}
+                onClick={() => changePage(currentPage + 1)}
+              >
+                下一片星河
+              </button>
+            </nav>
           )}
           <div className="map-controls">
             {scenic && (
-              <button
-                onClick={() => {
-                  setScenic(null);
-                  setReading(null);
-                }}
-              >
-                ← 浙江景区
-              </button>
+              <button onClick={returnToProvince}>← {regionName}景点</button>
             )}
             <button onClick={() => selectProvince(null)}>↖ 全国视野</button>
             <span>
@@ -167,123 +299,220 @@ export default function Home() {
           </div>
           <p className="map-credit">
             {scenic
-              ? '亮星对应作品 · 微尘为装饰，不计入收录数量'
+              ? '每颗亮星对应本页一首作品 · 名称线索与同城诗词可分别浏览'
               : '省界：DataV · 地形：Mapzen / USGS · 城市与河湖：Natural Earth（概化）'}
           </p>
         </div>
         <aside className="sidebar" id="destinations" tabIndex={-1}>
           {scenic ? (
             <>
-              <button
-                className="back-link"
-                onClick={() => {
-                  setScenic(null);
-                  setReading(null);
-                }}
-              >
-                ← 返回浙江景区名录
+              <button className="back-link" onClick={returnToProvince}>
+                ← 返回{regionName}景点名录
               </button>
               <div className="scenic-summary">
                 <span className="eyebrow">
-                  {scenic.city} · {scenic.district} / {scenic.grade}
+                  {scenic.city === '—' ? scenic.province : scenic.city} /{' '}
+                  {scenic.grade}
                 </span>
-                <h2>{reading ? reading.title : '山水诗文'}</h2>
+                <h2>{reading?.title ?? '山水诗词'}</h2>
               </div>
-              <ScenicAddress scenic={scenic} />
+              <section className="scenic-address" aria-label="景区详细地址">
+                <strong>景点地址</strong>
+                <p>
+                  {scenic.point?.address ||
+                    `${scenic.province}${scenic.city === '—' ? '' : scenic.city} · 详细地址待核验`}
+                </p>
+                {scenic.point && (
+                  <a
+                    href={scenic.point.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    查看高德地点 ↗
+                  </a>
+                )}
+                <small>
+                  {scenic.point
+                    ? '官方地图登记点位；联合景区为代表点，请以景区入口公告为准。'
+                    : '尚无可靠坐标，保留列表和诗词入口，不在地图中猜测落点。'}
+                </small>
+              </section>
               {reading ? (
                 <article className="reader">
                   <div className="work-byline">
                     {reading.dynasty} · {reading.author}{' '}
-                    <span>{reading.genre}</span>
+                    <span>{verificationLabel(reading)}</span>
                   </div>
-                  <div
-                    className={
-                      'work-body ' +
-                      (reading.genre === '文' ? 'prose' : 'verse')
-                    }
-                  >
-                    {reading.body
-                      .split(reading.genre === '文' ? /\n\n/ : /(?<=[。！？])/)
-                      .filter(Boolean)
-                      .map((line, i) => (
-                        <p key={i}>{line}</p>
-                      ))}
-                  </div>
-                  <section className="evidence">
-                    <h3>{reading.relation}</h3>
-                    <p>{reading.evidence}</p>
-                    <a
-                      href={reading.sourceUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      查阅原文来源 ↗
-                    </a>
-                    {reading.evidenceUrl &&
-                      reading.evidenceUrl !== reading.sourceUrl && (
+                  {readStatus === 'loading' ? (
+                    <p role="status">正在读取诗词正文…</p>
+                  ) : readStatus === 'error' ? (
+                    <div role="alert">
+                      <p>正文加载失败。</p>
+                      <button onClick={() => readWork(reading)}>
+                        重试正文
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div
+                        className={
+                          'work-body ' +
+                          (reading.genre === '文' ? 'prose' : 'verse')
+                        }
+                      >
+                        {reading.body
+                          .split(
+                            reading.genre === '文'
+                              ? /\n\n/
+                              : /(?<=[。！？])|\n/,
+                          )
+                          .filter(Boolean)
+                          .map((line, i) => (
+                            <p key={i}>{line}</p>
+                          ))}
+                      </div>
+                      <section className="evidence">
+                        <h3>{reading.relation}</h3>
+                        <p>{reading.evidence}</p>
                         <a
-                          href={reading.evidenceUrl}
+                          href={reading.sourceUrl}
                           target="_blank"
                           rel="noreferrer"
                         >
-                          查阅地理关联依据 ↗
+                          查阅原文来源 ↗
                         </a>
-                      )}
-                  </section>
-                  <button
-                    className="all-works"
-                    onClick={() => setReading(null)}
-                  >
-                    查看全部 {currentWorks.length} 篇作品
+                        {reading.sourceFile && (
+                          <small>
+                            语料：Werneror/Poetry · {reading.sourceFile} · CSV
+                            记录序号 {reading.sourceRow}（含表头） · MIT
+                          </small>
+                        )}
+                        {reading.evidenceUrl &&
+                          reading.evidenceUrl !== reading.sourceUrl && (
+                            <a
+                              href={reading.evidenceUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              查阅地理关联依据 ↗
+                            </a>
+                          )}
+                      </section>
+                    </>
+                  )}
+                  <button className="all-works" onClick={closeReading}>
+                    返回诗词列表
                   </button>
                 </article>
               ) : (
                 <>
-                  {workStatus === 'loading' ? (
-                    <p role="status">正在加载作品…</p>
-                  ) : workStatus === 'error' ? (
-                    <p role="alert">作品暂时无法加载，请刷新重试。</p>
-                  ) : currentWorks.length ? (
-                    <div className="work-list">
-                      {currentWorks.map((w) => (
-                        <button key={w.id} onClick={() => setReading(w)}>
-                          <span>
-                            {w.genre} · {w.dynasty}
-                          </span>
-                          <strong>{w.title}</strong>
-                          <small>{w.author} →</small>
-                        </button>
-                      ))}
+                  <p className="relation-note">
+                    景点名称与历史别名是待核验线索；同城诗词用于拓展阅读，不等同于题咏此景。
+                  </p>
+                  <div className="poetry-scope" aria-label="诗词关联范围">
+                    {(Object.keys(scopeLabels) as Scope[]).map((s) => (
+                      <button
+                        key={s}
+                        aria-pressed={scope === s}
+                        onClick={() => {
+                          setScope(s);
+                          setPage(0);
+                        }}
+                      >
+                        {scopeLabels[s]}
+                      </button>
+                    ))}
+                  </div>
+                  <label className="field-label" htmlFor="poetry-query">
+                    在此景点的诗词中查找
+                  </label>
+                  <input
+                    id="poetry-query"
+                    type="search"
+                    placeholder="题名、作者或朝代…"
+                    value={query}
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                      setPage(0);
+                    }}
+                  />
+                  {busy ? (
+                    <p role="status">正在读取诗词星河…</p>
+                  ) : collection.status === 'error' ? (
+                    <div role="alert">
+                      <p>此景点诗词加载失败。</p>
+                      <button onClick={() => setCollectionRetry((n) => n + 1)}>
+                        重试诗词
+                      </button>
                     </div>
                   ) : (
-                    <div className="empty-state">
-                      <span className="empty-icon">山</span>
-                      <h3>诗文尚待寻访</h3>
-                      <p>
-                        这个景区已列入官方等级名录，暂未收录经核对的相关作品。
+                    <>
+                      <p className="result-count" aria-live="polite">
+                        {filtered.length.toLocaleString()} 条记录 · 本页{' '}
+                        {currentWorks.length} 首
                       </p>
-                      <p>
-                        你可以先探索西湖、兰亭、沈园、雁荡山、江心屿、五泄、江郎山、天台山、仙都或严子陵钓台。
-                      </p>
-                    </div>
+                      <div className="work-list">
+                        {currentWorks.map((w) => (
+                          <button key={w.id} onClick={() => readWork(w)}>
+                            <span>
+                              {w.dynasty} · {verificationLabel(w)}
+                            </span>
+                            <strong>{w.title}</strong>
+                            <small>{w.author} →</small>
+                          </button>
+                        ))}
+                      </div>
+                      {!filtered.length && (
+                        <p>没有符合条件的作品，请调整关键词或关联范围。</p>
+                      )}
+                      {pages > 1 && (
+                        <nav
+                          className="collection-pager"
+                          aria-label="诗词列表翻页"
+                        >
+                          <button
+                            disabled={currentPage === 0}
+                            onClick={() => changePage(currentPage - 1)}
+                          >
+                            上一页
+                          </button>
+                          <span>
+                            {currentPage + 1} / {pages}
+                          </span>
+                          <button
+                            disabled={currentPage === pages - 1}
+                            onClick={() => changePage(currentPage + 1)}
+                          >
+                            下一页
+                          </button>
+                        </nav>
+                      )}
+                    </>
                   )}
-                  <div className="editor-note">
-                    <span>关于这里</span>
-                    <p>
-                      等级按 2024
-                      年底官方名录展示。古今景观与建筑可能有变化，作品关联范围见每篇说明。
-                    </p>
-                  </div>
                 </>
               )}
+              <div className="editor-note">
+                <span>名录与保留范围</span>
+                <p>
+                  {scenic.note === '—'
+                    ? '自然山水与历史古迹筛选名录。'
+                    : scenic.note}
+                </p>
+                <p>
+                  {scenic.sourceKind} · {scenic.gradeAsOf}
+                </p>
+                <a href={scenic.sourceUrl} target="_blank" rel="noreferrer">
+                  查看评级来源 ↗
+                </a>
+              </div>
             </>
           ) : (
             <>
               <span className="eyebrow">山水行笺</span>
-              <h2>{selected?.properties.name || '从浙江出发'}</h2>
+              <h2>{selected?.properties.name ?? '山河皆可入诗'}</h2>
               {!selected && (
                 <p className="intro">
-                  湖山有约，诗文为引。沿着真实的地理与文字，寻找山水留在文学中的回声。
+                  从一处山水出发，沿着古人的字句，读遍各地诗词。
                 </p>
               )}
               <label htmlFor="province">选择省份</label>
@@ -312,39 +541,72 @@ export default function Home() {
               </select>
               {!selected ? (
                 <>
-                  <button
-                    className="primary"
-                    disabled={!provinces.length}
-                    onClick={zhejiang}
-                  >
-                    探索浙江 →
-                  </button>
                   <div className="intro-stats">
                     <div>
-                      <b>{scenicCount ?? '—'}</b>
-                      <span>山水古迹精选</span>
+                      <b>
+                        {manifest?.linkedAttractions.toLocaleString() ?? '—'}
+                      </b>
+                      <span>有诗词线索的景点</span>
                     </div>
                     <div>
-                      <b>{new Set(works.map((w) => w.scenicId)).size || '—'}</b>
-                      <span>首批诗文目的地</span>
+                      <b>{manifest?.candidatePoems.toLocaleString() ?? '—'}</b>
+                      <span>候选古诗词</span>
                     </div>
+                  </div>
+                  <div className="province-directory" aria-label="各省诗词景点">
+                    {manifest?.coverage
+                      .filter((p) => p.attractions > 0)
+                      .map((p) => (
+                        <button
+                          key={p.code}
+                          onClick={() =>
+                            selectProvince(
+                              provinces.find(
+                                (x) => x.properties.adcode === p.code,
+                              ) ?? null,
+                            )
+                          }
+                        >
+                          <span>{p.name}</span>
+                          <small>{p.attractions} 处</small>
+                        </button>
+                      ))}
                   </div>
                   <div className="editor-note">
                     <span>收录原则</span>
                     <p>
-                      精选自然山水与历史古迹，按本站选景范围剔除现代设施、湿地及森林公园。保留作品出处与景区关联。等级名录为截至
-                      2024 年底的官方快照，非实时名单。
+                      来自既有诗词—景点数据库，按省份展示有候选关联的山水古迹。覆盖31个大陆省级地区；港澳台当前数据库无记录，不套用大陆A级景区等级。
                     </p>
+                    <p>
+                      包含名称、历史别名及同城古地名线索，候选不等于已考证。原有18篇已核对作品继续保留。
+                    </p>
+                    <a
+                      href="/data/poetry/CATALOG.md"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      查看名录来源与筛选范围 ↗
+                    </a>
                   </div>
                 </>
-              ) : selected.properties.adcode === 330000 ? (
-                <ScenicList works={works} onSelect={openScenic} />
+              ) : provinceAreas.length ? (
+                <NationalScenicList
+                  key={selected.properties.adcode}
+                  areas={provinceAreas}
+                  province={selected.properties.name}
+                  onSelect={openScenic}
+                />
               ) : (
                 <div className="empty-state">
                   <span className="empty-icon">山</span>
-                  <h3>{selected.properties.name}景区待接入</h3>
-                  <p>该省的景区名录与位置尚待核验，目前可查看省界与地形。</p>
-                  <button onClick={zhejiang}>前往浙江 →</button>
+                  <h3>数据库暂无该地区记录</h3>
+                  <p>
+                    {selected.properties.name}
+                    的地形仍可浏览。此地区尚无当前数据库中的景点与诗词记录，未套用大陆A级景区等级。
+                  </p>
+                  <button onClick={() => selectProvince(null)}>
+                    查看已有省份
+                  </button>
                 </div>
               )}
             </>

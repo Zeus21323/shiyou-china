@@ -33,9 +33,8 @@ import {
   provinceFocusPolygons,
 } from '../lib/province-view';
 import type { Province } from './china-map';
-import type { ScenicArea, Catalog } from '../lib/content';
+import type { ScenicArea } from '../lib/content';
 import cityData from '../public/data/city-labels.json';
-import { selectScenicAreas } from '../lib/scenic-selection';
 import {
   clusterAnchors,
   placeLabels,
@@ -679,7 +678,7 @@ function CameraAndLabels({
             p.properties.adcode,
           ),
         );
-    } else if (mapSelected.properties.adcode === 330000) {
+    } else {
       if (zoom > 1.7) showFour.current = true;
       if (zoom < 1.5) showFour.current = false;
       points.forEach((p) => {
@@ -799,6 +798,8 @@ function CameraAndLabels({
 }
 export default function HandscrollMap({
   provinces,
+  areas,
+  points,
   selected,
   onSelect,
   onScenic,
@@ -807,6 +808,8 @@ export default function HandscrollMap({
   visible = true,
 }: {
   provinces: Province[];
+  areas: ScenicArea[];
+  points: PointRecord[];
   selected: Province | null;
   onSelect: (p: Province) => void;
   onScenic: (s: ScenicArea) => void;
@@ -843,9 +846,7 @@ export default function HandscrollMap({
       });
     return () => controller.abort();
   }, []);
-  const [points, setPoints] = useState<PointRecord[]>([]),
-    [areas, setAreas] = useState<ScenicArea[]>([]),
-    [dataError, setDataError] = useState(false);
+  const [dataError, setDataError] = useState(false);
   const [screen, setScreen] = useState<ScreenState>({
     labels: [],
     hidden: [],
@@ -866,36 +867,25 @@ export default function HandscrollMap({
     retainedLabels.current.set(label.id, label);
   const visibleIds = new Set(screen.labels.map((l) => l.id));
   const drawnLabels = [...retainedLabels.current.values()];
+  const [, refreshRetainedLabels] = useState(0);
+  useEffect(() => {
+    // 淡出完成后释放旧省标签，长时间跨省浏览不积累不可见按钮。
+    const timer = window.setTimeout(() => {
+      const keep = new Set(screen.labels.map((label) => label.id));
+      let removed = false;
+      for (const id of retainedLabels.current.keys()) {
+        if (!keep.has(id)) {
+          retainedLabels.current.delete(id);
+          removed = true;
+        }
+      }
+      if (removed) refreshRetainedLabels((n) => n + 1);
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [screen.labels]);
   useEffect(() => {
     setExpanded(null);
   }, [selected, visible]);
-  useEffect(() => {
-    const c = new AbortController();
-    Promise.all([
-      fetch('/data/scenic-points.json', { signal: c.signal }).then((r) => {
-        if (!r.ok) throw Error();
-        return r.json();
-      }),
-      fetch('/data/zhejiang-catalog.json', { signal: c.signal }).then((r) => {
-        if (!r.ok) throw Error();
-        return r.json();
-      }),
-    ])
-      .then(([p, a]) => {
-        const selectedAreas = selectScenicAreas((a as Catalog).scenicAreas);
-        const selectedIds = new Set(selectedAreas.map((area) => area.id));
-        setPoints(
-          (p as { points: PointRecord[] }).points.filter((point) =>
-            selectedIds.has(point.scenicId),
-          ),
-        );
-        setAreas(selectedAreas);
-      })
-      .catch((e) => {
-        if (e.name !== 'AbortError') setDataError(true);
-      });
-    return () => c.abort();
-  }, []);
   const act = (id: string) => {
     const city = cityData.cities.find((c) => c.id === id);
     if (city) {
@@ -1128,7 +1118,7 @@ export default function HandscrollMap({
           </button>
         </div>
       )}
-      {mapSelected?.properties.adcode === 330000 && (
+      {mapSelected && areas.length > 0 && (
         <div className="map-density">
           <span>
             5A 优先 · 已显示{' '}

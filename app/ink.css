@@ -16,6 +16,117 @@
   background: var(--paper);
   font-size: 14px;
 }
+.province-directory {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 24px 0;
+}
+.province-directory button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px;
+  text-align: left;
+}
+.province-directory small {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+.field-label {
+  display: block;
+  margin: 16px 0 8px;
+  font-size: 13px;
+}
+.poetry-scope {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.poetry-scope button {
+  padding: 10px 4px;
+}
+.poetry-scope button[aria-pressed='true'] {
+  background: var(--jade-deep);
+  color: var(--paper-bright);
+  border-color: var(--jade-deep);
+}
+.relation-note {
+  color: var(--muted);
+  line-height: 1.85;
+  font-size: 13px;
+}
+.collection-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 20px 0;
+  font-size: 12px;
+}
+.collection-pager button {
+  padding: 10px;
+}
+.sky-pager {
+  position: absolute;
+  z-index: 8;
+  bottom: 143px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+  color: var(--paper);
+  font-size: 12px;
+}
+.sky-pager button {
+  background: #17383bee;
+  color: var(--paper);
+  border-color: #6e8b7d;
+}
+.scenic-card > small {
+  display: block;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.evidence small {
+  display: block;
+  overflow-wrap: anywhere;
+  margin-top: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.star-titles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.star-titles .compact-star {
+  position: absolute;
+  min-width: 0;
+  max-width: none;
+  min-height: 44px;
+  padding: 8px 10px;
+  font: 16px/1.5 var(--display);
+  pointer-events: auto;
+  transition: opacity 160ms;
+}
+.compact-star span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.compact-star small {
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
 * {
   box-sizing: border-box;
 }

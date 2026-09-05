@@ -1,10 +1,54 @@
 'use client';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Html } from '@react-three/drei';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import { useMemo, useRef, useState } from 'react';
 import type { Work } from '../lib/content';
 import { useReducedMotion } from '../lib/use-motion-preference';
 import * as THREE from 'three';
+import { layoutStarLabels, type StarLabel } from '../lib/star-layout';
+
+function starPosition(i: number, count: number): [number, number, number] {
+  const angle = i * 2.399 + 0.4,
+    radius = count === 1 ? 0 : 2.5 + Math.sqrt(i) * 1.25;
+  return [Math.cos(angle) * radius, 0.5, Math.sin(angle) * radius];
+}
+function StarTitles({
+  works,
+  onLayout,
+}: {
+  works: Work[];
+  onLayout: (labels: StarLabel[]) => void;
+}) {
+  const { camera, size } = useThree();
+  const stamp = useRef('');
+  useFrame(() => {
+    const next = [
+      ...camera.matrixWorld.elements,
+      ...camera.projectionMatrix.elements,
+      size.width,
+      size.height,
+      ...works.map((w) => w.id),
+    ].join(',');
+    if (next === stamp.current) return;
+    stamp.current = next;
+    const anchors = works.flatMap((w, i) => {
+      const p = new THREE.Vector3(...starPosition(i, works.length)).project(
+        camera,
+      );
+      return p.z >= -1 && p.z <= 1
+        ? [
+            {
+              id: w.id,
+              x: ((p.x + 1) * size.width) / 2,
+              y: ((1 - p.y) * size.height) / 2,
+            },
+          ]
+        : [];
+    });
+    onLayout(layoutStarLabels(anchors, size.width, size.height).labels);
+  });
+  return null;
+}
 
 function StarRiver({ paused }: { paused: boolean }) {
   const material = useRef<THREE.ShaderMaterial>(null);
@@ -74,9 +118,11 @@ export default function PoetryNebula({
 }) {
   const reduced = useReducedMotion();
   const [paused, setPaused] = useState(false);
+  const [labels, setLabels] = useState<StarLabel[]>([]);
   return (
     <div
       className={'nebula-scene' + (paused || reduced ? ' motion-paused' : '')}
+      data-star-count={works.length}
     >
       <div className="nebula-wash" aria-hidden="true" />
       <div className="nebula-moon" aria-hidden="true" />
@@ -89,32 +135,16 @@ export default function PoetryNebula({
       >
         <StarRiver paused={paused || reduced} />
         {works.map((w, i) => {
-          const angle = i * 2.399 + 0.4,
-            radius = works.length === 1 ? 0 : 2.5 + Math.sqrt(i) * 1.25;
           return (
-            <group
-              key={w.id}
-              position={[
-                Math.cos(angle) * radius,
-                0.5,
-                Math.sin(angle) * radius,
-              ]}
-            >
+            <group key={w.id} position={starPosition(i, works.length)}>
               <mesh onClick={() => onRead(w)}>
                 <sphereGeometry args={[0.095, 16, 16]} />
                 <meshBasicMaterial color="#f1d6a0" />
               </mesh>
-              <Html center position={[0, 0.6, 0]} zIndexRange={[6, 0]}>
-                <button className="star-label" onClick={() => onRead(w)}>
-                  <span>{w.title}</span>
-                  <small>
-                    {w.author} · {w.genre}
-                  </small>
-                </button>
-              </Html>
             </group>
           );
         })}
+        <StarTitles works={works} onLayout={setLabels} />
         <OrbitControls
           enablePan={false}
           enableDamping
@@ -125,6 +155,33 @@ export default function PoetryNebula({
           maxPolarAngle={1.3}
         />
       </Canvas>
+      <div className="star-titles" aria-label="本页诗词星点">
+        {labels.map((l) => {
+          const w = works.find((w) => w.id === l.id);
+          return (
+            w && (
+              <button
+                className="star-label compact-star"
+                key={w.id}
+                style={{
+                  left: l.left,
+                  top: l.top,
+                  width: l.width,
+                  height: l.height,
+                }}
+                aria-label={`${w.title} · ${w.author}`}
+                title={w.title}
+                onClick={() => onRead(w)}
+              >
+                <span>{w.title}</span>
+                <small>
+                  {w.author} · {w.dynasty}
+                </small>
+              </button>
+            )
+          );
+        })}
+      </div>
       <button
         className="motion-toggle"
         aria-pressed={paused || reduced}

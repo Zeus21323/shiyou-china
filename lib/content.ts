@@ -12,13 +12,16 @@ export interface Work {
   title: string;
   author: string;
   dynasty: string;
-  genre: '诗' | '词' | '文';
+  genre: '诗' | '词' | '文' | '诗词';
   body: string;
   sourceUrl: string;
   relation: string;
   evidence: string;
   evidenceUrl?: string;
   scenicId: string;
+  verification?: 'verified' | 'candidate' | 'regional';
+  sourceFile?: string;
+  sourceRow?: number;
 }
 export interface Catalog {
   asOf: string;
