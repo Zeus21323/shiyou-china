@@ -5,6 +5,9 @@ import {
   provinceAt,
   containsProvince,
   requiresCameraFit,
+  provincePolygons,
+  provinceFocusPolygons,
+  fitProvinceZoom,
 } from '../lib/province-view.ts';
 import { placeLabels, labelDock, leaderLength } from '../lib/map-layout.ts';
 const provinces = JSON.parse(
@@ -13,6 +16,19 @@ const provinces = JSON.parse(
     'utf8',
   ),
 ).features;
+
+test('海南初次聚焦主体，完整省界及远海离岛仍保留', () => {
+  const hainan = provinces.find((p) => p.properties.adcode === 460000);
+  const all = provincePolygons(hainan);
+  const focus = provinceFocusPolygons(hainan);
+  assert.ok(all.length > focus.length);
+  assert.equal(focus.length, 1);
+  assert.ok(focus.flat(2).every((p) => p[1] > 18));
+  assert.ok(all.flat(2).some((p) => p[1] < 10));
+  assert.ok(fitProvinceZoom([hainan], 900, 650) > 100);
+  const sichuan = provinces.find((p) => p.properties.adcode === 510000);
+  assert.deepEqual(provinceFocusPolygons(sichuan), provincePolygons(sichuan));
+});
 test('取消高亮或拖动切换省份不请求重新适配镜头', () => {
   const current = { revision: 3, width: 900, height: 800 };
   assert.equal(requiresCameraFit(current, 3, 900, 800, true), false);

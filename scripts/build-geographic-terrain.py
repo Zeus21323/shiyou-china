@@ -17,6 +17,16 @@ OUT.mkdir(parents=True, exist_ok=True)
 def tile_xy(lon, lat, zoom):
     return ((lon+180)/360*2**zoom, (1-math.asinh(math.tan(math.radians(lat)))/math.pi)/2*2**zoom)
 
+def remove_isolated_spikes(data):
+    """只清理相对局部邻域严重偏离的点，保留连续山峰和负高程洼地。"""
+    h,w=data.shape
+    padded=np.pad(data,1,mode='edge')
+    neighbours=np.stack([padded[dy:dy+h,dx:dx+w] for dy in range(3) for dx in range(3)])
+    median=np.median(neighbours,axis=0)
+    mad=np.median(np.abs(neighbours-median),axis=0)
+    spikes=np.abs(data-median)>np.maximum(250,8*mad)
+    return np.where(spikes,median,data)
+
 def fetch_tile(task):
     z, x, y = task
     dest = CACHE / f'{z}-{x}-{y}.png'
@@ -33,7 +43,10 @@ def fetch_tile(task):
                 if attempt==2: raise RuntimeError(f'公开高程瓦片读取失败：{z}/{x}/{y}') from None
                 time.sleep(2+attempt)
     rgb=np.asarray(Image.open(dest).convert('RGB'),dtype=np.float32)
-    return x,y,rgb[:,:,0]*256+rgb[:,:,1]+rgb[:,:,2]/256-32768
+    data=rgb[:,:,0]*256+rgb[:,:,1]+rgb[:,:,2]/256-32768
+    # 源瓦片有少量孤立尖峰/深坑（非地形），用局部中位数和 MAD 检出。
+    # 只替换相对邻域偏离至少 250m 且超过 8 MAD 的点；连片山地、洼地保留。
+    return x,y,remove_isolated_spikes(data)
 
 def read_dem(bounds, zoom, width, height):
     west,south,east,north=bounds
@@ -49,7 +62,7 @@ def read_dem(bounds, zoom, width, height):
     xx=((lon+180)/360*2**zoom-x0)*256-.5
     yy=((1-np.arcsinh(np.tan(np.radians(lat)))/np.pi)/2*2**zoom-y0)*256-.5
     xi=np.clip(np.floor(xx).astype(int),0,mosaic.shape[1]-2);yi=np.clip(np.floor(yy).astype(int),0,mosaic.shape[0]-2)
-    fx=xx-xi;fy=yy-yi
+    fx=np.clip(xx-xi,0,1);fy=np.clip(yy-yi,0,1)
     dem=(mosaic[yi[:,None],xi]*(1-fx)+mosaic[yi[:,None],xi+1]*fx)*(1-fy[:,None])+(mosaic[yi[:,None]+1,xi]*(1-fx)+mosaic[yi[:,None]+1,xi+1]*fx)*fy[:,None]
     if not np.isfinite(dem).all(): raise ValueError('高程有缺失值，停止输出')
     return dem
@@ -110,7 +123,8 @@ def build(name,bounds,zoom,width,height):
             elif typ in ('LineString','MultiLineString'):
                 for line in ([c] if typ=='LineString' else c):
                     draw.line([xy(p) for p in line],fill=(102,159,164),width=2 if name=='china' else 3,joint='curve')
-    image.save(OUT/f'{name}-ink.png',optimize=True)
+    # 纹理采用高质量 WebP，避免每次切省传输数 MB 的无损绘画栅格。
+    image.save(OUT/f'{name}-ink.webp',quality=92,method=6)
     # 留下可复查数值；单位米，网格北至南、西至东。
     stride=4
     grid={'bounds':bounds,'width':len(dem[0,::stride]),'height':len(dem[::stride,0]),'unit':'metre','rowOrder':'north-to-south','heights':np.rint(dem[::stride,::stride]).astype(int).ravel().tolist()}
@@ -119,9 +133,48 @@ def build(name,bounds,zoom,width,height):
     (OUT/f'{name}-elevation.json').write_text(json.dumps(grid,separators=(',',':')),encoding='utf-8')
     (OUT/f'{name}-water.geojson').write_text(json.dumps({'type':'FeatureCollection','features':water},ensure_ascii=False,separators=(',',':')),encoding='utf-8')
     print(f'{name}: 高程范围 {dem.min():.0f}–{dem.max():.0f} m，河湖要素 {len(water)}',flush=True)
-    return {'bounds':bounds,'width':width,'height':height,'tileZoom':zoom,'approximateSampleMetres':round(max(metres_x,metres_y)),'texture':f'{name}-ink.png','elevation':f'{name}-elevation.json','water':f'{name}-water.geojson'}
+    return {'processingVersion':2,'bounds':bounds,'width':width,'height':height,'tileZoom':zoom,'approximateSampleMetres':round(max(metres_x,metres_y)),'texture':f'{name}-ink.webp','elevation':f'{name}-elevation.json','water':f'{name}-water.geojson'}
 
 if __name__=='__main__':
-    result={'china':build('china',[73,18,136,54],5,1537,1025),'zhejiang':build('zhejiang',[117.8,26.8,123.3,31.6],8,1409,1537)}
-    result['sources']={'dem':'https://registry.opendata.aws/terrain-tiles/','demAttribution':'Mapzen terrain tiles; global SRTM/GMTED2010 courtesy of USGS; ETOPO1 courtesy of NOAA','water':'https://www.naturalearthdata.com/','waterLicense':'Natural Earth public domain','note':'水系为1:1000万制图概化数据，主要河湖，非完整水网；颜色与等高线是基于实际高程的艺术化表现，非地质岩性图。'}
+    # 可恢复生成；每省独立资源，浏览器只按需读取当前省份。
+    manifest=OUT/'manifest.json'
+    result=json.loads(manifest.read_text(encoding='utf-8')) if manifest.exists() else {}
+    for kind in ('lakes','rivers'):
+        dest=CACHE/f'{kind}.geojson'
+        if not dest.exists():
+            filename='ne_10m_lakes' if kind=='lakes' else 'ne_10m_rivers_lake_centerlines'
+            with urlopen(f'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/{filename}.geojson',timeout=60) as response:
+                dest.write_bytes(response.read())
+    if result.get('china',{}).get('processingVersion') != 2:
+        result['china']=build('china',[73,18,136,54],5,1537,1025)
+    if result.get('zhejiang',{}).get('processingVersion') != 2:
+        result['zhejiang']=build('zhejiang',[117.8,26.8,123.3,31.6],8,1409,1537)
+    result.setdefault('provinces',{})
+    features=json.loads((ROOT/'public/data/china.geojson').read_text(encoding='utf-8'))['features']
+    for feature in features:
+        if not feature['properties'].get('name'): continue
+        code=str(feature['properties']['adcode'])
+        if result['provinces'].get(code,{}).get('processingVersion') == 2: continue
+        if code=='330000':
+            region=dict(result['zhejiang'])
+        else:
+            points=list(coords(feature['geometry']))
+            w,s,e,n=min(p[0] for p in points),min(p[1] for p in points),max(p[0] for p in points),max(p[1] for p in points)
+            # 全部离岛都纳入范围；按物理距离保持像元近似方形，限制内存。
+            padx=max((e-w)*.015,.005);pady=max((n-s)*.015,.005)
+            bounds=[round(w-padx,6),round(s-pady,6),round(e+padx,6),round(n+pady,6)]
+            metres_x=(bounds[2]-bounds[0])*111320*math.cos(math.radians((n+s)/2))
+            metres_y=(bounds[3]-bounds[1])*111320
+            longest=max(metres_x,metres_y)
+            sample=max(40,longest/1792)
+            width=max(257,math.ceil(metres_x/sample/4)*4+1)
+            height=max(257,math.ceil(metres_y/sample/4)*4+1)
+            zoom=max(7,min(12,math.ceil(math.log2(156543*math.cos(math.radians((n+s)/2))/sample))))
+            print(f"生成 {feature['properties']['name']} ({code}) {width}×{height}",flush=True)
+            region=build(code,bounds,zoom,width,height)
+        region['name']=feature['properties']['name']
+        region['demGridSampleMetres']=region['approximateSampleMetres']*4
+        result['provinces'][code]=region
+        manifest.write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+    result['sources']={'dem':'https://registry.opendata.aws/terrain-tiles/','demAttribution':'Mapzen terrain tiles; global SRTM/GMTED2010 courtesy of USGS; ETOPO1 courtesy of NOAA','water':'https://www.naturalearthdata.com/','waterLicense':'Natural Earth public domain','processing':'3x3 median: replace only deviations > max(250 metres, 8 MAD); bilinear geographic resampling; elevation grid stride 4. Raw source tiles are retained in the local cache.','note':'水系为1:1000万制图概化数据，主要河湖，非完整水网；颜色与等高线是基于实际高程的艺术化表现，非地质岩性图。'}
     (OUT/'manifest.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')

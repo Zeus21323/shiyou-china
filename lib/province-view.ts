@@ -20,6 +20,33 @@ export function provincePolygons(p: Province): number[][][][] {
       : p.geometry.coordinates
   ) as number[][][][];
 }
+// 远海离岛仍然绘制和命中；只有初次飞入范围聚焦占绝大部分陆地的主体。
+export function provinceFocusPolygons(p: Province): number[][][][] {
+  const polygons = provincePolygons(p);
+  const area = (ring: number[][]) =>
+    Math.abs(
+      ring.reduce((sum, a, i) => {
+        const b = ring[(i + 1) % ring.length];
+        return sum + a[0] * b[1] - b[0] * a[1];
+      }, 0),
+    ) / 2;
+  const ranked = polygons
+    .map((poly) => ({ poly, area: area(poly[0]) }))
+    .sort((a, b) => b.area - a.area);
+  const main = ranked[0];
+  if (!main || main.area < ranked.reduce((n, p) => n + p.area, 0) * 0.85)
+    return polygons;
+  const span = (items: number[][][][]) => {
+    const points = items.flat(2),
+      xs = points.map((p) => p[0]),
+      ys = points.map((p) => p[1]);
+    return Math.max(
+      (Math.max(...xs) - Math.min(...xs)) * 0.75,
+      (Math.max(...ys) - Math.min(...ys)) * 0.95,
+    );
+  };
+  return span(polygons) > span([main.poly]) * 2 ? [main.poly] : polygons;
+}
 function inRing(point: number[], ring: number[][]) {
   let inside = false;
   const [x, y] = point;
@@ -56,7 +83,9 @@ export function fitProvinceZoom(
     maxX = -Infinity,
     maxY = -Infinity;
   for (const p of provinces)
-    for (const poly of provincePolygons(p))
+    for (const poly of provinces.length === 1
+      ? provinceFocusPolygons(p)
+      : provincePolygons(p))
       for (const r of poly)
         for (const [lon, lat] of r) {
           const x = (lon - 104) * 0.75,

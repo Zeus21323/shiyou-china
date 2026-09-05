@@ -1,19 +1,23 @@
 'use client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, useTexture } from '@react-three/drei';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { OrbitControls } from '@react-three/drei';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import type { OrbitControls as Controls } from 'three-stdlib';
 import { useReducedMotion } from '../lib/use-motion-preference';
-import terrain from '../public/data/terrain/manifest.json';
-import relief from '../public/data/terrain/relief.json';
-import chinaHeights from '../public/data/terrain/china-elevation.json';
-import zhejiangHeights from '../public/data/terrain/zhejiang-elevation.json';
-import { elevationAt, HEIGHT_SCALE } from '../lib/terrain-height';
+import { HEIGHT_SCALE } from '../lib/terrain-height';
+import {
+  ProvinceShape,
+  provinceTerrainBlend,
+  provinceTerrainHeight,
+  type TerrainStatus,
+} from './province-terrain';
 import {
   fitProvinceZoom,
   provinceAt,
   requiresCameraFit,
+  provincePolygons as polygons,
+  provinceFocusPolygons,
 } from '../lib/province-view';
 import type { Province } from './china-map';
 import type { ScenicArea, Catalog } from '../lib/content';
@@ -52,159 +56,6 @@ const cameraSettings = {
   near: 0.01,
   far: 1000,
 };
-const polygons = (f: Province) =>
-  (f.geometry.type === 'Polygon'
-    ? [f.geometry.coordinates]
-    : f.geometry.coordinates) as number[][][][];
-const meshBuffers = new WeakMap<
-  ArrayBuffer,
-  { data: THREE.InterleavedBuffer; index: THREE.BufferAttribute }
->();
-function sharedMeshBuffers(buffer: ArrayBuffer) {
-  let shared = meshBuffers.get(buffer);
-  if (!shared) {
-    shared = {
-      data: new THREE.InterleavedBuffer(
-        new Float32Array(buffer, 0, relief.vertexCount * 8),
-        8,
-      ),
-      index: new THREE.BufferAttribute(
-        new Uint32Array(buffer, relief.vertexCount * 32),
-        1,
-      ),
-    };
-    meshBuffers.set(buffer, shared);
-  }
-  return shared;
-}
-const ProvinceShape = memo(function ProvinceShape({
-  feature,
-  active,
-  muted,
-  onSelect,
-  meshData,
-}: {
-  feature: Province;
-  active: boolean;
-  muted: boolean;
-  onSelect: (p: Province) => void;
-  meshData: ArrayBuffer;
-}) {
-  const local = Number(feature.properties.adcode) === 330000;
-  const [nationalTexture, detailTexture] = useTexture([
-    `/data/terrain/${terrain.china.texture}`,
-    `/data/terrain/${terrain.zhejiang.texture}`,
-  ]);
-  const texture = local && active ? detailTexture : nationalTexture;
-  const { gl } = useThree();
-  useEffect(() => {
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
-    texture.needsUpdate = true;
-  }, [texture, gl]);
-  const geometry = useMemo(() => {
-    const geometry = new THREE.BufferGeometry();
-    const { data, index } = sharedMeshBuffers(meshData);
-    geometry.setAttribute(
-      'position',
-      new THREE.InterleavedBufferAttribute(data, 3, 0),
-    );
-    geometry.setAttribute(
-      'normal',
-      new THREE.InterleavedBufferAttribute(data, 3, 3),
-    );
-    geometry.setAttribute(
-      'uv',
-      new THREE.InterleavedBufferAttribute(data, 2, 6),
-    );
-    geometry.setIndex(index);
-    const part =
-      relief.features[
-        String(feature.properties.adcode) as keyof typeof relief.features
-      ];
-    geometry.setDrawRange(part.start, part.count);
-    return geometry;
-  }, [feature, meshData]);
-  useEffect(() => {
-    if (local && !active) {
-      const positions = geometry.getAttribute('position');
-      const uv = new Float32Array(positions.count * 2);
-      const [w, s, e, n] = terrain.china.bounds;
-      for (let i = 0; i < positions.count; i++) {
-        uv[i * 2] = (positions.getX(i) / 0.75 + 104 - w) / (e - w);
-        uv[i * 2 + 1] = (positions.getY(i) / 0.95 + 35 - s) / (n - s);
-      }
-      geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-    } else
-      geometry.setAttribute(
-        'uv',
-        new THREE.InterleavedBufferAttribute(
-          sharedMeshBuffers(meshData).data,
-          2,
-          6,
-        ),
-      );
-  }, [active, local, geometry, meshData]);
-  const outline = useMemo(() => {
-    const values: number[] = [];
-    const grid = local ? zhejiangHeights : chinaHeights;
-    for (const polygon of polygons(feature))
-      for (const ring of polygon) {
-        for (let i = 1; i < ring.length; i++)
-          for (const p of [ring[i - 1], ring[i]])
-            values.push(
-              ...project(p),
-              Math.max(0, elevationAt(grid, p[0], p[1])) * HEIGHT_SCALE + 0.033,
-            );
-      }
-    return new THREE.BufferGeometry().setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(values, 3),
-    );
-  }, [feature, local]);
-  useEffect(() => () => geometry.dispose(), [geometry]);
-  useEffect(() => () => outline.dispose(), [outline]);
-  const material = useRef<THREE.MeshStandardMaterial>(null);
-  useFrame((_, dt) => {
-    if (material.current)
-      material.current.opacity = THREE.MathUtils.damp(
-        material.current.opacity,
-        muted ? 0.65 : 1,
-        8,
-        dt,
-      );
-  });
-  return (
-    <group>
-      <mesh
-        geometry={geometry}
-        frustumCulled={false}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (e.delta < 5 && feature.properties.name && !active)
-            onSelect(feature);
-        }}
-      >
-        <meshStandardMaterial
-          ref={material}
-          map={texture}
-          transparent
-          depthWrite={!muted}
-          color={active ? '#fff9dc' : '#e1e9df'}
-          roughness={1}
-          metalness={0}
-        />
-      </mesh>
-      <lineSegments geometry={outline}>
-        <lineBasicMaterial
-          color={active ? '#a77c30' : '#9aa99a'}
-          transparent
-          opacity={active ? 1 : 0.55}
-        />
-      </lineSegments>
-    </group>
-  );
-});
 function CameraAndLabels({
   provinces,
   selected,
@@ -272,7 +123,7 @@ function CameraAndLabels({
   const bounds = useMemo(() => {
     const b = new THREE.Box2();
     (selected ? [selected] : provinces.filter((p) => p.properties.name))
-      .flatMap(polygons)
+      .flatMap(selected ? provinceFocusPolygons : polygons)
       .flat(2)
       .forEach((p) => b.expandByPoint(new THREE.Vector2(...project(p))));
     return b;
@@ -509,6 +360,7 @@ function CameraAndLabels({
       size.height,
       selected?.properties.adcode,
       points.length,
+      provinceTerrainBlend(selected?.properties.adcode).toFixed(3),
     ].join('|');
     if (cameraStamp === lastCamera.current) return;
     lastCamera.current = cameraStamp;
@@ -521,10 +373,9 @@ function CameraAndLabels({
       priority: number,
       kind: 'province' | 'scenic',
     ) => {
-      const grid =
-        selected?.properties.adcode === 330000 ? zhejiangHeights : chinaHeights;
       const h =
-        Math.max(0, elevationAt(grid, point[0], point[1])) * HEIGHT_SCALE;
+        provinceTerrainHeight(selected?.properties.adcode, point) *
+        HEIGHT_SCALE;
       const p = new THREE.Vector3(...project(point), h + 0.07).project(cam);
       const x = ((p.x + 1) * size.width) / 2,
         y = ((1 - p.y) * size.height) / 2;
@@ -658,6 +509,15 @@ export default function HandscrollMap({
   onViewportSelect: (p: Province | null) => void;
   visible?: boolean;
 }) {
+  const [terrainStatus, setTerrainStatus] = useState<
+    Record<string, TerrainStatus>
+  >({});
+  const onTerrainStatus = useCallback((code: string, status: TerrainStatus) => {
+    setTerrainStatus((old) => ({ ...old, [code]: status }));
+  }, []);
+  const currentTerrainStatus = selected
+    ? (terrainStatus[String(selected.properties.adcode)] ?? 'loading')
+    : 'overview';
   const [meshData, setMeshData] = useState<ArrayBuffer | null>(null);
   useEffect(() => {
     const controller = new AbortController();
@@ -742,6 +602,7 @@ export default function HandscrollMap({
   return (
     <div
       className="handscroll-map"
+      data-terrain-status={currentTerrainStatus}
       data-highlighted-province={selected?.properties.adcode ?? ''}
       tabIndex={0}
       aria-label="立体山水地图，可左键拖动或方向键平移，滚轮缩放"
@@ -751,6 +612,15 @@ export default function HandscrollMap({
           {dataError ? '地形加载失败，请刷新重试。' : '正在铺展立体山河…'}
         </p>
       )}
+      {selected &&
+        (currentTerrainStatus === 'loading' ||
+          currentTerrainStatus === 'error') && (
+          <p className="terrain-status" role="status">
+            {currentTerrainStatus === 'loading'
+              ? '正在细绘此地山河…'
+              : '精细地形暂未载入，仍可浏览基础地图。请重新选择此省重试。'}
+          </p>
+        )}
       <Canvas
         frameloop={visible ? 'always' : 'never'}
         orthographic
@@ -771,6 +641,7 @@ export default function HandscrollMap({
                 !!selected && selected.properties.adcode !== p.properties.adcode
               }
               meshData={meshData}
+              onStatus={onTerrainStatus}
               onSelect={onSelect}
             />
           ))}

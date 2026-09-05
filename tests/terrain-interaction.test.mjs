@@ -11,9 +11,9 @@ const read = (name) =>
 test('地形网格的高程来自 DEM，平原与山地有真实差异', () => {
   const g = read('terrain/zhejiang-elevation.json');
   assert.ok(elevationAt(g, 120.8, 30.75) < 30);
-  const meta = read('terrain/relief.json');
+  const meta = read('terrain/330000-relief.json');
   const raw = fs.readFileSync(
-    new URL('../public/data/terrain/relief.bin', import.meta.url),
+    new URL('../public/data/terrain/330000-relief.bin', import.meta.url),
   );
   const floats = new Float32Array(
     raw.buffer,

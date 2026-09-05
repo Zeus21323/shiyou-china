@@ -1086,3 +1086,16 @@ select {
     #f1eee3ed 100%
   );
 }
+.terrain-status {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: 72px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 40px);
+  padding: 8px 14px;
+  background: #f1eee3ee;
+  color: #293f37;
+  font-size: 13px;
+  pointer-events: none;
+}
