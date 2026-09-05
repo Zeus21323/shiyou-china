@@ -1,0 +1,19 @@
+{
+  "sources": [
+    {
+      "id": "datav-china",
+      "title": "阿里云 DataV 中国行政区划数据",
+      "url": "https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json",
+      "retrievedAt": "2026-09-05",
+      "localFile": "china.geojson",
+      "usage": "三维行政区划示意原型",
+      "status": "retrieved",
+      "releaseReview": "地图发布要求及数据使用许可仍待核验；不得宣称已审图。"
+    }
+  ],
+  "catalogStatus": "verified-historical-snapshot",
+  "catalog": {"id":"zj-official-2024","title":"浙江省A级旅游景区名录表（截至2024年底）","url":"https://ct.zj.gov.cn/art/2025/1/21/art_1229678763_5447295.html","asOf":"2024-12-31","retrievedAt":"2026-09-05","count4A":223,"count5A":22},
+  "literatureStatus": "18 texts checked; 10 destinations; AI-assisted geographic curation",
+  "literature": [{"title":"Werneror/Poetry","url":"https://github.com/Werneror/Poetry","license":"MIT","licenseFile":"/licenses/Poetry-MIT.txt","usage":"17首古典诗歌原文；逐篇出处及CSV记录位置见works.json"},{"title":"古文岛·兰亭集序","url":"https://www.guwendao.net/shiwenv_af279f0cdd95.aspx","usage":"仅古典原文，未复制现代翻译赏析"}],
+  "limitations":"名录非实时；关联核对不等于学术校勘；公开发行前需完成地图许可与地图发布要求核验，后续名录按官方公告更新。"
+}
