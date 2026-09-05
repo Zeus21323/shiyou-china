@@ -13,6 +13,45 @@ export interface PlacedLabel extends MapAnchor {
   width: number;
   height: number;
 }
+export function labelDock(label: {
+  width: number;
+  height: number;
+  x?: number;
+  y?: number;
+  left?: number;
+  top?: number;
+}) {
+  if (
+    label.x === undefined ||
+    label.y === undefined ||
+    label.left === undefined ||
+    label.top === undefined
+  )
+    return { x: label.width / 2, y: label.height - 4 };
+  const ax = label.x - label.left,
+    ay = label.y - label.top;
+  let x = Math.max(4, Math.min(label.width - 4, ax)),
+    y = Math.max(4, Math.min(label.height - 4, ay));
+  if (ax > 4 && ax < label.width - 4 && ay > 4 && ay < label.height - 4) {
+    const sides = [
+      { distance: ax - 4, x: 4, y },
+      { distance: label.width - 4 - ax, x: label.width - 4, y },
+      { distance: ay - 4, x, y: 4 },
+      { distance: label.height - 4 - ay, x, y: label.height - 4 },
+    ];
+    const nearest = sides.sort((a, b) => a.distance - b.distance)[0];
+    x = nearest.x;
+    y = nearest.y;
+  }
+  return { x, y };
+}
+export function leaderLength(label: PlacedLabel) {
+  const dock = labelDock(label);
+  return Math.hypot(
+    label.x - label.left - dock.x,
+    label.y - label.top - dock.y,
+  );
+}
 export function overlap(
   a: { left: number; top: number; width: number; height: number },
   b: { left: number; top: number; width: number; height: number },
@@ -60,12 +99,7 @@ export function placeLabels(
     if (old)
       offsets.unshift([old.left + old.width / 2 - old.x, old.top - old.y]);
     if (provinceMode)
-      for (let r = 110; r <= 360; r += 45)
-        for (let n = 0; n < 12; n++)
-          offsets.push([
-            Math.cos((n * Math.PI) / 6) * r,
-            Math.sin((n * Math.PI) / 6) * r - h / 2,
-          ]);
+      offsets.push([20, -h - 8], [-20, -h - 8], [35, -h - 8], [-35, -h - 8]);
     for (const [dx, dy] of offsets) {
       const c = {
         ...a,
@@ -74,6 +108,7 @@ export function placeLabels(
         width: w,
         height: h,
       };
+      if (leaderLength(c) > (provinceMode ? 50 : 100)) continue;
       if (
         c.left < 10 ||
         c.left + w > width - 10 ||

@@ -1,0 +1,782 @@
+{
+  "addresses": {
+    "zj-0001": {
+      "poiId": "B023B13L9M",
+      "address": "浙江省杭州市西湖区西湖街道龙井路1号",
+      "sourceName": "杭州西湖风景名胜区",
+      "sourceUrl": "https://www.amap.com/detail/B023B13L9M",
+      "checkedAt": "2026-09-05T19:05:02.328Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0003": {
+      "poiId": "B0FFFYF0GP",
+      "address": "浙江省杭州市淳安县千岛湖镇",
+      "sourceName": "千岛湖风景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFYF0GP",
+      "checkedAt": "2026-09-05T19:05:02.329Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0115": {
+      "poiId": "B0FFGTF6RC",
+      "address": "浙江省宁波市奉化区溪口镇公园路213省道旁",
+      "sourceName": "溪口-滕头旅游景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFGTF6RC",
+      "checkedAt": "2026-09-05T19:05:02.710Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0116": {
+      "poiId": "B0FFK2ZI40",
+      "address": "浙江省宁波市海曙区长春路92号",
+      "sourceName": "天一阁·月湖",
+      "sourceUrl": "https://www.amap.com/detail/B0FFK2ZI40",
+      "checkedAt": "2026-09-05T19:05:02.712Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0201": {
+      "poiId": "B024105U52",
+      "address": "浙江省温州市乐清市雁荡镇响岭头村",
+      "sourceName": "雁荡山风景名胜区",
+      "sourceUrl": "https://www.amap.com/detail/B024105U52",
+      "checkedAt": "2026-09-05T19:05:03.094Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0202": {
+      "poiId": "B0G3KCN3WJ",
+      "address": "浙江省温州市文成县百丈漈镇篁庄村",
+      "sourceName": "刘伯温故里景区(暂停开放)",
+      "sourceUrl": "https://www.amap.com/detail/B0G3KCN3WJ",
+      "checkedAt": "2026-09-05T19:05:03.107Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0390": {
+      "poiId": "B023D02T8E",
+      "address": "浙江省嘉兴市南湖区南溪西路1号",
+      "sourceName": "嘉兴南湖旅游区",
+      "sourceUrl": "https://www.amap.com/detail/B023D02T8E",
+      "checkedAt": "2026-09-05T19:05:03.480Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0466": {
+      "poiId": "B0FFFR0TIH",
+      "address": "浙江省绍兴市越城区鲁迅中路318号",
+      "sourceName": "沈氏园",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFR0TIH",
+      "checkedAt": "2026-09-05T19:05:04.200Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0551": {
+      "poiId": "B02430HWAH",
+      "address": "浙江省金华市婺城区罗电线",
+      "sourceName": "金华双龙风景旅游区",
+      "sourceUrl": "https://www.amap.com/detail/B02430HWAH",
+      "checkedAt": "2026-09-05T19:05:04.222Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0644": {
+      "poiId": "B023A00E21",
+      "address": "浙江省衢州市江山市石门镇余家坞村",
+      "sourceName": "江郎山省级旅游度假区",
+      "sourceUrl": "https://www.amap.com/detail/B023A00E21",
+      "checkedAt": "2026-09-05T19:05:04.574Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0757": {
+      "poiId": "B0FFKPYR64",
+      "address": "浙江省台州市临海市江滨中路",
+      "sourceName": "台州府城文化旅游区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFKPYR64",
+      "checkedAt": "2026-09-05T19:05:05.314Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0865": {
+      "poiId": "B024215MX7",
+      "address": "浙江省丽水市云和县崇头镇梅源村云和梯田景区游客中心1号",
+      "sourceName": "云和梯田景区",
+      "sourceUrl": "https://www.amap.com/detail/B024215MX7",
+      "checkedAt": "2026-09-05T19:05:05.330Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0006": {
+      "poiId": "B0M69CD2VW",
+      "address": "浙江省杭州市淳安县梦姑路99号千岛湖景区",
+      "sourceName": "下姜村",
+      "sourceUrl": "https://www.amap.com/detail/B0M69CD2VW",
+      "checkedAt": "2026-09-05T19:05:05.697Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0866": {
+      "poiId": "B024200C92",
+      "address": "浙江省丽水市缙云县仙都街道",
+      "sourceName": "缙云仙都景区",
+      "sourceUrl": "https://www.amap.com/detail/B024200C92",
+      "checkedAt": "2026-09-05T19:05:05.701Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0010": {
+      "poiId": "B023B1990G",
+      "address": "浙江省杭州市富阳区黄公望村(黄公望纪念馆)",
+      "sourceName": "黄公望隐居地",
+      "sourceUrl": "https://www.amap.com/detail/B023B1990G",
+      "checkedAt": "2026-09-05T19:05:06.078Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0008": {
+      "poiId": "B023B07SES",
+      "address": "浙江省杭州市富阳区胥口镇上练村",
+      "sourceName": "富春桃源风景区",
+      "sourceUrl": "https://www.amap.com/detail/B023B07SES",
+      "checkedAt": "2026-09-05T19:05:06.089Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0011": {
+      "poiId": "B023B19XYF",
+      "address": "浙江省杭州市建德市梅城镇正大街",
+      "sourceName": "严州古城",
+      "sourceUrl": "https://www.amap.com/detail/B023B19XYF",
+      "checkedAt": "2026-09-05T19:05:06.487Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0013": {
+      "poiId": "B023B08SR8",
+      "address": "浙江省杭州市建德市大慈岩镇大慈岩景区",
+      "sourceName": "大慈岩",
+      "sourceUrl": "https://www.amap.com/detail/B023B08SR8",
+      "checkedAt": "2026-09-05T19:05:06.489Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0020": {
+      "poiId": "B0FFGJQ68E",
+      "address": "浙江省杭州市临平区塘栖镇广济路",
+      "sourceName": "运河·塘栖古镇",
+      "sourceUrl": "https://www.amap.com/detail/B0FFGJQ68E",
+      "checkedAt": "2026-09-05T19:05:07.217Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0021": {
+      "poiId": "B0FFF3O4I1",
+      "address": "浙江省杭州市临平区塘栖镇超山风景区",
+      "sourceName": "超山风景名胜区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFF3O4I1",
+      "checkedAt": "2026-09-05T19:05:07.227Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0025": {
+      "poiId": "B0FFG97H9P",
+      "address": "浙江省杭州市拱墅区环城北路226号武林门码头",
+      "sourceName": "京杭大运河杭州景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFG97H9P",
+      "checkedAt": "2026-09-05T19:05:07.601Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0026": {
+      "poiId": "B023B09LKR",
+      "address": "浙江省杭州市西湖区南山路15号",
+      "sourceName": "雷峰塔景区",
+      "sourceUrl": "https://www.amap.com/detail/B023B09LKR",
+      "checkedAt": "2026-09-05T19:05:07.601Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0031": {
+      "poiId": "B023B07SP3",
+      "address": "浙江省杭州市桐庐县瑶琳镇仙境路",
+      "sourceName": "瑶琳仙境",
+      "sourceUrl": "https://www.amap.com/detail/B023B07SP3",
+      "checkedAt": "2026-09-05T19:05:08.001Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0119": {
+      "poiId": "B0FFFWXJAR",
+      "address": "浙江省宁波市慈溪市观海卫镇禹皇路999号",
+      "sourceName": "鸣鹤古镇",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFWXJAR",
+      "checkedAt": "2026-09-05T19:05:08.339Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0125": {
+      "poiId": "B023E07FCK",
+      "address": "浙江省宁波市江北区慈城镇",
+      "sourceName": "慈城古县城",
+      "sourceUrl": "https://www.amap.com/detail/B023E07FCK",
+      "checkedAt": "2026-09-05T19:05:08.370Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0132": {
+      "poiId": "B023E05C1Z",
+      "address": "浙江省宁波市宁海县长街镇塘岸头村",
+      "sourceName": "伍山石窟",
+      "sourceUrl": "https://www.amap.com/detail/B023E05C1Z",
+      "checkedAt": "2026-09-05T19:05:09.092Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0138": {
+      "poiId": "B023E05B0B",
+      "address": "浙江省宁波市象山县石浦镇江心街4号",
+      "sourceName": "石浦渔港古城",
+      "sourceUrl": "https://www.amap.com/detail/B023E05B0B",
+      "checkedAt": "2026-09-05T19:05:09.129Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0144": {
+      "poiId": "B023E04F3P",
+      "address": "浙江省宁波市余姚市大岚镇柿林村",
+      "sourceName": "丹山赤水风景区",
+      "sourceUrl": "https://www.amap.com/detail/B023E04F3P",
+      "checkedAt": "2026-09-05T19:05:09.478Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0215": {
+      "poiId": "B024104087",
+      "address": "浙江省温州市鹿城区望江东路119号",
+      "sourceName": "江心屿",
+      "sourceUrl": "https://www.amap.com/detail/B024104087",
+      "checkedAt": "2026-09-05T19:05:10.208Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0208": {
+      "poiId": "B024104089",
+      "address": "浙江省温州市永嘉县鹤盛镇下岙村",
+      "sourceName": "楠溪江风景名胜区",
+      "sourceUrl": "https://www.amap.com/detail/B024104089",
+      "checkedAt": "2026-09-05T19:05:10.212Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0216": {
+      "poiId": "B024104I42",
+      "address": "浙江省温州市苍南县",
+      "sourceName": "玉苍山",
+      "sourceUrl": "https://www.amap.com/detail/B024104I42",
+      "checkedAt": "2026-09-05T19:05:10.577Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0225": {
+      "poiId": "B024105Q17",
+      "address": "浙江省温州市苍南县马站镇渔寮湾社区",
+      "sourceName": "苍南县渔寮旅游区",
+      "sourceUrl": "https://www.amap.com/detail/B024105Q17",
+      "checkedAt": "2026-09-05T19:05:11.297Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0292": {
+      "poiId": "B0FFF0BWW1",
+      "address": "浙江省湖州市安吉县上墅乡董岭村",
+      "sourceName": "浙北大峡谷景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFF0BWW1",
+      "checkedAt": "2026-09-05T19:05:11.306Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0293": {
+      "poiId": "B0HUAUAZLC",
+      "address": "浙江省湖州市吴兴区织里镇义皋村太湖溇港",
+      "sourceName": "太湖溇港景区",
+      "sourceUrl": "https://www.amap.com/detail/B0HUAUAZLC",
+      "checkedAt": "2026-09-05T19:05:11.678Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0299": {
+      "poiId": "B023C02MJJ",
+      "address": "浙江省湖州市长兴县泗安镇仙山村仙山湖景区内",
+      "sourceName": "仙山湖",
+      "sourceUrl": "https://www.amap.com/detail/B023C02MJJ",
+      "checkedAt": "2026-09-05T19:05:12.033Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0395": {
+      "poiId": "B023D02TDV",
+      "address": "浙江省嘉兴市海盐县澉浦镇331县道",
+      "sourceName": "南北湖风景名胜区",
+      "sourceUrl": "https://www.amap.com/detail/B023D02TDV",
+      "checkedAt": "2026-09-05T19:05:12.071Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0398": {
+      "poiId": "B023D02TJF",
+      "address": "浙江省嘉兴市平湖市环城东路",
+      "sourceName": "东湖景区",
+      "sourceUrl": "https://www.amap.com/detail/B023D02TJF",
+      "checkedAt": "2026-09-05T19:05:12.425Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0470": {
+      "poiId": "B023F02L5P",
+      "address": "浙江省绍兴市越城区二环南路",
+      "sourceName": "大禹陵景区",
+      "sourceUrl": "https://www.amap.com/detail/B023F02L5P",
+      "checkedAt": "2026-09-05T19:05:13.157Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0471": {
+      "poiId": "B023F003AD",
+      "address": "浙江省绍兴市新昌县人民西路117号",
+      "sourceName": "大佛寺风景名胜区",
+      "sourceUrl": "https://www.amap.com/detail/B023F003AD",
+      "checkedAt": "2026-09-05T19:05:13.194Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0474": {
+      "poiId": "B023F02GUL",
+      "address": "浙江省绍兴市诸暨市五泄镇",
+      "sourceName": "五泄风景区",
+      "sourceUrl": "https://www.amap.com/detail/B023F02GUL",
+      "checkedAt": "2026-09-05T19:05:13.548Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0553": {
+      "poiId": "B0FFI1TMKZ",
+      "address": "浙江省金华市永康市永康方岩镇",
+      "sourceName": "永康市方岩风景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFI1TMKZ",
+      "checkedAt": "2026-09-05T19:05:14.275Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0554": {
+      "poiId": "B0FFG363AR",
+      "address": "浙江省金华市武义县武丽线",
+      "sourceName": "璟园",
+      "sourceUrl": "https://www.amap.com/detail/B0FFG363AR",
+      "checkedAt": "2026-09-05T19:05:14.294Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0555": {
+      "poiId": "B0HKNZRGVZ",
+      "address": "浙江省金华市武义县大红岩·崆峒山景区内(西侧)",
+      "sourceName": "大红岩",
+      "sourceUrl": "https://www.amap.com/detail/B0HKNZRGVZ",
+      "checkedAt": "2026-09-05T19:05:14.639Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0558": {
+      "poiId": "B02430HU4B",
+      "address": "浙江省金华市磐安县尖山镇",
+      "sourceName": "十八涡景区",
+      "sourceUrl": "https://www.amap.com/detail/B02430HU4B",
+      "checkedAt": "2026-09-05T19:05:15.010Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0557": {
+      "poiId": "B024315PTN",
+      "address": "浙江省金华市磐安县尖山镇楼下宅村",
+      "sourceName": "舞龙峡景区",
+      "sourceUrl": "https://www.amap.com/detail/B024315PTN",
+      "checkedAt": "2026-09-05T19:05:15.022Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0560": {
+      "poiId": "B02430HS4T",
+      "address": "浙江省金华市磐安县冷沙线仁川镇石下村往南",
+      "sourceName": "金华市磐安县百杖潭景区",
+      "sourceUrl": "https://www.amap.com/detail/B02430HS4T",
+      "checkedAt": "2026-09-05T19:05:15.431Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0561": {
+      "poiId": "B02430I2UW",
+      "address": "浙江省金华市兰溪市330国道",
+      "sourceName": "诸葛八卦村景区",
+      "sourceUrl": "https://www.amap.com/detail/B02430I2UW",
+      "checkedAt": "2026-09-05T19:05:15.434Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0647": {
+      "poiId": "B0IBMHDPIO",
+      "address": "浙江省衢州市柯城区花园东大道199号",
+      "sourceName": "衢州古城文化旅游区",
+      "sourceUrl": "https://www.amap.com/detail/B0IBMHDPIO",
+      "checkedAt": "2026-09-05T19:05:16.171Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0648": {
+      "poiId": "B0FFIBRGKL",
+      "address": "浙江省衢州市江山市大陈乡卫生院西侧130米",
+      "sourceName": "大陈古村",
+      "sourceUrl": "https://www.amap.com/detail/B0FFIBRGKL",
+      "checkedAt": "2026-09-05T19:05:16.379Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0652": {
+      "poiId": "B0FFH0ER8O",
+      "address": "浙江省衢州市柯城区七里乡",
+      "sourceName": "桃源七里景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFH0ER8O",
+      "checkedAt": "2026-09-05T19:05:17.142Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0653": {
+      "poiId": "B023A00E22",
+      "address": "浙江省衢州市江山市205国道廿八都镇南浮盖山村洋田自然村",
+      "sourceName": "浮盖山风景区",
+      "sourceUrl": "https://www.amap.com/detail/B023A00E22",
+      "checkedAt": "2026-09-05T19:05:17.250Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0654": {
+      "poiId": "B0FFFAGOGR",
+      "address": "浙江省衢州市开化县604县道",
+      "sourceName": "古田山",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFAGOGR",
+      "checkedAt": "2026-09-05T19:05:17.520Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0721": {
+      "poiId": "B0FFJCYDB3",
+      "address": "浙江省舟山市嵊泗县李五线舟山嵊泗列岛风景名胜区",
+      "sourceName": "花鸟岛",
+      "sourceUrl": "https://www.amap.com/detail/B0FFJCYDB3",
+      "checkedAt": "2026-09-05T19:05:18.243Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0875": {
+      "poiId": "B024215FQ6",
+      "address": "浙江省丽水市遂昌县",
+      "sourceName": "南尖岩",
+      "sourceUrl": "https://www.amap.com/detail/B024215FQ6",
+      "checkedAt": "2026-09-05T19:05:19.222Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0877": {
+      "poiId": "B02420JJ0R",
+      "address": "浙江省丽水市景宁畲族自治县大均乡",
+      "sourceName": "景宁畲族自治县畲乡之窗旅游区",
+      "sourceUrl": "https://www.amap.com/detail/B02420JJ0R",
+      "checkedAt": "2026-09-05T19:05:19.335Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0878": {
+      "poiId": "B024215NPM",
+      "address": "浙江省丽水市缙云县河阳村内",
+      "sourceName": "河阳古民居",
+      "sourceUrl": "https://www.amap.com/detail/B024215NPM",
+      "checkedAt": "2026-09-05T19:05:19.619Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0880": {
+      "poiId": "B0FFJZ6LID",
+      "address": "浙江省丽水市缙云县梅溪山塘农场露营烧烤大锅饭菜·垂钓北侧310米",
+      "sourceName": "黄龙景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFJZ6LID",
+      "checkedAt": "2026-09-05T19:05:19.982Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0882": {
+      "poiId": "B02420163F",
+      "address": "浙江省丽水市庆元县",
+      "sourceName": "巾子峰",
+      "sourceUrl": "https://www.amap.com/detail/B02420163F",
+      "checkedAt": "2026-09-05T19:05:20.059Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0884": {
+      "poiId": "B024215J5N",
+      "address": "浙江省丽水市遂昌县石练镇黄皮村",
+      "sourceName": "千佛山景区",
+      "sourceUrl": "https://www.amap.com/detail/B024215J5N",
+      "checkedAt": "2026-09-05T19:05:20.397Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0288": {
+      "poiId": "B023C0OMFN",
+      "address": "浙江省湖州市南浔区南浔镇东塘路古镇东大门",
+      "sourceName": "南浔古镇",
+      "sourceUrl": "https://www.amap.com/detail/B023C0OMFN",
+      "checkedAt": "2026-09-05T19:10:31.504Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0391": {
+      "poiId": "B023D02T2B",
+      "address": "浙江省嘉兴市嘉善县西塘镇南苑路258号",
+      "sourceName": "西塘古镇",
+      "sourceUrl": "https://www.amap.com/detail/B023D02T2B",
+      "checkedAt": "2026-09-05T19:10:32.230Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0392": {
+      "poiId": "B0FFFAPGR4",
+      "address": "浙江省嘉兴市桐乡市石佛南路18号",
+      "sourceName": "乌镇风景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFAPGR4",
+      "checkedAt": "2026-09-05T19:10:32.929Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0718": {
+      "poiId": "B02445IKZ7",
+      "address": "浙江省舟山市普陀区普陀山镇梅芩路1号(奇石王宫景区东北166.9公里)",
+      "sourceName": "普陀山风景名胜区",
+      "sourceUrl": "https://www.amap.com/detail/B02445IKZ7",
+      "checkedAt": "2026-09-05T19:10:33.636Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0755": {
+      "poiId": "B0FFGLW1SP",
+      "address": "浙江省台州市仙居县下街线与321省道交叉口南180米",
+      "sourceName": "神仙居景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFGLW1SP",
+      "checkedAt": "2026-09-05T19:10:34.324Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0756": {
+      "poiId": "B02400SPSI",
+      "address": "浙江省台州市天台县和合街1号(奇石王宫景区东南45.3公里)",
+      "sourceName": "天台山国家级风景名胜区",
+      "sourceUrl": "https://www.amap.com/detail/B02400SPSI",
+      "checkedAt": "2026-09-05T19:10:35.030Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0015": {
+      "poiId": "B023B07SJV",
+      "address": "浙江省杭州市临安区锦北街道柳庄驿站出入口",
+      "sourceName": "青山湖景区",
+      "sourceUrl": "https://www.amap.com/detail/B023B07SJV",
+      "checkedAt": "2026-09-05T19:10:35.741Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0017": {
+      "poiId": "B023B07SDD",
+      "address": "浙江省杭州市临安区清凉峰镇白果村横溪桥158号",
+      "sourceName": "大明山风景区",
+      "sourceUrl": "https://www.amap.com/detail/B023B07SDD",
+      "checkedAt": "2026-09-05T19:10:36.429Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0030": {
+      "poiId": "B023B07SOU",
+      "address": "浙江省杭州市桐庐县富春江镇云源路1号",
+      "sourceName": "严子陵钓台",
+      "sourceUrl": "https://www.amap.com/detail/B023B07SOU",
+      "checkedAt": "2026-09-05T19:10:37.136Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0127": {
+      "poiId": "B0HAJR6TJ6",
+      "address": "浙江省宁波市余姚市梁弄镇横坎头村",
+      "sourceName": "浙东四明山抗日根据地旧址群",
+      "sourceUrl": "https://www.amap.com/detail/B0HAJR6TJ6",
+      "checkedAt": "2026-09-05T19:10:37.830Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0130": {
+      "poiId": "B023E07KHL",
+      "address": "浙江省宁波市江北区中马路157号-159号",
+      "sourceName": "宁波老外滩",
+      "sourceUrl": "https://www.amap.com/detail/B023E07KHL",
+      "checkedAt": "2026-09-05T19:10:38.517Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0150": {
+      "poiId": "B023E058Q5",
+      "address": "浙江省宁波市镇海区",
+      "sourceName": "招宝山旅游风景区",
+      "sourceUrl": "https://www.amap.com/detail/B023E058Q5",
+      "checkedAt": "2026-09-05T19:10:39.226Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0205": {
+      "poiId": "B024100OC2",
+      "address": "浙江省温州市瑞安市徐红线附近",
+      "sourceName": "寨寮溪风景区",
+      "sourceUrl": "https://www.amap.com/detail/B024100OC2",
+      "checkedAt": "2026-09-05T19:10:39.942Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0207": {
+      "poiId": "B024100TY3",
+      "address": "浙江省温州市乐清市白石街道",
+      "sourceName": "中雁荡山风景区",
+      "sourceUrl": "https://www.amap.com/detail/B024100TY3",
+      "checkedAt": "2026-09-05T19:10:40.667Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0219": {
+      "poiId": "B024104068",
+      "address": "浙江省温州市文成县西坑畲族镇",
+      "sourceName": "龙麒源",
+      "sourceUrl": "https://www.amap.com/detail/B024104068",
+      "checkedAt": "2026-09-05T19:10:41.365Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0221": {
+      "poiId": "B0FFLN90G9",
+      "address": "浙江省温州市平阳县显腾线西南30米",
+      "sourceName": "苏步青故里文化旅游区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFLN90G9",
+      "checkedAt": "2026-09-05T19:10:42.058Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0223": {
+      "poiId": "B0241046RS",
+      "address": "浙江省温州市平阳县南雁镇雁荡村",
+      "sourceName": "南雁荡山国家级风景名胜区",
+      "sourceUrl": "https://www.amap.com/detail/B0241046RS",
+      "checkedAt": "2026-09-05T19:10:42.764Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0297": {
+      "poiId": "B0FFMED4GC",
+      "address": "浙江省湖州市德清县莫干山镇莫干山国际旅游度假区内(东侧)",
+      "sourceName": "庾村景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFMED4GC",
+      "checkedAt": "2026-09-05T19:10:43.469Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0401": {
+      "poiId": "B023D03OFF",
+      "address": "浙江省嘉兴市南湖区三星路10号",
+      "sourceName": "梅花洲景区",
+      "sourceUrl": "https://www.amap.com/detail/B023D03OFF",
+      "checkedAt": "2026-09-05T19:10:44.187Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0468": {
+      "poiId": "B023F00N0U",
+      "address": "浙江省绍兴市柯桥区兰亭街道兰亭村(奇石王宫景区西北49.1公里)",
+      "sourceName": "兰亭景区",
+      "sourceUrl": "https://www.amap.com/detail/B023F00N0U",
+      "checkedAt": "2026-09-05T19:10:44.909Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0469": {
+      "poiId": "B023F02KJ6",
+      "address": "浙江省绍兴市新昌县澄潭街道左于村(奇石王宫景区东南20.6公里)",
+      "sourceName": "十九峰景区",
+      "sourceUrl": "https://www.amap.com/detail/B023F02KJ6",
+      "checkedAt": "2026-09-05T19:10:45.652Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0475": {
+      "poiId": "B0FFFD1GIT",
+      "address": "浙江省绍兴市诸暨市苎萝东路2号",
+      "sourceName": "西施故里",
+      "sourceUrl": "https://www.amap.com/detail/B0FFFD1GIT",
+      "checkedAt": "2026-09-05T19:10:46.358Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0479": {
+      "poiId": "B0GKK91IZ9",
+      "address": "浙江省绍兴市柯桥区会稽山兜率天景区",
+      "sourceName": "大香林风景区",
+      "sourceUrl": "https://www.amap.com/detail/B0GKK91IZ9",
+      "checkedAt": "2026-09-05T19:10:47.069Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0480": {
+      "poiId": "B023F00NBB",
+      "address": "浙江省绍兴市柯桥区安昌街道安昌古镇入口广场",
+      "sourceName": "安昌古镇",
+      "sourceUrl": "https://www.amap.com/detail/B023F00NBB",
+      "checkedAt": "2026-09-05T19:10:47.768Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0556": {
+      "poiId": "B02430I35I",
+      "address": "浙江省金华市浦江县潘宅镇丽水村神丽峡",
+      "sourceName": "神丽峡风景区",
+      "sourceUrl": "https://www.amap.com/detail/B02430I35I",
+      "checkedAt": "2026-09-05T19:10:48.468Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0565": {
+      "poiId": "B02430HZD8",
+      "address": "浙江省金华市东阳市卢宅街2号",
+      "sourceName": "卢宅",
+      "sourceUrl": "https://www.amap.com/detail/B02430HZD8",
+      "checkedAt": "2026-09-05T19:10:49.182Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0649": {
+      "poiId": "B0FFJTPX05",
+      "address": "浙江省衢州市常山县东案乡梅树底村",
+      "sourceName": "梅树底风景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFJTPX05",
+      "checkedAt": "2026-09-05T19:10:51.320Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0650": {
+      "poiId": "B023A00E1D",
+      "address": "浙江省衢州市龙游县裕民路44号",
+      "sourceName": "龙游石窟",
+      "sourceUrl": "https://www.amap.com/detail/B023A00E1D",
+      "checkedAt": "2026-09-05T19:10:52.028Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0651": {
+      "poiId": "B023A0I6V8",
+      "address": "浙江省衢州市龙游县东华街道宝塔路46号",
+      "sourceName": "龙游民居苑",
+      "sourceUrl": "https://www.amap.com/detail/B023A0I6V8",
+      "checkedAt": "2026-09-05T19:10:52.737Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0655": {
+      "poiId": "B023A14J79",
+      "address": "浙江省衢州市江山市仙霞关风景区内(南侧)",
+      "sourceName": "仙霞关",
+      "sourceUrl": "https://www.amap.com/detail/B023A14J79",
+      "checkedAt": "2026-09-05T19:10:53.446Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0657": {
+      "poiId": "B023A0IG06",
+      "address": "浙江省衢州市衢江区黄坛口乡",
+      "sourceName": "药王山景区",
+      "sourceUrl": "https://www.amap.com/detail/B023A0IG06",
+      "checkedAt": "2026-09-05T19:10:54.159Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0658": {
+      "poiId": "B023A0I86L",
+      "address": "浙江省衢州市常山县辉埠镇",
+      "sourceName": "三衢石林风景区",
+      "sourceUrl": "https://www.amap.com/detail/B023A0I86L",
+      "checkedAt": "2026-09-05T19:10:54.879Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0759": {
+      "poiId": "B0FFJRUUX5",
+      "address": "浙江省台州市天台县山大瀑布(琼台仙谷东南50米)",
+      "sourceName": "天台山大瀑布(琼台仙谷)景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFJRUUX5",
+      "checkedAt": "2026-09-05T19:10:56.286Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0772": {
+      "poiId": "B0MRVOFG2W",
+      "address": "浙江省台州市温岭市观夕硐西南侧110米",
+      "sourceName": "长屿硐天风景名胜区",
+      "sourceUrl": "https://www.amap.com/detail/B0MRVOFG2W",
+      "checkedAt": "2026-09-05T19:10:56.967Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0773": {
+      "poiId": "B024005GL9",
+      "address": "浙江省台州市温岭市",
+      "sourceName": "方山",
+      "sourceUrl": "https://www.amap.com/detail/B024005GL9",
+      "checkedAt": "2026-09-05T19:10:57.668Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0871": {
+      "poiId": "B0FFJZ5OVC",
+      "address": "浙江省丽水市松阳县新兴镇横溪村新兴邮政代办所马路对面",
+      "sourceName": "大木山茶园景区",
+      "sourceUrl": "https://www.amap.com/detail/B0FFJZ5OVC",
+      "checkedAt": "2026-09-05T19:10:58.393Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0879": {
+      "poiId": "B024215X6G",
+      "address": "浙江省丽水市云和县龙门村三龙段与紧龙段交叉口东50米(龙门村村委)",
+      "sourceName": "云和湖仙宫景区",
+      "sourceUrl": "https://www.amap.com/detail/B024215X6G",
+      "checkedAt": "2026-09-05T19:10:59.100Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    },
+    "zj-0887": {
+      "poiId": "B024200C15",
+      "address": "浙江省丽水市青田县伯温古村43号",
+      "sourceName": "石门洞景区",
+      "sourceUrl": "https://www.amap.com/detail/B024200C15",
+      "checkedAt": "2026-09-05T19:10:59.792Z",
+      "note": "高德POI登记地址；联合景区为代表点地址，不等同于唯一入口。"
+    }
+  },
+  "provider": "amap",
+  "updatedAt": "2026-09-05T19:11:00.305Z"
+}

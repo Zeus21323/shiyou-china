@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import ChinaMap, { type Province } from '../components/handscroll-map';
 import ScenicList from '../components/scenic-list';
+import ScenicAddress from '../components/scenic-address';
 import PoetryNebula from '../components/star-river';
 import type { ScenicArea, Work, Catalog } from '../lib/content';
 import { selectScenicAreas } from '../lib/scenic-selection';
@@ -58,7 +59,11 @@ export default function Home() {
     setScenic(null);
     setReading(null);
   }, []);
-  const overview = useCallback(() => selectProvince(null), [selectProvince]);
+  const selectInViewport = useCallback((p: Province | null) => {
+    setSelected(p);
+    setScenic(null);
+    setReading(null);
+  }, []);
   const zhejiang = () =>
     selectProvince(
       provinces.find((p) => p.properties.adcode === 330000) ?? null,
@@ -98,7 +103,7 @@ export default function Home() {
               selected={selected}
               onSelect={selectProvince}
               onScenic={openScenic}
-              onOverview={overview}
+              onViewportSelect={selectInViewport}
               visible={!scenic}
             />
           </div>
@@ -184,6 +189,7 @@ export default function Home() {
                 </span>
                 <h2>{reading ? reading.title : '山水诗文'}</h2>
               </div>
+              <ScenicAddress scenic={scenic} />
               {reading ? (
                 <article className="reader">
                   <div className="work-byline">
@@ -336,8 +342,8 @@ export default function Home() {
               ) : (
                 <div className="empty-state">
                   <span className="empty-icon">山</span>
-                  <h3>这个省份的诗路尚待展开</h3>
-                  <p>首期建设浙江省。你仍可在地图上查看其他省份。</p>
+                  <h3>{selected.properties.name}景区待接入</h3>
+                  <p>该省的景区名录与位置尚待核验，目前可查看省界与地形。</p>
                   <button onClick={zhejiang}>前往浙江 →</button>
                 </div>
               )}

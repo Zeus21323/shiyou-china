@@ -662,11 +662,35 @@ select {
   background: transparent;
 }
 .sign-solid {
+  transform-origin: 50% 100%;
   position: absolute;
   inset: 4px;
   transform-style: preserve-3d;
   transform: rotateX(8deg) rotateY(-17deg);
   transition: transform 0.22s ease;
+}
+.sign-connector {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.scenic-address {
+  margin: 16px 0 24px;
+  padding: 14px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  font-size: 13px;
+  line-height: 1.9;
+}
+.scenic-address p {
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+.scenic-address small {
+  display: block;
+  color: var(--muted);
 }
 .sign-front,
 .sign-back,

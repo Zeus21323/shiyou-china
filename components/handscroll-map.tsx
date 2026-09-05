@@ -10,12 +10,18 @@ import relief from '../public/data/terrain/relief.json';
 import chinaHeights from '../public/data/terrain/china-elevation.json';
 import zhejiangHeights from '../public/data/terrain/zhejiang-elevation.json';
 import { elevationAt, HEIGHT_SCALE } from '../lib/terrain-height';
+import {
+  fitProvinceZoom,
+  provinceAt,
+  requiresCameraFit,
+} from '../lib/province-view';
 import type { Province } from './china-map';
 import type { ScenicArea, Catalog } from '../lib/content';
 import { selectScenicAreas } from '../lib/scenic-selection';
 import {
   clusterAnchors,
   placeLabels,
+  labelDock,
   type MapAnchor,
   type PlacedLabel,
 } from '../lib/map-layout';
@@ -33,6 +39,7 @@ type ScreenState = {
   hidden: MapAnchor[];
   groups: ReturnType<typeof clusterAnchors>;
   zoom: number;
+  scale: number;
   width: number;
   height: number;
 };
@@ -83,10 +90,12 @@ const ProvinceShape = memo(function ProvinceShape({
   onSelect: (p: Province) => void;
   meshData: ArrayBuffer;
 }) {
-  const [hover, setHover] = useState(false);
   const local = Number(feature.properties.adcode) === 330000;
-  const region = local ? terrain.zhejiang : terrain.china;
-  const texture = useTexture(`/data/terrain/${region.texture}`);
+  const [nationalTexture, detailTexture] = useTexture([
+    `/data/terrain/${terrain.china.texture}`,
+    `/data/terrain/${terrain.zhejiang.texture}`,
+  ]);
+  const texture = local && active ? detailTexture : nationalTexture;
   const { gl } = useThree();
   useEffect(() => {
     texture.colorSpace = THREE.SRGBColorSpace;
@@ -116,6 +125,26 @@ const ProvinceShape = memo(function ProvinceShape({
     geometry.setDrawRange(part.start, part.count);
     return geometry;
   }, [feature, meshData]);
+  useEffect(() => {
+    if (local && !active) {
+      const positions = geometry.getAttribute('position');
+      const uv = new Float32Array(positions.count * 2);
+      const [w, s, e, n] = terrain.china.bounds;
+      for (let i = 0; i < positions.count; i++) {
+        uv[i * 2] = (positions.getX(i) / 0.75 + 104 - w) / (e - w);
+        uv[i * 2 + 1] = (positions.getY(i) / 0.95 + 35 - s) / (n - s);
+      }
+      geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    } else
+      geometry.setAttribute(
+        'uv',
+        new THREE.InterleavedBufferAttribute(
+          sharedMeshBuffers(meshData).data,
+          2,
+          6,
+        ),
+      );
+  }, [active, local, geometry, meshData]);
   const outline = useMemo(() => {
     const values: number[] = [];
     const grid = local ? zhejiangHeights : chinaHeights;
@@ -140,7 +169,7 @@ const ProvinceShape = memo(function ProvinceShape({
     if (material.current)
       material.current.opacity = THREE.MathUtils.damp(
         material.current.opacity,
-        muted ? 0.16 : 1,
+        muted ? 0.65 : 1,
         8,
         dt,
       );
@@ -150,11 +179,6 @@ const ProvinceShape = memo(function ProvinceShape({
       <mesh
         geometry={geometry}
         frustumCulled={false}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          setHover(true);
-        }}
-        onPointerOut={() => setHover(false)}
         onClick={(e) => {
           e.stopPropagation();
           if (e.delta < 5 && feature.properties.name && !active)
@@ -166,16 +190,16 @@ const ProvinceShape = memo(function ProvinceShape({
           map={texture}
           transparent
           depthWrite={!muted}
-          color={active || hover ? '#ffffff' : '#e1e9df'}
+          color={active ? '#fff9dc' : '#e1e9df'}
           roughness={1}
           metalness={0}
         />
       </mesh>
       <lineSegments geometry={outline}>
         <lineBasicMaterial
-          color={active ? '#547d70' : '#9aa99a'}
+          color={active ? '#a77c30' : '#9aa99a'}
           transparent
-          opacity={muted ? 0.15 : 0.6}
+          opacity={active ? 1 : 0.55}
         />
       </lineSegments>
     </group>
@@ -189,7 +213,7 @@ function CameraAndLabels({
   command,
   onScreen,
   resetRevision,
-  onOverview,
+  onViewportSelect,
   visible,
 }: {
   provinces: Province[];
@@ -199,7 +223,7 @@ function CameraAndLabels({
   command: { id: number; factor: number };
   onScreen: (s: ScreenState) => void;
   resetRevision: number;
-  onOverview: () => void;
+  onViewportSelect: (p: Province | null) => void;
   visible: boolean;
 }) {
   const { camera, size, gl } = useThree();
@@ -215,7 +239,10 @@ function CameraAndLabels({
   const initialized = useRef(false);
   const userZoomed = useRef(false);
   const returning = useRef(false);
-  const overviewWheelLock = useRef(0);
+  const lastFit = useRef({ revision: -1, width: 0, height: 0 });
+  const dragStart = useRef<THREE.Vector3 | null>(null);
+  const panPending = useRef(false);
+  const panSettlesAt = useRef(0);
   const previousLabels = useRef<PlacedLabel[]>([]);
   const showFour = useRef(false);
   const pivot = useRef<THREE.Vector2 | null>(null);
@@ -233,6 +260,15 @@ function CameraAndLabels({
   const initialZoom = useRef(1),
     elapsed = useRef(0);
   const cam = camera as THREE.OrthographicCamera;
+  const nationalZoom = useMemo(
+    () =>
+      fitProvinceZoom(
+        provinces.filter((p) => p.properties.name),
+        size.width,
+        size.height,
+      ),
+    [provinces, size],
+  );
   const bounds = useMemo(() => {
     const b = new THREE.Box2();
     (selected ? [selected] : provinces.filter((p) => p.properties.name))
@@ -250,12 +286,29 @@ function CameraAndLabels({
   );
   useEffect(() => {
     if (bounds.isEmpty()) return;
-    const span = bounds.getSize(new THREE.Vector2());
-    initialZoom.current =
-      Math.min(
-        Math.max(220, size.width - 96) / Math.max(span.x, 1),
-        Math.max(220, size.height - 220) / Math.max(span.y * 0.81, 1),
-      ) * 0.92;
+    initialZoom.current = fitProvinceZoom(
+      selected ? [selected] : provinces.filter((p) => p.properties.name),
+      size.width,
+      size.height,
+    );
+    const fitRequested = requiresCameraFit(
+      lastFit.current,
+      resetRevision,
+      size.width,
+      size.height,
+      initialized.current,
+    );
+    previousLabels.current = [];
+    showFour.current = false;
+    lastCamera.current = '';
+    returning.current = false;
+    // 平移/缩小引起的选择变化只更新数据范围，不改镜头或缩放目标。
+    if (!fitRequested) return;
+    lastFit.current = {
+      revision: resetRevision,
+      width: size.width,
+      height: size.height,
+    };
     const destination = {
       position: new THREE.Vector3(center.x, center.y - 26, 36),
       target: new THREE.Vector3(center.x, center.y, 0),
@@ -264,6 +317,7 @@ function CameraAndLabels({
     zoomTarget.current = null;
     pivot.current = null;
     userZoomed.current = false;
+    panPending.current = false;
     returning.current = false;
     previousLabels.current = [];
     showFour.current = false;
@@ -308,8 +362,8 @@ function CameraAndLabels({
       if (pinchDistance > 0)
         zoomTarget.current = THREE.MathUtils.clamp(
           ((zoomTarget.current ?? cam.zoom) * distance) / pinchDistance,
-          initialZoom.current * (selected?.properties ? 0.4 : 0.65),
-          initialZoom.current * 18,
+          nationalZoom * 0.65,
+          1400,
         );
       pinchDistance = distance;
       userZoomed.current = true;
@@ -324,8 +378,6 @@ function CameraAndLabels({
       if ((e.target as HTMLElement).closest('.map-cluster, .map-density'))
         return;
       e.preventDefault();
-      // 同一次触控板惯性滚动不能打断刚触发的全国回程。
-      if (!selected && performance.now() < overviewWheelLock.current) return;
       const rect = gl.domElement.getBoundingClientRect();
       pivot.current = new THREE.Vector2(
         ((e.clientX - rect.left) / rect.width) * 2 - 1,
@@ -339,8 +391,8 @@ function CameraAndLabels({
       zoomTarget.current = THREE.MathUtils.clamp(
         (zoomTarget.current ?? cam.zoom) *
           Math.exp(-THREE.MathUtils.clamp(pixels, -240, 240) * 0.0032),
-        initialZoom.current * (selected ? 0.4 : 0.65),
-        initialZoom.current * 18,
+        nationalZoom * 0.65,
+        1400,
       );
     };
     host.addEventListener('wheel', wheel, { passive: false });
@@ -358,17 +410,14 @@ function CameraAndLabels({
       canvas.removeEventListener('pointerup', touchUp, true);
       canvas.removeEventListener('pointercancel', touchUp, true);
     };
-  }, [gl, cam, selected, visible]);
+  }, [gl, cam, selected, visible, nationalZoom]);
   useEffect(() => {
     if (command.id && command.id !== lastCommand.current) {
       lastCommand.current = command.id;
       flight.current = null;
       const next = Math.max(
-        initialZoom.current * (selected ? 0.4 : 0.65),
-        Math.min(
-          initialZoom.current * 18,
-          (zoomTarget.current ?? cam.zoom) * command.factor,
-        ),
+        nationalZoom * 0.65,
+        Math.min(1400, (zoomTarget.current ?? cam.zoom) * command.factor),
       );
       userZoomed.current = true;
       pivot.current = null;
@@ -377,7 +426,7 @@ function CameraAndLabels({
         cam.updateProjectionMatrix();
       } else zoomTarget.current = next;
     }
-  }, [command, cam, reduced, selected]);
+  }, [command, cam, reduced, selected, nationalZoom]);
   useFrame((_, dt) => {
     if (!visible) return;
     const blend = reduced ? 1 : 1 - Math.exp(-Math.min(dt, 0.05) * 10);
@@ -413,6 +462,7 @@ function CameraAndLabels({
         zoomTarget.current = null;
     }
     cam.updateMatrixWorld();
+    gl.domElement.dataset.mapZoom = cam.zoom.toFixed(4);
     if (
       selected &&
       userZoomed.current &&
@@ -421,9 +471,31 @@ function CameraAndLabels({
       cam.zoom / initialZoom.current < 0.6
     ) {
       returning.current = true;
-      overviewWheelLock.current = performance.now() + 1100;
       zoomTarget.current = null;
-      onOverview();
+      onViewportSelect(null);
+    }
+    if (
+      panPending.current &&
+      performance.now() > panSettlesAt.current &&
+      controls.current &&
+      !flight.current &&
+      zoomTarget.current === null
+    ) {
+      panPending.current = false;
+      ray.setFromCamera(new THREE.Vector2(0, 0), cam);
+      const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
+      let candidate = hit
+        ? provinceAt(provinces, [hit.x / 0.75 + 104, hit.y / 0.95 + 35])
+        : null;
+      if (
+        candidate &&
+        cam.zoom < fitProvinceZoom([candidate], size.width, size.height) * 0.6
+      )
+        candidate = null;
+      if (candidate?.properties.adcode !== selected?.properties.adcode) {
+        userZoomed.current = false;
+        onViewportSelect(candidate);
+      }
     }
     elapsed.current += dt;
     if (elapsed.current < 1 / 30) return;
@@ -517,6 +589,7 @@ function CameraAndLabels({
       hidden: [...result.hidden, ...groups.slice(budget).map((g) => g.anchor)],
       groups,
       zoom,
+      scale: cam.zoom / nationalZoom,
       width: size.width,
       height: size.height,
     };
@@ -532,6 +605,19 @@ function CameraAndLabels({
       onStart={() => {
         flight.current = null;
         zoomTarget.current = null;
+        dragStart.current = controls.current?.target.clone() ?? null;
+        panPending.current = false;
+      }}
+      onEnd={() => {
+        if (
+          dragStart.current &&
+          controls.current &&
+          dragStart.current.distanceTo(controls.current.target) > 0.02
+        ) {
+          panPending.current = true;
+          panSettlesAt.current = performance.now() + 300;
+        }
+        dragStart.current = null;
       }}
       dampingFactor={0.12}
       enableDamping
@@ -561,7 +647,7 @@ export default function HandscrollMap({
   onSelect,
   onScenic,
   resetRevision,
-  onOverview,
+  onViewportSelect,
   visible = true,
 }: {
   provinces: Province[];
@@ -569,7 +655,7 @@ export default function HandscrollMap({
   onSelect: (p: Province) => void;
   onScenic: (s: ScenicArea) => void;
   resetRevision: number;
-  onOverview: () => void;
+  onViewportSelect: (p: Province | null) => void;
   visible?: boolean;
 }) {
   const [meshData, setMeshData] = useState<ArrayBuffer | null>(null);
@@ -594,6 +680,7 @@ export default function HandscrollMap({
     hidden: [],
     groups: [],
     zoom: 1,
+    scale: 1,
     width: 1,
     height: 1,
   });
@@ -655,6 +742,7 @@ export default function HandscrollMap({
   return (
     <div
       className="handscroll-map"
+      data-highlighted-province={selected?.properties.adcode ?? ''}
       tabIndex={0}
       aria-label="立体山水地图，可左键拖动或方向键平移，滚轮缩放"
     >
@@ -695,7 +783,7 @@ export default function HandscrollMap({
           command={command}
           onScreen={setScreen}
           resetRevision={resetRevision}
-          onOverview={onOverview}
+          onViewportSelect={onViewportSelect}
           visible={visible}
         />
       </Canvas>
@@ -703,40 +791,6 @@ export default function HandscrollMap({
         className="map-signs"
         aria-label={selected ? '景区地图标签' : '省份地图标签'}
       >
-        <svg
-          className="map-leaders"
-          width="100%"
-          height="100%"
-          aria-hidden="true"
-        >
-          {drawnLabels.map((l) => (
-            <g
-              key={l.id}
-              style={{
-                opacity: visibleIds.has(l.id) ? 1 : 0,
-                transition: 'opacity 180ms ease',
-              }}
-            >
-              <line
-                x1={l.x}
-                y1={l.y}
-                x2={l.left + l.width / 2}
-                y2={l.top + l.height}
-                stroke="#937345"
-                strokeWidth=".8"
-                opacity=".6"
-              />
-              <circle
-                cx={l.x}
-                cy={l.y}
-                r={l.kind === 'province' ? 2 : 4}
-                fill="#b78a37"
-                stroke="#fff5d1"
-                strokeWidth="2"
-              />
-            </g>
-          ))}
-        </svg>
         {drawnLabels.map((l) => {
           const count =
             screen.groups.find((g) => g.anchor.id === l.id)?.members.length ??
@@ -761,7 +815,36 @@ export default function HandscrollMap({
               }
               onClick={() => act(l.id)}
             >
-              <div className="sign-solid">
+              <svg
+                className="sign-connector"
+                width={l.width}
+                height={l.height}
+                aria-hidden="true"
+              >
+                <line
+                  x1={l.x - l.left}
+                  y1={l.y - l.top}
+                  x2={labelDock(l).x}
+                  y2={labelDock(l).y}
+                  stroke="#937345"
+                  strokeWidth=".8"
+                  opacity=".65"
+                />
+                <circle
+                  cx={l.x - l.left}
+                  cy={l.y - l.top}
+                  r={l.kind === 'province' ? 2 : 4}
+                  fill="#b78a37"
+                  stroke="#fff5d1"
+                  strokeWidth="2"
+                />
+              </svg>
+              <div
+                className="sign-solid"
+                style={{
+                  transformOrigin: `${labelDock(l).x - 4}px ${labelDock(l).y - 4}px`,
+                }}
+              >
                 <div className="sign-side sign-left" aria-hidden="true" />
                 <div className="sign-side sign-right" aria-hidden="true" />
                 <div className="sign-side sign-top" aria-hidden="true" />
@@ -790,7 +873,7 @@ export default function HandscrollMap({
         <button aria-label="放大地图" onClick={() => zoom(1.5)}>
           ＋
         </button>
-        <span>{screen.zoom.toFixed(1)}×</span>
+        <span>{screen.scale.toFixed(1)}×</span>
         <button aria-label="缩小地图" onClick={() => zoom(1 / 1.5)}>
           −
         </button>
