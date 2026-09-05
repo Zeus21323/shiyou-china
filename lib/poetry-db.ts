@@ -80,9 +80,18 @@ async function getJson<T>(url: string): Promise<T> {
     return old as Promise<T>;
   }
   const task = fetch(url)
-    .then((r) => {
+    .then(async (r) => {
       if (!r.ok) throw Error('数据暂时无法读取，请重试。');
-      return r.json() as Promise<T>;
+      const bytes = await r.arrayBuffer();
+      const magic = new Uint8Array(bytes, 0, Math.min(2, bytes.byteLength));
+      // 静态 .gz 资产按需解压；若托管层已解码则直接读取 JSON。
+      if (magic[0] === 0x1f && magic[1] === 0x8b) {
+        const stream = new Blob([bytes])
+          .stream()
+          .pipeThrough(new DecompressionStream('gzip'));
+        return new Response(stream).json() as Promise<T>;
+      }
+      return JSON.parse(new TextDecoder().decode(bytes)) as T;
     })
     .catch((e) => {
       if (cache.get(url) === task) cache.delete(url);
@@ -93,11 +102,11 @@ async function getJson<T>(url: string): Promise<T> {
   return task;
 }
 export const loadPoetryManifest = () =>
-  getJson<PoetryManifest>('/data/poetry/manifest.json');
+  getJson<PoetryManifest>('/data/poetry/manifest.json.gz');
 export const loadPoetryAttractions = () =>
-  getJson<PoetryAttraction[]>('/data/poetry/attractions.index.json');
+  getJson<PoetryAttraction[]>('/data/poetry/attractions.index.json.gz');
 export const loadAttractionSky = (id: string) =>
-  getJson<AttractionSky>(`/data/poetry/places/${id}.json`);
+  getJson<AttractionSky>(`/data/poetry/places/${id}.json.gz`);
 export const relationNames: Record<RelationType, string> = {
   direct: '景区名称线索',
   'historical-alias': '历史别名线索',
@@ -141,7 +150,7 @@ export async function resolvePoetryWork(work: Work): Promise<Work> {
   const shard = work.id.slice(-2);
   if (!/^[a-f0-9]{2}$/.test(shard)) throw Error('作品索引格式不正确。');
   const records = await getJson<PoetryRecord[]>(
-    `/data/poetry/poems/${shard}.json`,
+    `/data/poetry/poems/${shard}.json.gz`,
   );
   const poem = records.find((p) => p.id === work.id);
   if (!poem) throw Error('没有找到这首作品的正文。');

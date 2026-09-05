@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { gunzipSync } from 'node:zlib';
 import {
   skyWorks,
   resolvePoetryWork,
@@ -13,7 +14,11 @@ import { layoutStarLabels } from '../lib/star-layout.ts';
 const root = path.resolve(import.meta.dirname, '..');
 const source = path.resolve(root, '../work/poetry-db');
 const target = path.join(root, 'public/data/poetry');
-const read = (p) => JSON.parse(fs.readFileSync(p, 'utf8'));
+const readBytes = (p) =>
+  fs.existsSync(p)
+    ? fs.readFileSync(p)
+    : gunzipSync(fs.readFileSync(p + '.gz'));
+const read = (p) => JSON.parse(readBytes(p));
 const index = read(path.join(target, 'attractions.index.json'));
 
 test('原有18篇核对诗文的正文、出处、关联及核对说明完整保留', () => {
@@ -94,7 +99,7 @@ test('十万首正文逐分片保持原文与来源一致，每条星河记录�
   const poems = new Map();
   for (const name of fs.readdirSync(path.join(source, 'poems'))) {
     const original = fs.readFileSync(path.join(source, 'poems', name));
-    const published = fs.readFileSync(path.join(target, 'poems', name));
+    const published = readBytes(path.join(target, 'poems', name));
     assert.equal(
       createHash('sha256').update(published).digest('hex'),
       createHash('sha256').update(original).digest('hex'),

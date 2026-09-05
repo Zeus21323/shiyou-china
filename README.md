@@ -20,10 +20,10 @@
 
 网页资产位于 `public/data/poetry`：
 
-- `attractions.index.json`：全国景点、分省编码、评级出处、关系数、已有点位。
-- `manifest.json`：覆盖范围、关系统计和原始正文分片 SHA-256。
-- `places/{scenicId}.json`：单景点全部候选关系和诗词元数据、已有核对作品；无全站全文预加载。
-- `poems/{00..ff}.json`：256 个去重正文分片，原样复制来源数据库；单片约 0.3 MB。
+- `attractions.index.json.gz`：全国景点、分省编码、评级出处、关系数、已有点位。
+- `manifest.json.gz`：覆盖范围、关系统计和原始正文分片 SHA-256。
+- `places/{scenicId}.json.gz`：单景点全部候选关系和诗词元数据、已有核对作品；无全站全文预加载。
+- `poems/{00..ff}.json.gz`：256 个去重正文分片，无损压缩来源数据库；解压后单片约 0.3 MB。
 - `CATALOG.md`、`DATABASE.md`、`LICENSE.txt`：原始名录、数据库说明和 MIT 许可。DATABASE.md 描述的是源数据库，其 relations/search 目录不属于网页资产布局。
 
 在项目根目录上级保留原数据库、筛选名录与 `work/scenic-research/filtered.json`，执行：
@@ -35,7 +35,7 @@ node --experimental-strip-types scripts/build-national-poetry.mjs
 
 第一步仅维护坐标时需要，读取本地忽略文件 `.env.local` 中的 `AMAP_WEB_SERVICE_KEY`。官方查询缓存与待核验列表写入 `web/work/national-geocoding`，便于断点继续，不发布 API 密钥或查询缓存。第二步只重组数据读取方式，不删改源数据库的诗词与关系，且校验原有 18 篇作品全部保留。
 
-网页 JSON 缓存最多 16 个资源，地形缓存最多 6 省；退场标签释放，隐藏场景暂停帧循环。地图采用艺术化垂直夸张，非等比例测绘模型；Natural Earth 河湖为概化数据。
+为满足 Sites 256 MiB 解包体积上限，全部诗词 JSON 以 gzip 分片发布，浏览器使用标准 DecompressionStream 按需解压；解压后字节与源数据库逐分片核验。需要支持此标准的现代浏览器（Chrome/Edge、Firefox、Safari 新版）。网页 JSON 缓存最多 16 个资源，地形缓存最多 6 省；退场标签释放，隐藏场景暂停帧循环。地图采用艺术化垂直夸张，非等比例测绘模型；Natural Earth 河湖为概化数据。
 
 ## 开发与验证
 

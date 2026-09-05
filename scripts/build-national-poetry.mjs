@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { gzipSync } from 'node:zlib';
 import { scenicNameScore, scenicName } from '../lib/scenic-names.ts';
 const root = path.resolve(import.meta.dirname, '..');
 const source = path.resolve(
@@ -9,7 +10,14 @@ const source = path.resolve(
 );
 const target = path.join(root, 'public/data/poetry');
 const read = (p) => JSON.parse(fs.readFileSync(p, 'utf8'));
-const write = (p, v) => fs.writeFileSync(p, JSON.stringify(v));
+const plainOutputs = [];
+const writeCompressed = (p, bytes) => {
+  if (!path.resolve(p).startsWith(target + path.sep))
+    throw Error('输出超出网页数据目录');
+  fs.writeFileSync(p + '.gz', gzipSync(bytes, { level: 9 }));
+  plainOutputs.push(p);
+};
+const write = (p, v) => writeCompressed(p, Buffer.from(JSON.stringify(v)));
 fs.mkdirSync(path.join(target, 'places'), { recursive: true });
 fs.mkdirSync(path.join(target, 'poems'), { recursive: true });
 const manifest = read(path.join(source, 'manifest.json'));
@@ -49,7 +57,7 @@ for (const file of fs
     if (poems.has(poem.id)) throw Error('重复诗词ID：' + poem.id);
     poems.set(poem.id, poem);
   }
-  fs.writeFileSync(path.join(target, 'poems', file), bytes);
+  writeCompressed(path.join(target, 'poems', file), bytes);
 }
 const national = [];
 let relationCount = 0,
@@ -151,7 +159,8 @@ const coverage = regions.map((p) => {
 write(path.join(target, 'attractions.index.json'), national);
 write(path.join(target, 'manifest.json'), {
   ...manifest,
-  webVersion: 2,
+  webVersion: 3,
+  compression: 'gzip',
   curatedWorks: curatedCount,
   coverage,
   sourceHashes,
@@ -169,6 +178,8 @@ fs.copyFileSync(
   path.join(root, '../全国5A和4A景区_按省份_筛选名录.md'),
   path.join(target, 'CATALOG.md'),
 );
+// 所有压缩资源生成且通过数量核验后，移除同名旧派生副本；不触碰源数据库。
+for (const p of plainOutputs) if (fs.existsSync(p)) fs.unlinkSync(p);
 console.log(
   JSON.stringify(
     {
