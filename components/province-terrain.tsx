@@ -23,6 +23,7 @@ import {
 import { useReducedMotion } from '../lib/use-motion-preference';
 import type { Province } from './china-map';
 import { ResourceCache } from '../lib/resource-cache';
+import { nextProvinceLift, provinceWallBand } from '../lib/province-lift';
 
 type Region = {
   texture: string;
@@ -41,6 +42,9 @@ type Detail = {
 };
 // Only mounted detail resources are held here. Release them after the return transition.
 const liveDetails = new Map<string, Detail>();
+const liveLifts = new Map<string, number>();
+export const provinceDisplayLift = (code?: string | number) =>
+  liveLifts.get(String(code)) ?? 0;
 export function createBoundaryContext(provinces: Province[]) {
   return {
     ...provinceBoundaries(provinces),
@@ -237,6 +241,13 @@ export const ProvinceShape = memo(function ProvinceShape({
   const baseColor = useMemo(() => new THREE.Color('#e1e9df'), []);
   const borderColor = useMemo(() => new THREE.Color('#a77c30'), []);
   const focusBlend = useRef(0);
+  const lift = useRef(0);
+  useEffect(
+    () => () => {
+      liveLifts.delete(code);
+    },
+    [code],
+  );
   useEffect(() => {
     for (const texture of [nationalTexture, detail?.texture])
       if (texture) initializeTexture(texture, gl);
@@ -319,11 +330,14 @@ export const ProvinceShape = memo(function ProvinceShape({
     line.raycast = () => {};
     return { line, points, revision: null as string | null };
   }, [boundaries, code, focusCode]);
-  // 仅沿国界/海岸封闭版图外缘，省际接缝不重复挤出侧壁。
+  // 外缘封闭到底座；省际侧壁只填补两省升降之差，同高时退化为零。
   const skirt = useMemo(() => {
-    const points = boundaries.segments
-      .filter((s) => s.owners.length === 1 && s.owners[0] === code)
-      .flatMap((s) => [s.a, s.b]);
+    const edges = boundaries.segments.filter((s) => s.owners.includes(code));
+    const points = edges.flatMap((s) => [s.a, s.b]);
+    const neighbors = edges.flatMap((s) => [
+      s.owners.filter((c) => c !== code),
+      s.owners.filter((c) => c !== code),
+    ]);
     const positions: number[] = [],
       colors: number[] = [],
       indices: number[] = [];
@@ -332,7 +346,17 @@ export const ProvinceShape = memo(function ProvinceShape({
     points.forEach((p, i) => {
       const x = (p[0] - 104) * 0.75,
         y = (p[1] - 35) * 0.95;
-      positions.push(x, y, boundaryHeight(boundaries, p) - 0.008, x, y, -0.1);
+      const band = provinceWallBand(
+        provinceTerrainHeight(code, p) * HEIGHT_SCALE + 0.025,
+        lift.current,
+        neighbors[i].map(
+          (c) =>
+            provinceTerrainHeight(c, p) * HEIGHT_SCALE +
+            0.025 +
+            provinceDisplayLift(c),
+        ),
+      );
+      positions.push(x, y, band.top, x, y, band.bottom);
       colors.push(...upper.toArray(), ...lower.toArray());
       if (i % 2 === 0) {
         const a = i * 2;
@@ -346,7 +370,7 @@ export const ProvinceShape = memo(function ProvinceShape({
     );
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
     geometry.setIndex(indices);
-    return { geometry, points };
+    return { geometry, points, neighbors };
   }, [boundaries, code]);
   useEffect(() => () => skirt.geometry.dispose(), [skirt]);
   useEffect(() => () => baseGeometry.dispose(), [baseGeometry]);
@@ -393,6 +417,9 @@ export const ProvinceShape = memo(function ProvinceShape({
   }, [detail, nationalTexture]);
   useEffect(() => () => detailedMaterial?.dispose(), [detailedMaterial]);
   useFrame(({ size }, dt) => {
+    lift.current = nextProvinceLift(lift.current, active, dt, reduced);
+    liveLifts.set(code, lift.current);
+    if (mesh.current) mesh.current.position.z = lift.current;
     if (detail) {
       const target = active ? 1 : 0;
       detail.blend.value = reduced
@@ -436,9 +463,15 @@ export const ProvinceShape = memo(function ProvinceShape({
   useFrame(({ clock }) => {
     if (boundaries.frame !== clock.elapsedTime) {
       boundaries.frame = clock.elapsedTime;
-      const revision = [...liveDetails]
-        .map(([code, detail]) => `${code}:${detail.blend.value.toFixed(4)}`)
-        .join('|');
+      const revision =
+        [...liveDetails]
+          .map(([code, detail]) => `${code}:${detail.blend.value.toFixed(4)}`)
+          .join('|') +
+        '/' +
+        [...liveLifts]
+          .filter(([, value]) => value > 0)
+          .map(([code, value]) => `${code}:${value.toFixed(5)}`)
+          .join('|');
       if (revision !== boundaries.revision) {
         boundaries.revision = revision;
         boundaries.heights.clear();
@@ -452,7 +485,10 @@ export const ProvinceShape = memo(function ProvinceShape({
     const array = positions.data.array;
     let changed = false;
     outline.points.forEach((point, i) => {
-      const height = boundaryHeight(boundaries, point),
+      const height =
+          (lift.current > 0
+            ? provinceTerrainHeight(code, point) * HEIGHT_SCALE + 0.033
+            : boundaryHeight(boundaries, point)) + lift.current,
         index = i * 3 + 2;
       if (Math.abs(array[index] - height) > 0.00001) {
         array[index] = height;
@@ -462,7 +498,18 @@ export const ProvinceShape = memo(function ProvinceShape({
     if (changed) positions.data.needsUpdate = true;
     const sidePositions = skirt.geometry.getAttribute('position');
     skirt.points.forEach((p, i) => {
-      sidePositions.setZ(i * 2, boundaryHeight(boundaries, p) - 0.008);
+      const band = provinceWallBand(
+        provinceTerrainHeight(code, p) * HEIGHT_SCALE + 0.025,
+        lift.current,
+        skirt.neighbors[i].map(
+          (c) =>
+            provinceTerrainHeight(c, p) * HEIGHT_SCALE +
+            0.025 +
+            provinceDisplayLift(c),
+        ),
+      );
+      sidePositions.setZ(i * 2, band.top);
+      sidePositions.setZ(i * 2 + 1, band.bottom);
     });
     sidePositions.needsUpdate = true;
     outline.revision = boundaries.revision;

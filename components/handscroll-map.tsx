@@ -6,11 +6,13 @@ import * as THREE from 'three';
 import type { OrbitControls as Controls } from 'three-stdlib';
 import { useReducedMotion } from '../lib/use-motion-preference';
 import { HEIGHT_SCALE, elevationAt } from '../lib/terrain-height';
+import { PROVINCE_LIFT } from '../lib/province-lift';
 import chinaHeights from '../public/data/terrain/china-elevation.json';
 import {
   ProvinceShape,
   provinceTerrainBlend,
   provinceTerrainHeight,
+  provinceDisplayLift,
   type TerrainStatus,
   prefetchProvinceTerrain,
   warmProvinceTexture,
@@ -20,6 +22,7 @@ import {
   fitProvinceZoom,
   MAP_CAMERA_OFFSET,
   provinceAt,
+  containsProvince,
   PROVINCE_FOCUS_SCALE,
   provinceFocusEnabled,
   focusProvince,
@@ -432,6 +435,14 @@ function CameraAndLabels({
       focusHistory.current = focusHistory.current.slice(-24);
       gl.domElement.dataset.focusHistory = JSON.stringify(focusHistory.current);
     }
+    gl.domElement.dataset.provinceLifts = JSON.stringify(
+      provinces
+        .map((p) => [
+          p.properties.adcode,
+          provinceDisplayLift(p.properties.adcode),
+        ])
+        .filter(([, lift]) => Number(lift) > 0),
+    );
     gl.domElement.dataset.terrainProgress = provinceTerrainBlend(
       selected?.properties.adcode,
     ).toFixed(3);
@@ -489,7 +500,7 @@ function CameraAndLabels({
           size.width,
           size.height,
         ].join('|');
-        const projectPointer = (point: THREE.Vector2) => {
+        const projectPointer = (point: THREE.Vector2, lift = 0) => {
           ray.setFromCamera(point, cam);
           const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
           if (hit) {
@@ -498,7 +509,8 @@ function CameraAndLabels({
               const geo = [hit.x / 0.75 + 104, hit.y / 0.95 + 35];
               const h =
                 Math.max(0, elevationAt(chinaHeights, geo[0], geo[1])) *
-                HEIGHT_SCALE;
+                  HEIGHT_SCALE +
+                lift;
               ray.ray.intersectPlane(
                 new THREE.Plane(new THREE.Vector3(0, 0, 1), -h),
                 hit,
@@ -507,15 +519,23 @@ function CameraAndLabels({
             return [hit.x / 0.75 + 104, hit.y / 0.95 + 35];
           } else return [NaN, NaN];
         };
+        // 选中板块上表面可继续命中；使用固定目标高度，升降动画不参与命中反馈。
+        const pickPointer = (point: THREE.Vector2) => {
+          if (selected) {
+            const raised = projectPointer(point, PROVINCE_LIFT);
+            if (containsProvince(selected, raised)) return raised;
+          }
+          return projectPointer(point);
+        };
         if (pointerPick.current?.stamp !== stamp) {
-          const point = projectPointer(pointer);
+          const point = pickPointer(pointer);
           const nearby = [
             [-6 / size.width, 0],
             [6 / size.width, 0],
             [0, -6 / size.height],
             [0, 6 / size.height],
           ].map(([dx, dy]) =>
-            projectPointer(new THREE.Vector2(pointer.x + dx, pointer.y + dy)),
+            pickPointer(new THREE.Vector2(pointer.x + dx, pointer.y + dy)),
           );
           pointerPick.current = { stamp, point, nearby };
         }
@@ -596,6 +616,9 @@ function CameraAndLabels({
       selected?.properties.adcode,
       points.length,
       provinceTerrainBlend(selected?.properties.adcode).toFixed(3),
+      provinces
+        .map((p) => provinceDisplayLift(p.properties.adcode).toFixed(4))
+        .join(','),
     ].join('|');
     if (cameraStamp === lastCamera.current) return;
     lastCamera.current = cameraStamp;
@@ -610,7 +633,9 @@ function CameraAndLabels({
       kind: MapAnchor['kind'],
       provinceCode: string | number | undefined = selected?.properties.adcode,
     ) => {
-      const h = provinceTerrainHeight(provinceCode, point) * HEIGHT_SCALE;
+      const h =
+        provinceTerrainHeight(provinceCode, point) * HEIGHT_SCALE +
+        provinceDisplayLift(provinceCode);
       const p = new THREE.Vector3(
         ...project(point),
         h + (kind === 'scenic' ? 0.028 : 0.07),
@@ -651,6 +676,7 @@ function CameraAndLabels({
             p.properties.center!,
             4,
             'province',
+            p.properties.adcode,
           ),
         );
     } else if (mapSelected.properties.adcode === 330000) {
