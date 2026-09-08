@@ -159,6 +159,17 @@ test('候选省份必须持续稳定，边界短暂跳到邻省不提交选择',
     true,
   );
 });
+test('快速连续跨省时，明确的省内命中无需停留；海面仍需稳定判定', () => {
+  let proposal = { code: '330000', since: 0 };
+  for (const [time, code] of [[16, '320000'], [32, '340000'], [48, '360000']]) {
+    const result = settleProvinceFocus(proposal, code, time, true);
+    assert.equal(result.ready, true);
+    proposal = result.proposal;
+  }
+  assert.equal(settleProvinceFocus(proposal, '', 64, true).ready, false);
+  assert.equal(settleProvinceFocus(proposal, '420000', 64, false).ready, false);
+});
+
 test('边界3px邻域保留原省份，进入邻省内部立即交给快速稳定判定', () => {
   const provinces = read('china.geojson').features;
   const current = provinces.find((p) => p.properties.adcode === 330000);

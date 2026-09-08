@@ -15,6 +15,29 @@ export interface PlacedLabel extends MapAnchor {
   width: number;
   height: number;
 }
+
+/** Screen-space approach area includes the raised sign, stem and actual POI.
+ * Geographic picking alone would select the province underneath the sign. */
+export function scenicInteractionAt(
+  point: { x: number; y: number },
+  labels: readonly PlacedLabel[],
+  padding = 20,
+) {
+  for (const l of labels) {
+    if (l.kind !== 'scenic') continue;
+    const nearSign =
+      point.x >= l.left - padding &&
+      point.x <= l.left + l.width + padding &&
+      point.y >= l.top - padding &&
+      point.y <= l.top + l.height + padding;
+    const nearStem =
+      Math.abs(point.x - l.x) <= padding &&
+      point.y >= Math.min(l.y, l.top + l.height) - padding &&
+      point.y <= Math.max(l.y, l.top + l.height) + padding;
+    if (nearSign || nearStem) return l.id;
+  }
+  return null;
+}
 export function cityVisible(province: number, selected?: string | number) {
   return province === Number(selected);
 }

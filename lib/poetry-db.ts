@@ -1,16 +1,27 @@
 import type { ScenicArea, Work } from './content';
+import { fetchSiteData } from './site-data.ts';
 export type RelationType =
   | 'direct'
   | 'historical-alias'
   | 'name-stem'
-  | 'regional-context';
+  | 'regional-context'
+  | 'subsite'
+  | 'inscription'
+  | 'event-person';
 export interface PoetryRecord {
   id: string;
   title: string;
   author: string;
   dynasty: string;
   body: string;
-  source: { repository: string; file: string; row: number; license: string };
+  genre?: 'poem' | 'prose';
+  source: {
+    repository: string;
+    file: string;
+    row: number;
+    license: string;
+    url?: string;
+  };
 }
 export interface ScenicPoint {
   scenicId: string;
@@ -41,6 +52,10 @@ export interface PoetryAttraction extends ScenicArea {
   legacyId?: string;
 }
 export interface PoetryManifest {
+  uniqueTexts: number;
+  poetryCount: number;
+  proseCount: number;
+  formalOnly?: boolean;
   candidatePoems: number;
   relations: number;
   linkedAttractions: number;
@@ -63,13 +78,30 @@ export type SkyRow = [
   string,
   number,
   RelationType,
-  'candidate' | 'candidate-low',
-  'title' | 'body',
+  'candidate' | 'candidate-low' | 'curated-confirmed',
+  string,
+  ('poem' | 'prose')?,
 ];
 export interface AttractionSky {
   scenicId: string;
   rows: SkyRow[];
   curated: Work[];
+  evidence?: Record<
+    string,
+    {
+      reasoning: string;
+      quote: string;
+      confidence: string;
+      batch: string;
+      sources: {
+        title: string;
+        url: string;
+        bibliographic_citation: string;
+        locator: string;
+        quote: string;
+      }[];
+    }
+  >;
 }
 const cache = new Map<string, Promise<unknown>>();
 async function getJson<T>(url: string): Promise<T> {
@@ -79,7 +111,7 @@ async function getJson<T>(url: string): Promise<T> {
     cache.set(url, old);
     return old as Promise<T>;
   }
-  const task = fetch(url)
+  const task = fetchSiteData(url)
     .then(async (r) => {
       if (!r.ok) throw Error('数据暂时无法读取，请重试。');
       const bytes = await r.arrayBuffer();
@@ -112,24 +144,56 @@ export const relationNames: Record<RelationType, string> = {
   'historical-alias': '历史别名线索',
   'name-stem': '名称线索',
   'regional-context': '同城／古地名诗词',
+  subsite: '景区内古迹关联',
+  inscription: '碑刻题咏关联',
+  'event-person': '历史人物与事件关联',
 };
 export function skyWorks(sky: AttractionSky): Work[] {
   const candidate = sky.rows.map(
-    ([id, title, author, dynasty, anchor, score, type, , match]) => ({
+    ([
       id,
       title,
       author,
       dynasty,
-      genre: '诗词' as const,
+      anchor,
+      score,
+      type,
+      status,
+      match,
+      genre,
+    ]) => ({
+      id,
+      title,
+      author,
+      dynasty,
+      genre: genre === 'prose' ? ('文' as const) : ('诗词' as const),
       body: '',
       sourceUrl: '',
       scenicId: sky.scenicId,
       verification:
-        type === 'regional-context'
-          ? ('regional' as const)
-          : ('candidate' as const),
+        status === 'curated-confirmed'
+          ? ('verified' as const)
+          : type === 'regional-context'
+            ? ('regional' as const)
+            : ('candidate' as const),
       relation: relationNames[type],
-      evidence: `${match === 'title' ? '题名' : '正文'}检索命中“${anchor}”。${type === 'regional-context' ? '这是同城或古地名的区域阅读线索，不表示作品题咏该景区。' : '这是数据库候选关联，仍需结合古今地名与作品背景核验。'}`,
+      evidence:
+        status === 'curated-confirmed'
+          ? [
+              sky.evidence?.[id]?.reasoning,
+              sky.evidence?.[id]?.quote &&
+                `核验引文：${sky.evidence[id].quote}`,
+            ]
+              .filter(Boolean)
+              .join('\n\n')
+          : `${match === 'title' ? '题名' : '正文'}检索命中“${anchor}”。${type === 'regional-context' ? '这是同城或古地名的区域阅读线索，不表示作品题咏该景区。' : '这是数据库候选关联，仍需结合古今地名与作品背景核验。'}`,
+      verificationNote:
+        status === 'curated-confirmed'
+          ? `正式关系 · 核验批次 ${sky.evidence?.[id]?.batch ?? ''}`
+          : undefined,
+      evidenceUrl: sky.evidence?.[id]?.sources.find((s) =>
+        /^https?:\/\//.test(s.url),
+      )?.url,
       score,
     }),
   );
@@ -157,8 +221,13 @@ export async function resolvePoetryWork(work: Work): Promise<Work> {
   return {
     ...work,
     body: poem.body,
+    genre: poem.genre === 'prose' ? '文' : work.genre,
+    sourceRepository: poem.source.repository,
+    sourceLicense: poem.source.license,
     sourceFile: poem.source.file,
     sourceRow: poem.source.row,
-    sourceUrl: `https://github.com/${poem.source.repository}/blob/master/${poem.source.file.split('/').map(encodeURIComponent).join('/')}`,
+    sourceUrl:
+      poem.source.url ??
+      `https://github.com/${poem.source.repository}/blob/master/${poem.source.file.split('/').map(encodeURIComponent).join('/')}`,
   };
 }

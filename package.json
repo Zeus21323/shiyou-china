@@ -12,6 +12,7 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "data:geocode": "node scripts/refresh-scenic-points.mjs",
+    "data:import": "node --experimental-strip-types scripts/import-formal-poetry.mjs",
     "test:map": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {

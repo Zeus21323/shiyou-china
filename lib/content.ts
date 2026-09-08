@@ -23,6 +23,8 @@ export interface Work {
   verificationNote?: string;
   sourceFile?: string;
   sourceRow?: number;
+  sourceRepository?: string;
+  sourceLicense?: string;
 }
 export interface Catalog {
   asOf: string;

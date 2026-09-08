@@ -1,4 +1,5 @@
 'use client';
+import { fetchSiteData } from '../lib/site-data';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
@@ -131,9 +132,12 @@ function geometryFrom(
 async function loadDetail(code: string, signal: AbortSignal): Promise<Detail> {
   const region = regions[code];
   const read = async (name: string) => {
-    const response = await fetch(`/data/terrain/${name}?v=${HEIGHT_SCALE}`, {
-      signal,
-    });
+    const response = await fetchSiteData(
+      `/data/terrain/${name}?v=${HEIGHT_SCALE}`,
+      {
+        signal,
+      },
+    );
     if (!response.ok) throw Error('省级地形资源读取失败');
     return response;
   };

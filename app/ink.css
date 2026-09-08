@@ -362,6 +362,24 @@ select {
   align-items: center;
   gap: 6px;
 }
+.site-access-notice {
+  z-index: 30;
+  border: 1px solid var(--ink-soft, #52665b);
+  line-height: 1.8;
+}
+.site-access-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.site-access-actions a,
+.site-access-actions button {
+  padding: 5px 12px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .map-zoom button {
   width: 44px;
   padding: 4px;
@@ -904,7 +922,102 @@ select {
   font-size: 18px;
 }
 .reading-mode .map-stage {
-  background: #102c31;
+  background: #071c25;
+}
+.poetry-cloud .nebula-wash {
+  background:
+    radial-gradient(ellipse at 50% 53%, #b79b5920, transparent 24%),
+    radial-gradient(ellipse at 54% 58%, #316a7630, transparent 57%);
+}
+.poetry-cloud .star-titles {
+  z-index: 3;
+}
+.star-titles .cloud-title {
+  left: 0;
+  top: 0;
+  background: #071c2533;
+  border: 1px solid transparent;
+  text-shadow: 0 1px 5px #020c11, 0 0 14px #030c14;
+  border-radius: 2px;
+  box-shadow: none;
+  transition:
+    transform 65ms linear,
+    opacity 160ms,
+    background-color 160ms,
+    border-color 160ms;
+}
+.star-titles .cloud-title.is-focused,
+.star-titles .cloud-title:hover,
+.star-titles .cloud-title:focus-visible {
+  background: #173b43f5;
+  border-color: #e4c78b;
+  color: #fff2d2;
+}
+.cloud-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: absolute;
+  right: 24px;
+  top: 26px;
+  z-index: 8;
+}
+.cloud-toolbar button,
+.cloud-zoom button {
+  min-height: 44px;
+  padding: 8px 12px;
+  color: #e9debf;
+  border: 1px solid #62888b;
+  background: #0c2935e8;
+  font-size: 12px;
+}
+.cloud-toolbar button:hover,
+.cloud-zoom button:hover {
+  background: #25494d;
+}
+.cloud-zoom {
+  position: absolute;
+  z-index: 8;
+  right: 24px;
+  bottom: 152px;
+  display: grid;
+  gap: 8px;
+}
+.cloud-zoom button {
+  width: 44px;
+  font-size: 22px;
+}
+.cloud-caption {
+  position: absolute;
+  bottom: 105px;
+  left: 20px;
+  right: 20px;
+  color: #d8ccab;
+  text-align: center;
+  pointer-events: none;
+  font: 17px/1.7 var(--display);
+}
+.cloud-caption small {
+  display: block;
+  font: 12px/1.8 var(--body);
+  color: #a1bab9;
+}
+@media (max-width: 650px) {
+  .cloud-toolbar {
+    right: 14px;
+    top: 16px;
+    gap: 6px;
+  }
+  .cloud-toolbar button {
+    padding: 7px 9px;
+  }
+  .cloud-zoom {
+    right: 14px;
+    bottom: 155px;
+  }
+  .cloud-caption {
+    font-size: 15px;
+  }
 }
 .reading-mode .map-heading h1 {
   color: #f2e8cf;
@@ -1215,3 +1328,36 @@ select {
   font-size: 13px;
   pointer-events: none;
 }
+
+/* Water lantern reading: jade water, paper petals, warm wick. */
+.lotus-water{position:absolute;inset:0;overflow:hidden;background:#315f59;color:#f6e8c6;font-family:var(--display)}
+.lotus-water canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.lotus-water canvas:active{cursor:grabbing}
+.lotus-water button{min-height:40px;padding:7px 15px;border:1px solid #b9c9ae80;background:#234f48d9;color:#f5ead0;border-radius:3px;cursor:pointer}
+.lotus-water button:focus-visible,.lotus-reflection:focus-visible{outline:2px solid #ffe0a2;outline-offset:4px}
+.lotus-tools{position:absolute;right:24px;top:150px;display:flex;gap:8px}
+.lotus-caption{position:absolute;bottom:86px;left:28px;font-size:17px;pointer-events:none;text-shadow:0 1px 3px #163f40}
+.lotus-caption small{display:block;font-size:12px;margin-top:7px;color:#c9d8c8}
+.lotus-reading{position:absolute;top:24%;left:50%;width:min(560px,80%);height:64%;transform:translateX(-50%);animation:lotus-arrive 1.3s cubic-bezier(.18,.7,.25,1) both;pointer-events:none}
+.lotus-blossom{position:absolute;left:50%;top:70px;width:1px;height:1px;filter:drop-shadow(0 14px 10px #142f3640)}
+.lotus-blossom i{position:absolute;width:130px;height:190px;left:-65px;bottom:-10px;transform-origin:50% 100%;border-radius:85% 12% 65% 35%;border:1px solid #e5bdad;background:linear-gradient(25deg,#f0dba7,#e8b9b0 65%,#f8e8d780);transform:rotate(calc(var(--petal)*30deg)) scaleY(.55);animation:lotus-open 1.8s ease both}
+.lotus-heart{position:relative;margin:-2px auto 0;min-height:145px;max-width:300px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;color:#4a4534;text-shadow:0 1px 8px #fff2cb;background:radial-gradient(ellipse,#f5e5bd 25%,#f2ddb7d9 48%,transparent 72%)}
+.lotus-heart h2{font-size:clamp(21px,2.3vw,29px);line-height:1.3;margin:0 0 8px;max-height:80px;overflow:auto;pointer-events:auto}
+.lotus-heart p{margin:0;font-size:17px}.lotus-heart small{margin-top:4px}
+.lotus-reflection{position:relative;pointer-events:auto;max-height:calc(100% - 180px);min-height:110px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#abbfa580 transparent;text-align:center;padding:24px 20px 36px;color:#f7e8bd;background:linear-gradient(#d6dcb016,#234f4826);border-top:1px solid #dde5be70;mask-image:linear-gradient(transparent,#000 13px,#000 calc(100% - 20px),transparent);text-shadow:0 2px 3px #cbdcba55,0 6px 12px #afcabc50;line-height:2;font-size:21px;animation:lotus-words 1.8s ease both}
+.lotus-reflection:after{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(177deg,transparent 0 17px,#b4dbc20a 18px 19px,transparent 21px 34px)}
+.lotus-reflection p{margin:0 0 13px;white-space:pre-wrap;overflow-wrap:anywhere}.lotus-prose{text-align:left;font-size:18px;line-height:2.1}
+.lotus-close{position:relative;display:block;margin:12px auto;pointer-events:auto}
+@keyframes lotus-arrive{from{opacity:0;transform:translate(-50%,-90px) scale(.35)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+@keyframes lotus-open{from{transform:rotate(calc(var(--petal)*30deg)) scale(.32,.8)}to{transform:rotate(calc(var(--petal)*30deg)) scaleY(.55)}}
+@keyframes lotus-words{0%,45%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
+.lotus-still *{animation:none!important}
+@media(max-width:640px){.lotus-tools{top:148px;right:12px}.lotus-tools button{font-size:12px;padding:5px 8px}.lotus-reading{top:29%;height:56%;width:87%}.lotus-blossom i{width:100px;height:155px;left:-50px}.lotus-heart{min-height:125px}.lotus-reflection{font-size:18px;max-height:calc(100% - 170px)}.lotus-caption{bottom:90px;left:15px;font-size:14px}}
+.lotus-blossom i{border-radius:100% 0 100% 0;background:linear-gradient(35deg,#ecd2a6,#e4b0aa 64%,#fff0de);box-shadow:inset 1px 1px 0 #ffe5d9}
+@keyframes lotus-arrive{from{opacity:.4;transform:translate(calc(-50% + var(--origin-x,0px)),var(--origin-y,80px)) scale(.12)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+.lotus-real-water .lotus-reading{top:30%;height:57%;animation:lotus-reveal 1s ease both}
+.lotus-real-water .lotus-heart{background:none;color:#fff4dc;text-shadow:0 2px 5px #274148,0 0 14px #496973;min-height:110px;max-width:330px}
+.lotus-real-water .lotus-reflection{max-height:calc(100% - 166px);background:linear-gradient(#213e4c22,#15313e88);text-shadow:0 2px 4px #122e3d,0 5px 12px #c4c2a36b}
+.lotus-real-water .lotus-tools{top:140px}
+@keyframes lotus-reveal{0%,45%{opacity:0;transform:translateX(-50%) translateY(12px)}100%{opacity:1;transform:translateX(-50%) translateY(0)}}
+.lotus-real-water .lotus-heart{color:#612c36;text-shadow:0 1px 2px #ffe8bb,0 0 8px #ffe8bb80}

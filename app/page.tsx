@@ -2,7 +2,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ChinaMap, { type Province } from '../components/handscroll-map';
 import NationalScenicList from '../components/national-scenic-list';
-import PoetryNebula from '../components/star-river';
+import LotusWater from '../components/lotus-water';
+import SiteAccessNotice from '../components/site-access-notice';
+import { fetchSiteData, SiteDataError } from '../lib/site-data';
 import type { ScenicArea, Work } from '../lib/content';
 import {
   loadPoetryAttractions,
@@ -16,14 +18,13 @@ import {
 const PAGE_SIZE = 12;
 const scopeLabels = {
   all: '全部',
-  related: '景点线索',
-  regional: '同城诗词',
-  verified: '已核对',
+  poem: '古诗',
+  prose: '文言散文',
 };
 type Scope = keyof typeof scopeLabels;
 const verificationLabel = (w: Work) =>
   w.verification === 'verified'
-    ? '已核对'
+    ? '正式关联'
     : w.verification === 'regional'
       ? '区域线索'
       : '候选关联';
@@ -55,7 +56,7 @@ export default function Home() {
     let active = true;
     setCatalogError('');
     Promise.all([
-      fetch('/data/china.geojson').then((r) => {
+      fetchSiteData('/data/china.geojson').then((r) => {
         if (!r.ok) throw Error();
         return r.json();
       }),
@@ -69,8 +70,13 @@ export default function Home() {
           setManifest(meta);
         }
       })
-      .catch(() => {
-        if (active) setCatalogError('全国景点数据暂时无法加载，请重试。');
+      .catch((error: unknown) => {
+        if (active)
+          setCatalogError(
+            error instanceof SiteDataError
+              ? error.message
+              : '全国景点数据暂时无法加载，请重试。',
+          );
       });
     return () => {
       active = false;
@@ -162,9 +168,8 @@ export default function Home() {
       allWorks.filter(
         (w) =>
           (scope === 'all' ||
-            (scope === 'related' && w.verification !== 'regional') ||
-            (scope === 'regional' && w.verification === 'regional') ||
-            (scope === 'verified' && w.verification === 'verified')) &&
+            (scope === 'poem' && w.genre !== '文') ||
+            (scope === 'prose' && w.genre === '文')) &&
           `${w.title}${w.author}${w.dynasty}`.includes(query.trim()),
       ),
     [allWorks, scope, query],
@@ -176,9 +181,13 @@ export default function Home() {
       filtered.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE),
     [filtered, currentPage],
   );
+  const matchingIds = useMemo(
+    () => new Set(filtered.map((w) => w.id)),
+    [filtered],
+  );
   useEffect(() => {
-    if (scenic) setLastSky(currentWorks);
-  }, [currentWorks, scenic]);
+    if (scenic) setLastSky(allWorks);
+  }, [allWorks, scenic]);
   const returnToProvince = () => {
     setScenic(null);
     closeReading();
@@ -227,9 +236,14 @@ export default function Home() {
               className={'scene-layer' + (!scenic ? ' scene-hidden' : '')}
               inert={!scenic}
             >
-              <PoetryNebula
-                works={scenic ? currentWorks : lastSky}
+              <LotusWater
+                reading={reading}
+                readStatus={readStatus}
+                works={scenic ? allWorks : lastSky}
+                matchingIds={matchingIds}
+                selectedId={reading?.id}
                 onRead={readWork}
+                onDeselect={closeReading}
                 active={!!scenic}
               />
             </div>
@@ -252,41 +266,20 @@ export default function Home() {
                   ? '正在展开此地诗词…'
                   : collection.status === 'error'
                     ? '诗词暂时未能读取，可在右侧重试'
-                    : `${filtered.length.toLocaleString()} 篇${scope === 'all' ? '诗词记录' : scopeLabels[scope]} · 点击星点阅读`
+                    : `${filtered.length.toLocaleString()} 篇${scope === 'all' ? '诗词记录' : scopeLabels[scope]} · 点击莲灯阅读`
                 : selected
                   ? '循着地名，寻访山水。放大地图，遇见更多景点。'
                   : '选择省份，开启你的山水诗文之旅。'}
             </p>
           </div>
-          {catalogError && (
-            <div className="map-error" role="alert">
-              {catalogError}
-              <button onClick={() => setRetry((n) => n + 1)}>重试加载</button>
-            </div>
-          )}
+          <SiteAccessNotice
+            error={catalogError}
+            onRetry={() => setRetry((n) => n + 1)}
+          />
           {!catalog.length && !catalogError && (
             <p className="map-error" role="status">
               正在读取全国山水与诗词索引…
             </p>
-          )}
-          {scenic && !busy && filtered.length > 0 && (
-            <nav className="sky-pager" aria-label="诗词星河翻页">
-              <button
-                disabled={currentPage === 0}
-                onClick={() => changePage(currentPage - 1)}
-              >
-                上一片星河
-              </button>
-              <span>
-                {currentPage + 1} / {pages}
-              </span>
-              <button
-                disabled={currentPage === pages - 1}
-                onClick={() => changePage(currentPage + 1)}
-              >
-                下一片星河
-              </button>
-            </nav>
           )}
           <div className="map-controls">
             {scenic && (
@@ -294,12 +287,14 @@ export default function Home() {
             )}
             <button onClick={() => selectProvince(null)}>↖ 全国视野</button>
             <span>
-              {scenic ? '拖动环视 · 滚轮缩放' : '拖动平移 · 滚轮缩放'}
+              {scenic
+                ? '拖动水面 · 滚轮缩放 · 倒影内滚动阅读'
+                : '拖动平移 · 滚轮缩放'}
             </span>
           </div>
           <p className="map-credit">
             {scenic
-              ? '每颗亮星对应本页一首作品 · 名称线索与同城诗词可分别浏览'
+              ? '一篇一盏莲灯 · 点击开莲 · 右侧目录可搜索定位'
               : '省界：DataV · 地形：Mapzen / USGS · 城市与河湖：Natural Earth（概化）'}
           </p>
         </div>
@@ -386,8 +381,9 @@ export default function Home() {
                         </a>
                         {reading.sourceFile && (
                           <small>
-                            语料：Werneror/Poetry · {reading.sourceFile} · CSV
-                            记录序号 {reading.sourceRow}（含表头） · MIT
+                            语料：{reading.sourceRepository} ·{' '}
+                            {reading.sourceFile} · 源记录 {reading.sourceRow} ·{' '}
+                            {reading.sourceLicense}
                           </small>
                         )}
                         {reading.evidenceUrl &&
@@ -410,7 +406,7 @@ export default function Home() {
               ) : (
                 <>
                   <p className="relation-note">
-                    景点名称与历史别名是待核验线索；同城诗词用于拓展阅读，不等同于题咏此景。
+                    此处仅展示最新数据库中正式确认的诗文关联，可在作品详情查看核验理由与原文出处。
                   </p>
                   <div className="poetry-scope" aria-label="诗词关联范围">
                     {(Object.keys(scopeLabels) as Scope[]).map((s) => (
@@ -440,7 +436,7 @@ export default function Home() {
                     }}
                   />
                   {busy ? (
-                    <p role="status">正在读取诗词星河…</p>
+                    <p role="status">正在点亮水上诗灯…</p>
                   ) : collection.status === 'error' ? (
                     <div role="alert">
                       <p>此景点诗词加载失败。</p>
@@ -451,8 +447,8 @@ export default function Home() {
                   ) : (
                     <>
                       <p className="result-count" aria-live="polite">
-                        {filtered.length.toLocaleString()} 条记录 · 本页{' '}
-                        {currentWorks.length} 首
+                        {filtered.length.toLocaleString()} 条记录 · 目录本页{' '}
+                        {currentWorks.length} 篇
                       </p>
                       <div className="work-list">
                         {currentWorks.map((w) => (
@@ -549,13 +545,18 @@ export default function Home() {
                       <b>
                         {manifest?.linkedAttractions.toLocaleString() ?? '—'}
                       </b>
-                      <span>有诗词线索的景点</span>
+                      <span>有正式关系的景区</span>
                     </div>
                     <div>
-                      <b>{manifest?.candidatePoems.toLocaleString() ?? '—'}</b>
-                      <span>候选古诗词</span>
+                      <b>{manifest?.uniqueTexts.toLocaleString() ?? '—'}</b>
+                      <span>去重诗文</span>
                     </div>
                   </div>
+                  <p>
+                    {manifest?.poetryCount.toLocaleString() ?? '—'} 篇古诗 ·{' '}
+                    {manifest?.proseCount.toLocaleString() ?? '—'} 篇文言散文 ·{' '}
+                    {manifest?.relations.toLocaleString() ?? '—'} 条正式关系
+                  </p>
                   <div className="province-directory" aria-label="各省诗词景点">
                     {manifest?.coverage
                       .filter((p) => p.attractions > 0)
@@ -578,10 +579,10 @@ export default function Home() {
                   <div className="editor-note">
                     <span>收录原则</span>
                     <p>
-                      来自既有诗词—景点数据库，按省份展示有候选关联的山水古迹。覆盖31个大陆省级地区；港澳台当前数据库无记录，不套用大陆A级景区等级。
+                      来自最新核验数据库，只收录已完成核验批次的正式关系。没有正式关系的景区不进入地图与景区名录。
                     </p>
                     <p>
-                      包含名称、历史别名及同城古地名线索，候选不等于已考证。原有18篇已核对作品继续保留。
+                      古诗与文言散文按文本去重，同一作品与多个景区的正式关系分别保留。原始出处与核验理由可在阅读页面查阅。
                     </p>
                     <a
                       href="/data/poetry/CATALOG.md"

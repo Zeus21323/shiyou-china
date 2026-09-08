@@ -96,15 +96,12 @@ export default function NationalScenicList({
             </span>
             <strong>{a.name}</strong>
             <span className="scenic-enter">
-              {a.directCount
-                ? `${a.directCount} 条景点关联线索`
-                : '同城诗词可读'}{' '}
-              · {a.poemCount.toLocaleString()} 首候选
+              {a.poemCount.toLocaleString()} 篇诗文 · 正式关联
             </span>
             {a.curatedCount > 0 && (
               <small>另有 {a.curatedCount} 篇已核对作品</small>
             )}
-            {!a.point && <small>地点待核验 · 可直接进入星河</small>}
+            {!a.point && <small>地点待核验 · 可直接点灯读诗</small>}
           </button>
         ))}
       </div>

@@ -7,6 +7,7 @@ import type { OrbitControls as Controls } from 'three-stdlib';
 import { useReducedMotion } from '../lib/use-motion-preference';
 import { HEIGHT_SCALE, elevationAt } from '../lib/terrain-height';
 import { PROVINCE_LIFT } from '../lib/province-lift';
+import { fetchSiteData, SiteDataError } from '../lib/site-data';
 import chinaHeights from '../public/data/terrain/china-elevation.json';
 import {
   ProvinceShape,
@@ -37,6 +38,7 @@ import type { ScenicArea } from '../lib/content';
 import cityData from '../public/data/city-labels.json';
 import {
   clusterAnchors,
+  scenicInteractionAt,
   placeLabels,
   cityVisible,
   capitalPosition,
@@ -458,24 +460,46 @@ function CameraAndLabels({
     if (canFocus) returning.current = false;
     const now = performance.now();
     const followingMouse = canFocus && hoverPointer.current !== null;
+    // A raised scenic sign may project into another province. Protect the
+    // visible sign and its approach corridor before geographic auto-selection.
+    const pointer = hoverPointer.current?.point;
+    const protectedScenic =
+      selected && followingMouse && pointer && !dragStart.current
+        ? scenicInteractionAt(
+            {
+              x: ((pointer.x + 1) * size.width) / 2,
+              y: ((1 - pointer.y) * size.height) / 2,
+            },
+            previousLabels.current.filter((l) => areaIndex.has(l.id)),
+          )
+        : null;
+    gl.domElement.dataset.scenicInteraction = protectedScenic ?? '';
+    if (protectedScenic) {
+      // Cancel a neighbor proposal already started while approaching the label.
+      proposed.current = {
+        code: String(selected!.properties.adcode),
+        since: now,
+      };
+    }
     if (
       !flight.current &&
+      !protectedScenic &&
       canFocus &&
       !awaitingFit &&
-      now >= selectionCheckAt.current &&
+      (followingMouse || now >= selectionCheckAt.current) &&
       (followingMouse ||
         (userZoomed.current && zoomDirection.current > 0) ||
         panPending.current ||
         dragStart.current)
     ) {
       selectionCheckAt.current = now + 32;
-      const samples = [
+      const samples = (followingMouse ? [] : [
         [0, 0],
         [-0.32, 0],
         [0.32, 0],
         [0, 0.28],
         [0, -0.28],
-      ].flatMap(([x, y]) => {
+      ]).flatMap(([x, y]) => {
         ray.setFromCamera(new THREE.Vector2(x, y), cam);
         const hit = ray.ray.intersectPlane(ground, new THREE.Vector3());
         return hit ? [[hit.x / 0.75 + 104, hit.y / 0.95 + 35]] : [];
@@ -548,20 +572,27 @@ function CameraAndLabels({
         samples,
         selected,
       );
+      const nearbyProvinces = pointerNearby.map((p) => provinceAt(provinces, p));
       if (followingMouse)
         candidate = retainBoundaryFocus(
           candidate,
           selected,
-          pointerNearby.map((p) => provinceAt(provinces, p)),
+          nearbyProvinces,
         );
       if (candidate) {
         prefetchProvinceTerrain(candidate.properties.adcode);
         warmProvinceTexture(candidate.properties.adcode, gl);
       }
       const code = String(candidate?.properties.adcode ?? '');
-      const settled = settleProvinceFocus(proposed.current, code, now);
+      // 明确进入省内时按帧响应；边缘/海面保留短暂稳定判定。
+      // 上方景点交互保护优先，不能被快速选省绕过。
+      const interior = followingMouse && !!candidate &&
+        nearbyProvinces.length === 4 && nearbyProvinces.every(
+          (p) => p?.properties.adcode === candidate.properties.adcode,
+        );
+      const settled = settleProvinceFocus(proposed.current, code, now, interior);
       proposed.current = settled.proposal;
-      // 空间滞回负责边界稳定，省内只需40ms响应。
+      // 空间滞回负责边界稳定，省内不再叠加时间等待。
       if (
         !returning.current &&
         settled.ready &&
@@ -833,7 +864,7 @@ export default function HandscrollMap({
   const [meshData, setMeshData] = useState<ArrayBuffer | null>(null);
   useEffect(() => {
     const controller = new AbortController();
-    fetch(`/data/terrain/relief.bin?v=${HEIGHT_SCALE}`, {
+    fetchSiteData(`/data/terrain/relief.bin?v=${HEIGHT_SCALE}`, {
       signal: controller.signal,
     })
       .then((r) => {
@@ -842,11 +873,16 @@ export default function HandscrollMap({
       })
       .then(setMeshData)
       .catch((e) => {
-        if (e.name !== 'AbortError') setDataError(true);
+        if (e.name !== 'AbortError')
+          setDataError(
+            e instanceof SiteDataError
+              ? e.message
+              : '地形加载失败，请刷新重试。',
+          );
       });
     return () => controller.abort();
   }, []);
-  const [dataError, setDataError] = useState(false);
+  const [dataError, setDataError] = useState('');
   const [screen, setScreen] = useState<ScreenState>({
     labels: [],
     hidden: [],
@@ -922,7 +958,7 @@ export default function HandscrollMap({
     >
       {!meshData && (
         <p className="map-error" role="status">
-          {dataError ? '地形加载失败，请刷新重试。' : '正在铺展立体山河…'}
+          {dataError || '正在铺展立体山河…'}
         </p>
       )}
       {mapSelected &&

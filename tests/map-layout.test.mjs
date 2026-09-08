@@ -1,7 +1,45 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { placeLabels, overlap, clusterAnchors } from '../lib/map-layout.ts';
+import {
+  placeLabels,
+  overlap,
+  clusterAnchors,
+  scenicInteractionAt,
+} from '../lib/map-layout.ts';
+
+test('边界景点保护覆盖标签、引导线和落点，离开后恢复省份命中', () => {
+  const label = {
+    id: 'lushan',
+    kind: 'scenic',
+    name: '庐山',
+    priority: 5,
+    x: 516,
+    y: 375,
+    left: 475,
+    top: 308,
+    width: 82,
+    height: 36,
+  };
+  for (const point of [
+    { x: 516, y: 326 },
+    { x: 516, y: 360 },
+    { x: 516, y: 375 },
+    { x: 516, y: 292 },
+    { x: 460, y: 326 },
+  ])
+    assert.equal(scenicInteractionAt(point, [label]), 'lushan');
+  assert.equal(scenicInteractionAt({ x: 440, y: 326 }, [label]), null);
+  assert.equal(scenicInteractionAt({ x: 560, y: 385 }, [label]), null);
+  assert.equal(scenicInteractionAt({ x: 516, y: 326 }, []), null);
+  assert.equal(
+    scenicInteractionAt({ x: 516, y: 326 }, [{ ...label, kind: 'province' }]),
+    null,
+  );
+  const moved = { ...label, left: 675, x: 716 };
+  assert.equal(scenicInteractionAt({ x: 516, y: 326 }, [moved]), null);
+  assert.equal(scenicInteractionAt({ x: 716, y: 326 }, [moved]), 'lushan');
+});
 
 test('官方坐标有唯一来源、合法坐标系，覆盖全部5A和诗文目的地', () => {
   const read = (name) =>

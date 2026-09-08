@@ -37,9 +37,10 @@ export function settleProvinceFocus(
   previous: { code: string; since: number },
   code: string,
   now: number,
+  interior = false,
 ) {
   const proposal = previous.code === code ? previous : { code, since: now };
-  return { proposal, ready: now - proposal.since >= 40 };
+  return { proposal, ready: (interior && code !== '') || now - proposal.since >= 40 };
 }
 // 跨界需真正离开当前省份的3px邻域，避免用延长等待来掩盖边界抖动。
 export function retainBoundaryFocus(
